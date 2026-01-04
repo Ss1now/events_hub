@@ -14,7 +14,7 @@ export const assets = {
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lorem dui, rhoncus id eleme",
             image: post_1,
             date: Date.now(),
-            category: "Article",
+            category: "Development",
             author: "Paul Ford",
         },
         {
@@ -41,7 +41,7 @@ export const assets = {
             description: "Learn the essential strategies to improve your website's search engine visibility.",
             image: post_1,
             date: Date.now(),
-            category: "SEO",
+            category: "Development",
             author: "Emily Davis",
         },
         {
@@ -50,7 +50,7 @@ export const assets = {
             description: "Best practices for designing and implementing scalable REST APIs.",
             image: post_1,
             date: Date.now(),
-            category: "Backend",
+            category: "Development",
             author: "Michael Brown",
         },
         {
@@ -59,7 +59,7 @@ export const assets = {
             description: "Understanding when and how to use CSS Grid and Flexbox in your layouts.",
             image: post_1,
             date: Date.now(),
-            category: "CSS",
+            category: "Design",
             author: "Lisa Anderson",
         },
         {
@@ -68,7 +68,7 @@ export const assets = {
             description: "Optimize your JavaScript code for better performance and faster load times.",
             image: post_1,
             date: Date.now(),
-            category: "Performance",
+            category: "Development",
             author: "David Wilson",
         },
         {
@@ -86,7 +86,7 @@ export const assets = {
             description: "Creating accessible web applications that work for everyone.",
             image: post_1,
             date: Date.now(),
-            category: "Accessibility",
+            category: "Design",
             author: "Robert Taylor",
         },
         {
@@ -95,7 +95,7 @@ export const assets = {
             description: "Exploring different state management solutions for React applications.",
             image: post_1,
             date: Date.now(),
-            category: "React",
+            category: "Development",
             author: "Amanda Garcia",
         },
         {
@@ -113,7 +113,7 @@ export const assets = {
             description: "Comprehensive guide to unit and integration testing in React.",
             image: post_1,
             date: Date.now(),
-            category: "Testing",
+            category: "Development",
             author: "Rachel White",
         },
         {
@@ -122,7 +122,7 @@ export const assets = {
             description: "Learn TypeScript and improve your code quality with type safety.",
             image: post_1,
             date: Date.now(),
-            category: "TypeScript",
+            category: "Development",
             author: "Kevin Harris",
         },
         {
@@ -131,7 +131,7 @@ export const assets = {
             description: "Strategies for optimizing database queries and improving performance.",
             image: post_1,
             date: Date.now(),
-            category: "Database",
+            category: "Development",
             author: "Michelle Clark",
         },
         {
@@ -140,7 +140,7 @@ export const assets = {
             description: "Getting started with containerization using Docker and Docker Compose.",
             image: post_1,
             date: Date.now(),
-            category: "DevOps",
+            category: "Development",
             author: "Thomas Miller",
         },
         {
@@ -149,7 +149,7 @@ export const assets = {
             description: "Master advanced Git techniques for collaborative development.",
             image: post_1,
             date: Date.now(),
-            category: "Tools",
+            category: "Development",
             author: "Victoria Rodriguez",
         }
     ]
