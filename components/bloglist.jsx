@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const BlogList = () => {
 
-        const [menu, setMenu] = useState("All");
+        const [menu, setMenu] = useState("future");
         
         console.log('blog_data:', blog_data);
 
@@ -28,16 +28,35 @@ const BlogList = () => {
 
             {/* Filter Tabs */}
             <div className='flex justify-center gap-4 mb-8'>
-                <button onClick={()=>setMenu('All')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="All"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Future</button>
-                <button onClick={()=>setMenu('Design')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="Design"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Ongoing</button>
-                <button onClick={()=>setMenu('Development')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="Development"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
+                <button onClick={()=>setMenu('future')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Future</button>
+                <button onClick={()=>setMenu('live')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Ongoing</button>
+                <button onClick={()=>setMenu('past')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
             </div>
 
             {/* Event Cards */}
             <div className='max-w-6xl mx-auto px-5'>
                 <div className='space-y-6'>
-                    {blog_data.filter((item)=> menu==="All"?true:item.category===menu).map((item,index)=>{
-                        return <BlogItem key={index} id={item.id} image={item.image} title={item.title} description={item.description} category={item.category} />
+                    {blog_data.filter((item)=> item.status === menu).map((item,index)=>{
+                        return <BlogItem 
+                            key={index} 
+                            id={item.id} 
+                            image={item.image} 
+                            title={item.title} 
+                            description={item.description} 
+                            category={item.category}
+                            status={item.status}
+                            eventType={item.eventType}
+                            theme={item.theme}
+                            dressCode={item.dressCode}
+                            location={item.location}
+                            needReservation={item.needReservation}
+                            reserved={item.reserved}
+                            capacity={item.capacity}
+                            time={item.time}
+                            host={item.host}
+                            hostUsername={item.hostUsername}
+                            eventDate={item.eventDate}
+                        />
                     })}
                 </div>
             </div>

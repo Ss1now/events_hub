@@ -16,9 +16,7 @@ const page = async ({ params }) => {
             <div className='flex justify-between items-center'>
             <Link href='/'>
                 <div className='flex items-center gap-3 cursor-pointer hover:opacity-80'>
-                    <div className='w-10 h-10 bg-black rounded-full flex items-center justify-center'>
-                        <span className='text-white text-xl'>🎉</span>
-                    </div>
+                    <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-12 h-12 object-contain'/>
                     <div>
                         <h2 className='text-xl font-semibold'>Rice Party</h2>
                         <p className='text-xs text-gray-500'>minimal + playful</p>
