@@ -2,9 +2,10 @@ import React from 'react'
 import Image from 'next/image';
 import { assets, blog_data } from '@/assets/assets';
 import Link from 'next/link';
-import Page from '@/app/blogs/[id]/page';
+import page from '@/app/blogs/[id]/page';
 
 const BlogItem = ({title, description, category, image, id}) => {
+    console.log('BlogItem ID:', id);
     return (
         <div className='max-w-[330px] sm:max-w-[300px] bg-white border border-black'>
             <Link href={`/blogs/${id}`}>

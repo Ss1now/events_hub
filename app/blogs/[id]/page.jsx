@@ -1,29 +1,13 @@
-'use client'
 import React from 'react'
-import { useEffect, useState } from 'react';
 import { blog_data } from '@/assets/assets';
-import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { assets } from '@/assets/assets';
 
 
-const page = ({params}) => {
-
-    const [data,setData] = useState(null);
-
-    const fetchBlogData = () => {
-        for(let i=0;i<blog_data.length;i++){
-            if (Number(params.id)===blog_data[i].id){
-                setData(blog_data[i]);
-                console.log(blog_data[i]);
-                break;
-            }
-        }
-    }   
-
-    useEffect(() => {
-        fetchBlogData();
-    }, []);
+const page = async ({ params }) => {
+    const { id } = await params;
+    
+    const data = blog_data.find(item => item.id === Number(id));
 
     return (data?<>
         <div className ='bg-gray-200 py-5 px-5 md:px-12 lg:px-28'>
