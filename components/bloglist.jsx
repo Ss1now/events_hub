@@ -6,8 +6,23 @@ import { useState } from 'react';
 const BlogList = () => {
 
         const [menu, setMenu] = useState("future");
+        const [searchTerm, setSearchTerm] = useState("");
         
         console.log('blog_data:', blog_data);
+
+        // Filter events by status and search term
+        const filteredEvents = blog_data.filter((item) => {
+            const matchesStatus = item.status === menu;
+            const matchesSearch = searchTerm === "" || 
+                item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.eventType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.theme.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.dressCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                item.host.toLowerCase().includes(searchTerm.toLowerCase());
+            return matchesStatus && matchesSearch;
+        });
 
     return (
         <div className='bg-gray-50 min-h-screen py-8'>
@@ -19,11 +34,13 @@ const BlogList = () => {
                     </svg>
                     <input 
                         type='text' 
-                        placeholder='Search' 
+                        placeholder='Search events by name, location, theme, type...' 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
                     />
                 </div>
-                <p className='text-sm text-gray-400 mt-2 text-right'>Try "jones", "silent disco", "rooftop"...</p>
+                <p className='text-sm text-gray-400 mt-2 text-right'>Try "jones", "silent disco", "rooftop", "karaoke"...</p>
             </div>
 
             {/* Filter Tabs */}
@@ -36,28 +53,34 @@ const BlogList = () => {
             {/* Event Cards */}
             <div className='max-w-6xl mx-auto px-5'>
                 <div className='space-y-6'>
-                    {blog_data.filter((item)=> item.status === menu).map((item,index)=>{
-                        return <BlogItem 
-                            key={index} 
-                            id={item.id} 
-                            image={item.image} 
-                            title={item.title} 
-                            description={item.description} 
-                            category={item.category}
-                            status={item.status}
-                            eventType={item.eventType}
-                            theme={item.theme}
-                            dressCode={item.dressCode}
-                            location={item.location}
-                            needReservation={item.needReservation}
-                            reserved={item.reserved}
-                            capacity={item.capacity}
-                            time={item.time}
-                            host={item.host}
-                            hostUsername={item.hostUsername}
-                            eventDate={item.eventDate}
-                        />
-                    })}
+                    {filteredEvents.length > 0 ? (
+                        filteredEvents.map((item,index)=>{
+                            return <BlogItem 
+                                key={index} 
+                                id={item.id} 
+                                image={item.image} 
+                                title={item.title} 
+                                description={item.description} 
+                                category={item.category}
+                                status={item.status}
+                                eventType={item.eventType}
+                                theme={item.theme}
+                                dressCode={item.dressCode}
+                                location={item.location}
+                                needReservation={item.needReservation}
+                                reserved={item.reserved}
+                                capacity={item.capacity}
+                                time={item.time}
+                                host={item.host}
+                                hostUsername={item.hostUsername}
+                                eventDate={item.eventDate}
+                            />
+                        })
+                    ) : (
+                        <div className='text-center py-12'>
+                            <p className='text-gray-500 text-lg'>No events found matching your search.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
