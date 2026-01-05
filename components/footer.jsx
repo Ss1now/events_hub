@@ -4,9 +4,19 @@ import Image from 'next/image';
 
 const Footer = () => {
     return (
-        <div className='flex justify-around flex-col gap-2 sm:gap-0 sm:flex-row bg-black py-5 items-center'>
-            <Image src={assets.logo} alt='' width={120} />
-            <p className='text-sm text-white'>All right reserved. Copyright @blogger</p>
+        <div className='bg-white border-t border-gray-200 py-8 mt-12'>
+            <div className='max-w-6xl mx-auto px-5 flex justify-between items-center flex-col sm:flex-row gap-4'>
+                <div className='flex items-center gap-3'>
+                    <div className='w-8 h-8 bg-black rounded-full flex items-center justify-center'>
+                        <span className='text-white text-lg'>🎉</span>
+                    </div>
+                    <div>
+                        <h3 className='font-semibold text-sm'>Rice Party</h3>
+                        <p className='text-xs text-gray-500'>minimal + playful</p>
+                    </div>
+                </div>
+                <p className='text-sm text-gray-500'>All rights reserved. Copyright @riceparty 2026</p>
+            </div>
         </div>
     )
 }

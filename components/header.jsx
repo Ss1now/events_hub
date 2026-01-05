@@ -4,18 +4,22 @@ import React from 'react';
 
 const Header = () => {
     return (
-        <div className='py-5 px-5 md:px-12 lg:px-28'>
-            <div className='flex justify-between items-center'>
-                <Image src={assets.logo} width={180} alt='' className='w-[130px] sm:w-auto'/>
-                <button className='flex items-center gap-2 font-medium py-1 px-3 sm:py-3 sm:px-6 border border-solid border-black'>Get Started</button>  
+        <div className='py-6 px-5 md:px-12 lg:px-28 bg-white'>
+            <div className='flex justify-between items-center mb-8'>
+                <div className='flex items-center gap-3'>
+                    <div className='w-10 h-10 bg-black rounded-full flex items-center justify-center'>
+                        <span className='text-white text-xl'>🎉</span>
+                    </div>
+                    <div>
+                        <h2 className='text-xl font-semibold'>Rice Party</h2>
+                        <p className='text-xs text-gray-500'>minimal + playful</p>
+                    </div>
+                </div>
+                <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Post a party</button>  
             </div>
-            <div className='text-center my-8'>
-                <h1 className='text-3xl sm:text-5xl font-medium'>Latest Blogs</h1>
-                <p className='mt-10 max-w-[740px] m-auto text-xs sm:text-base'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lorem dui, rhoncus id eleme</p>
-                <form className='flex justify-between max-w-[500px] scale-75 sm:scale-100 mx-auto mt-10 border border-black'>
-                    <input type="email" placeholder='Enter your email' className='pl-4 outline-none'/>
-                    <button type='submit' className='border-l border-black py-4 px-4 sm:px-8 active:bg-gray-600 active:text-white'>Subscribe</button>
-                </form>
+            <div className='text-center my-12'>
+                <h1 className='text-4xl sm:text-5xl font-bold mb-3'>Event / Party Hub</h1>
+                <p className='mt-4 max-w-[800px] m-auto text-sm sm:text-base text-gray-600'>Post future parties. When the time comes → it becomes LIVE. After it ends → it lands in Past for ratings.</p>
             </div>
         </div>
     )
