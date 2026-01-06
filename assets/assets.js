@@ -1,9 +1,13 @@
 import logo from "./logo.png";
 import post_1 from "./post_1.png";
+import post_icon from "./post_icon.png";
+import profile from "./profile.png";
 
 export const assets = {
     logo,
-    post_1
+    post_1,
+    post_icon,
+    profile
     }
 
 
