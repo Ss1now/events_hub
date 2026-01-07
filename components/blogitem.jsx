@@ -4,8 +4,30 @@ import { assets, blog_data } from '@/assets/assets';
 import Link from 'next/link';
 import page from '@/app/blogs/[id]/page';
 
-const BlogItem = ({title, description, category, image, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, time, host, eventDate}) => {
+const BlogItem = ({title, description, category, image, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, startDateTime, endDateTime, host}) => {
     console.log('BlogItem ID:', id);
+    
+    // Format date and time from startDateTime and endDateTime
+    const formatDateTime = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const options = { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true };
+        return date.toLocaleString('en-US', options);
+    };
+    
+    const formatDateBadge = (dateString) => {
+        if (!dateString) return { month: 'Jan', day: '1' };
+        const date = new Date(dateString);
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const day = date.getDate();
+        return { month, day };
+    };
+    
+    const timeDisplay = startDateTime && endDateTime 
+        ? `${formatDateTime(startDateTime)} → ${formatDateTime(endDateTime)}`
+        : '';
+    
+    const eventDate = formatDateBadge(startDateTime);
     
     // Determine status badge color and text
     const getStatusBadge = () => {
@@ -76,7 +98,7 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
                         <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                         </svg>
-                        <span>{time}</span>
+                        <span>{timeDisplay}</span>
                     </div>
                 </div>
 

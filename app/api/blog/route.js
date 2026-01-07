@@ -29,10 +29,8 @@ export async function POST(request){
         description: `${formData.get('description')}`,
         image: imgUrl,
         date: new Date(),
-        eventDate: {
-            month: `${formData.get('month')}`,
-            day: parseInt(formData.get('day'))
-        },
+        startDateTime: new Date(formData.get('startDateTime')),
+        endDateTime: new Date(formData.get('endDateTime')),
         status: `${formData.get('status')}`,
         eventType: `${formData.get('eventType')}`,
         theme: `${formData.get('theme')}`,
@@ -41,7 +39,6 @@ export async function POST(request){
         needReservation: formData.get('needReservation') === 'true',
         reserved: parseInt(formData.get('reserved')) || 0,
         capacity: parseInt(formData.get('capacity')),
-        time: `${formData.get('time')}`,
         host: `${formData.get('host')}`
     }
 

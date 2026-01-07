@@ -70,9 +70,9 @@ const BlogList = () => {
                                 needReservation={item.needReservation}
                                 reserved={item.reserved}
                                 capacity={item.capacity}
-                                time={item.time}
+                                startDateTime={item.startDateTime}
+                                endDateTime={item.endDateTime}
                                 host={item.host}
-                                eventDate={item.eventDate}
                             />
                         })
                     ) : (

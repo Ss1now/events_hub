@@ -3,6 +3,9 @@ import { assets } from '@/assets/assets';
 import Image from 'next/image';
 import React from 'react'
 import { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -12,9 +15,8 @@ export default function Page() {
     const [data,setData] = useState({
         title:'',
         description:'',
-        date:'',
-        eventMonth:'',
-        eventDay:'',
+        startDateTime:'',
+        endDateTime:'',
         status:'future',
         eventType:eventTypeOption,
         theme:'',
@@ -23,7 +25,6 @@ export default function Page() {
         needReservation:false,
         reserved:0,
         capacity:0,
-        time:'',
         host:''
     })
 
@@ -31,12 +32,42 @@ export default function Page() {
         const { name, type, value, checked } = event.target;
         const next = type === 'checkbox' ? checked : value;
         setData(prev => ({ ...prev, [name]: next }));
+        console.log(data);
     }
+
+    const onSubmitHandler = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('title', data.title);
+        formData.append('description', data.description);
+        formData.append('image', image);
+        formData.append('startDateTime', data.startDateTime);
+        formData.append('endDateTime', data.endDateTime);
+        formData.append('status', data.status);
+        formData.append('eventType', data.eventType);
+        formData.append('theme', data.theme);
+        formData.append('dressCode', data.dressCode);
+        formData.append('location', data.location);
+        formData.append('needReservation', data.needReservation);
+        formData.append('reserved', data.reserved);
+        formData.append('capacity', data.capacity);
+        formData.append('host', data.host);
+
+        const response = await axios.post('/api/blog', formData);
+        if (response.data.success) {
+            toast.success(response.data.msg)
+        } else {
+            toast.error("Error occurred! Please try again.")
+        }
+    }
+
+
+    
 
 
     return (
         <>
-        <form className='pt-5 px-5 sm:pt-12 sm:px-16'>
+        <form onSubmit={onSubmitHandler} className='pt-5 px-5 sm:pt-12 sm:px-16'>
             <p className='text-xl'>Upload</p>
                         <div
                             onClick={() => document.getElementById('image')?.click()}
@@ -53,21 +84,13 @@ export default function Page() {
             <p className='text-xl mt-6'>Description</p>
             <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' rows={4} placeholder='Describe your event' required></textarea>
 
-            {/* Date */}
-            <p className='text-xl mt-6'>Date</p>
-            <input name='date' onChange={onChangeHandler} value={data.date} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='date' required/>
+            {/* Start Date & Time */}
+            <p className='text-xl mt-6'>Start Date & Time</p>
+            <input name='startDateTime' onChange={onChangeHandler} value={data.startDateTime} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='datetime-local' required/>
 
-            {/* Event Month/Day (optional for display badge) */}
-            <div className='flex gap-4 mt-4'>
-                <div className='flex-1'>
-                    <p className='text-sm'>Event Month</p>
-                    <input name='eventMonth' onChange={onChangeHandler} value={data.eventMonth} className='w-full mt-2 px-4 py-3 border' type='text' placeholder='Jan'/>
-                </div>
-                <div className='flex-1'>
-                    <p className='text-sm'>Event Day</p>
-                    <input name='eventDay' onChange={onChangeHandler} value={data.eventDay} className='w-full mt-2 px-4 py-3 border' type='number' min='1' max='31' placeholder='30'/>
-                </div>
-            </div>
+            {/* End Date & Time */}
+            <p className='text-xl mt-6'>End Date & Time</p>
+            <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='datetime-local' required/>
 
             {/* Status */}
             <p className='text-xl mt-6'>Status</p>
@@ -137,10 +160,6 @@ export default function Page() {
                     <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full mt-4 px-4 py-3 border' type='number' min='1' placeholder='120' required/>
                 </div>
             </div>
-
-            {/* Time */}
-            <p className='text-xl mt-6'>Time</p>
-            <input name='time' onChange={onChangeHandler} value={data.time} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='text' placeholder='Tue, Jan 30, 5:00 PM → 8:00 PM' required/>
 
             {/* Host */}
             <div className='mt-6'>
