@@ -42,9 +42,11 @@ export async function POST(request){
         reserved: parseInt(formData.get('reserved')) || 0,
         capacity: parseInt(formData.get('capacity')),
         time: `${formData.get('time')}`,
-        host: `${formData.get('host')}`,
-        hostUsername: `${formData.get('hostUsername')}`
+        host: `${formData.get('host')}`
     }
 
-    return NextResponse.json({imgUrl})
+    await Blogmodel.create(blogData);
+    console.log("Post Created");
+
+    return NextResponse.json({success:true, msg:"Post Created Successfully"});
 }

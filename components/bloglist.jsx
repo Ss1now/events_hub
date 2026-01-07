@@ -72,7 +72,6 @@ const BlogList = () => {
                                 capacity={item.capacity}
                                 time={item.time}
                                 host={item.host}
-                                hostUsername={item.hostUsername}
                                 eventDate={item.eventDate}
                             />
                         })

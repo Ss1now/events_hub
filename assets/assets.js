@@ -2,12 +2,14 @@ import logo from "./logo.png";
 import post_1 from "./post_1.png";
 import post_icon from "./post_icon.png";
 import profile from "./profile.png";
+import upload from "./upload.png";
 
 export const assets = {
     logo,
     post_1,
     post_icon,
-    profile
+    profile,
+    upload
     }
 
 
@@ -29,7 +31,7 @@ export const assets = {
             capacity: 120,
             time: "Tue, Jan 30, 4:51 PM → Tue, Jan 30, 7:51 PM",
             host: "Howard Zhao",
-            hostUsername: "@howard",
+            
         },
         {
             id: 2,
@@ -48,7 +50,7 @@ export const assets = {
             capacity: 200,
             time: "Sat, Jan 3, 3:51 PM → Sat, Jan 3, 6:51 PM",
             host: "Eli K.",
-            hostUsername: "@elik",
+            
         },
         {
             id: 3,
@@ -65,7 +67,7 @@ export const assets = {
             needReservation: false,
             time: "Sat, Feb 15, 7:00 PM → Sat, Feb 15, 10:00 PM",
             host: "Sarah Johnson",
-            hostUsername: "@sarahj",
+            
         },
         {
             id: 4,
@@ -84,7 +86,7 @@ export const assets = {
             capacity: 85,
             time: "Sun, Dec 15, 8:00 PM → Mon, Dec 16, 12:00 AM",
             host: "Emily Davis",
-            hostUsername: "@emilyd",
+            
         },
         {
             id: 5,
@@ -101,7 +103,7 @@ export const assets = {
             needReservation: false,
             time: "Sun, Jan 5, 5:30 PM → Sun, Jan 5, 8:00 PM",
             host: "Michael Brown",
-            hostUsername: "@mikeb",
+            
         },
         {
             id: 6,
@@ -120,7 +122,7 @@ export const assets = {
             capacity: 60,
             time: "Mon, Jan 20, 8:00 PM → Mon, Jan 20, 11:00 PM",
             host: "Lisa Anderson",
-            hostUsername: "@lisaa",
+            
         },
         {
             id: 7,
@@ -139,7 +141,7 @@ export const assets = {
             capacity: 32,
             time: "Sat, Jan 25, 9:00 PM → Sun, Jan 26, 12:00 AM",
             host: "David Wilson",
-            hostUsername: "@davidw",
+            
         },
         {
             id: 8,
@@ -156,7 +158,7 @@ export const assets = {
             needReservation: false,
             time: "Fri, Jan 10, 11:00 PM → Sat, Jan 11, 1:00 AM",
             host: "Jessica Martinez",
-            hostUsername: "@jessicam",
+            
         },
         {
             id: 9,
@@ -175,7 +177,7 @@ export const assets = {
             capacity: 25,
             time: "Wed, Dec 20, 6:00 PM → Wed, Dec 20, 9:00 PM",
             host: "Robert Taylor",
-            hostUsername: "@robertt",
+            
         },
         {
             id: 10,
@@ -192,7 +194,7 @@ export const assets = {
             needReservation: false,
             time: "Sat, Feb 1, 8:00 PM → Sat, Feb 1, 11:00 PM",
             host: "Amanda Garcia",
-            hostUsername: "@amandag",
+            
         },
         {
             id: 11,
@@ -211,7 +213,7 @@ export const assets = {
             capacity: 20,
             time: "Sat, Jan 18, 7:00 PM → Sat, Jan 18, 9:30 PM",
             host: "Christopher Lee",
-            hostUsername: "@chrisl",
+            
         },
         {
             id: 12,
@@ -230,7 +232,7 @@ export const assets = {
             capacity: 95,
             time: "Sat, Dec 28, 10:00 PM → Sun, Dec 29, 2:00 AM",
             host: "Rachel White",
-            hostUsername: "@rachelw",
+            
         },
         {
             id: 13,
@@ -247,7 +249,7 @@ export const assets = {
             needReservation: false,
             time: "Sun, Jan 12, 2:00 PM → Sun, Jan 12, 8:00 PM",
             host: "Kevin Harris",
-            hostUsername: "@kevinh",
+            
         },
         {
             id: 14,
@@ -266,7 +268,7 @@ export const assets = {
             capacity: 100,
             time: "Sat, Feb 8, 9:00 PM → Sun, Feb 9, 1:00 AM",
             host: "Michelle Clark",
-            hostUsername: "@michellec",
+            
         },
         {
             id: 15,
@@ -285,7 +287,7 @@ export const assets = {
             capacity: 20,
             time: "Sun, Jan 6, 11:00 AM → Sun, Jan 6, 2:00 PM",
             host: "Thomas Miller",
-            hostUsername: "@thomasm",
+            
         },
         {
             id: 16,
@@ -302,6 +304,6 @@ export const assets = {
             needReservation: false,
             time: "Wed, Jan 22, 7:00 PM → Wed, Jan 22, 10:00 PM",
             host: "Victoria Rodriguez",
-            hostUsername: "@vickyr",
+            
         }
     ]

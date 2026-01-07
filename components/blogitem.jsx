@@ -4,7 +4,7 @@ import { assets, blog_data } from '@/assets/assets';
 import Link from 'next/link';
 import page from '@/app/blogs/[id]/page';
 
-const BlogItem = ({title, description, category, image, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, time, host, hostUsername, eventDate}) => {
+const BlogItem = ({title, description, category, image, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, time, host, eventDate}) => {
     console.log('BlogItem ID:', id);
     
     // Determine status badge color and text
@@ -81,7 +81,7 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
                 </div>
 
                 {/* Hosted by */}
-                <p className='text-xs text-gray-500 mt-3'>Hosted by <span className='font-medium'>{host}</span> · {hostUsername}</p>
+                <p className='text-xs text-gray-500 mt-3'>Hosted by <span className='font-medium'>{host}</span></p>
             </div>
             
             {/* Right side - Date badge and actions */}
