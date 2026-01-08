@@ -1,7 +1,8 @@
 import { connectDB } from "@/lib/config/db"
 const { NextResponse } = require("next/server")
-import {writeFile} from 'fs/promises';
+import {writeFile, mkdir} from 'fs/promises';
 import Blogmodel from "@/lib/models/blogmodel";
+import path from 'path';
 
 const LoadDB = async () => {
     await connectDB();
@@ -9,11 +10,15 @@ const LoadDB = async () => {
 
 LoadDB();
 
+// API Endpoint to get all blogs
 export async function GET(request){
+    const blogs = await Blogmodel.find({});
     
-    return NextResponse.json({msg: "API is working"})
+    return NextResponse.json({blogs})
 }
 
+
+// API Endpoint for uploading post
 export async function POST(request){
 
     const formData=await request.formData();
@@ -26,8 +31,13 @@ export async function POST(request){
     if (image && image.size > 0) {
         const imageByteData=await image.arrayBuffer();
         const buffer = Buffer.from(imageByteData);
-        const path = `./public/images/blogs/${timestamp}-${image.name}`;
-        await writeFile(path, buffer);
+        
+        // Ensure directory exists
+        const dir = './public/images/blogs';
+        await mkdir(dir, { recursive: true });
+        
+        const filePath = `${dir}/${timestamp}_${image.name}`;
+        await writeFile(filePath, buffer);
         imgUrl=`/images/blogs/${timestamp}_${image.name}`;
     }
    
