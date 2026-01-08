@@ -1,5 +1,6 @@
 import { assets } from '../assets/assets';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 const Header = () => {
@@ -14,9 +15,9 @@ const Header = () => {
     return (
         <div className='py-6 px-5 md:px-12 lg:px-28 bg-white'>
             <div className='flex justify-between items-center mb-8'>
-                <div className='flex items-center gap-3'>
+                <Link href='/' className='flex items-center gap-3 cursor-pointer'>
                     <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-24 sm:w-28 h-auto object-contain'/>
-                </div>
+                </Link>
                 <div className='flex items-center gap-3'>
                     <form onSubmit={handleEmailSubmit} className='flex items-center'>
                         <input 
