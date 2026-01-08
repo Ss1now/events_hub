@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/config/db"
 const { NextResponse } = require("next/server")
 import {writeFile} from 'fs/promises';
+import Blogmodel from "@/lib/models/blogmodel";
 
 const LoadDB = async () => {
     await connectDB();
@@ -18,11 +19,17 @@ export async function POST(request){
     const formData=await request.formData();
     const timestamp=Date.now();
     const image=formData.get('image');
-    const imageByteData=await image.arrayBuffer();
-    const buffer = Buffer.from(imageByteData);
-    const path = `./public/images/blogs/${timestamp}-${image.name}`;
-    await writeFile(path, buffer);
-    const imgUrl=`/images/blogs/${timestamp}_${image.name}`;
+    
+    let imgUrl = '';
+    
+    // Only process image if one was uploaded
+    if (image && image.size > 0) {
+        const imageByteData=await image.arrayBuffer();
+        const buffer = Buffer.from(imageByteData);
+        const path = `./public/images/blogs/${timestamp}-${image.name}`;
+        await writeFile(path, buffer);
+        imgUrl=`/images/blogs/${timestamp}_${image.name}`;
+    }
    
     const blogData = {
         title: `${formData.get('title')}`,

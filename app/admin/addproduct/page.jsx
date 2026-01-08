@@ -5,7 +5,6 @@ import React from 'react'
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -37,6 +36,7 @@ export default function Page() {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+        
         const formData = new FormData();
         formData.append('title', data.title);
         formData.append('description', data.description);
@@ -76,7 +76,7 @@ export default function Page() {
                         >
                                 <Image src={!image?assets.upload:URL.createObjectURL(image)} width={140} height={70} alt='upload image' />
             </div>
-            <input onChange={(e)=>setImage(e.target.files[0])}type="file" id='image' hidden required/>
+            <input onChange={(e)=>setImage(e.target.files[0])} type="file" id='image' hidden />
             <p className='text-xl mt-4'>Blog Title</p>
             <input name='title' onChange={onChangeHandler} value={data.title} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type="text" placeholder='Type here' required/>
             
@@ -106,7 +106,12 @@ export default function Page() {
                 name='eventType'
                 className='w-full sm:w-[500px] mt-4 px-4 py-3 border'
                 value={eventTypeOption}
-                onChange={(e)=> { setEventTypeOption(e.target.value); if(e.target.value !== 'Other'){ onChangeHandler(e);} }}
+                onChange={(e)=> { 
+                    setEventTypeOption(e.target.value); 
+                    if(e.target.value !== 'Other'){ 
+                        setData(prev => ({ ...prev, eventType: e.target.value }));
+                    } 
+                }}
                 required
             >
                 <option value='Private Party'>Private Party</option>
@@ -117,7 +122,7 @@ export default function Page() {
                 <option value='Game Night'>Game Night</option>
                 <option value='Other'>Other (type manually)</option>
             </select>
-            {eventTypeOption === 'Other' ? (
+            {eventTypeOption === 'Other' && (
                 <input
                     name='eventType'
                     className='w-full sm:w-[500px] mt-4 px-4 py-3 border'
@@ -127,8 +132,6 @@ export default function Page() {
                     onChange={onChangeHandler}
                     required
                 />
-            ) : (
-                <input type='hidden' name='eventType' value={eventTypeOption} />
             )}
 
             {/* Theme */}
