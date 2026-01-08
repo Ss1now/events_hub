@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { blog_data } from '@/assets/assets';
 import BlogItem from './blogitem';
 import { useState } from 'react';
+import axios from 'axios';
 
 const BlogList = () => {
 
         const [menu, setMenu] = useState("future");
         const [searchTerm, setSearchTerm] = useState("");
+        const [blogs, setBlogs] = useState([]);
+
+        const fetchBlogs = async () =>{
+            const response = await axios.get('/api/blog');
+            setBlogs(response.data.blogs);
+            console.log(response.data.blogs);
+        }
+
+        useEffect(()=>{
+            fetchBlogs();
+        },[])
         
-        console.log('blog_data:', blog_data);
+        console.log('blogs:', blogs);
 
         // Filter events by status and search term
-        const filteredEvents = blog_data.filter((item) => {
+        const filteredEvents = blogs.filter((item) => {
             const matchesStatus = item.status === menu;
             const matchesSearch = searchTerm === "" || 
                 item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,8 +68,8 @@ const BlogList = () => {
                     {filteredEvents.length > 0 ? (
                         filteredEvents.map((item,index)=>{
                             return <BlogItem 
-                                key={index} 
-                                id={item.id} 
+                                key={item._id} 
+                                id={item._id} 
                                 image={item.image} 
                                 title={item.title} 
                                 description={item.description} 

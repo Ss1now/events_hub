@@ -1,5 +1,4 @@
 import React from 'react'
-import { blog_data } from '@/assets/assets';
 import Image from 'next/image';
 import { assets } from '@/assets/assets';
 import Footer from '@/components/footer';
@@ -9,7 +8,11 @@ import Link from 'next/link';
 const page = async ({ params }) => {
     const { id } = await params;
     
-    const data = blog_data.find(item => item.id === Number(id));
+    // Fetch blog data from API
+    const response = await fetch(`http://localhost:3000/api/blog?id=${id}`, {
+        cache: 'no-store'
+    });
+    const data = await response.json();
 
     return (data?<>
         <div className='bg-white py-6 px-5 md:px-12 lg:px-28 border-b border-gray-200'>
