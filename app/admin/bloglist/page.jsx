@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import blogtableitem from '@/components/admincomponents/blogtableitem';
+import BlogTableItem from '@/components/admincomponents/blogtableitem';
 
 export default function Page() {
     return (
@@ -26,7 +26,7 @@ export default function Page() {
                         </tr>
                     </thead>
                     <tbody>
-                        <blogtableitem />
+                        <BlogTableItem />
                     </tbody>
 
                 </table>
