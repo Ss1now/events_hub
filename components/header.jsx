@@ -1,15 +1,26 @@
+'use client'
+
 import { assets } from '../assets/assets';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const Header = () => {
-    const [email, setEmail] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const router = useRouter();
 
-    const handleEmailSubmit = (e) => {
-        e.preventDefault();
-        console.log('Email subscribed:', email);
-        setEmail('');
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token);
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        toast.success('Logged out successfully');
+        window.location.reload();
     };
 
     return (
@@ -19,18 +30,30 @@ const Header = () => {
                     <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-24 sm:w-28 h-auto object-contain'/>
                 </Link>
                 <div className='flex items-center gap-3'>
-                    <form onSubmit={handleEmailSubmit} className='flex items-center'>
-                        <input 
-                            type='email' 
-                            placeholder='Enter your email' 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className='px-4 py-2 rounded-l-md border border-gray-300 border-r-0 focus:outline-none focus:ring-2 focus:ring-gray-300 text-sm'
-                            required
-                        />
-                        <button type='submit' className='bg-black text-white font-medium py-2 px-6 rounded-r-md hover:bg-gray-800 transition-colors text-sm'>Subscribe</button>
-                    </form>
-                    <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Post an event</button>  
+                    {isLoggedIn ? (
+                        <>
+                            <button 
+                                onClick={handleLogout}
+                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
+                            >
+                                Logout
+                            </button>
+                            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Post an event</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link href='/login'>
+                                <button className='bg-white text-black font-medium py-2 px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-sm'>
+                                    Login
+                                </button>
+                            </Link>
+                            <Link href='/register'>
+                                <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'>
+                                    Register
+                                </button>
+                            </Link>
+                        </>
+                    )}
                 </div>
             </div>
             <div className='text-center my-12'>
