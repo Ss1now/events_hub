@@ -23,17 +23,19 @@ export default function LoginPage() {
 
             if (response.data.success) {
                 localStorage.setItem('token', response.data.token)
-                toast.success('Login successful!')
+                toast.success('🎉 Welcome back! Login successful!', {
+                    position: 'top-center',
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                })
                 
-                // Check if there's a redirect URL stored
-                const redirectUrl = localStorage.getItem('redirectAfterLogin')
-                if (redirectUrl) {
-                    localStorage.removeItem('redirectAfterLogin')
-                    router.push(redirectUrl)
-                } else {
-                    router.push('/')
-                }
-                window.location.reload()
+                // Redirect to main page after a brief delay
+                setTimeout(() => {
+                    window.location.href = '/'
+                }, 1500)
             } else {
                 toast.error(response.data.msg)
             }
@@ -47,6 +49,15 @@ export default function LoginPage() {
         <div className='min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-md w-full space-y-8'>
                 <div>
+                    <button
+                        onClick={() => router.push('/')}
+                        className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
+                    >
+                        <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
+                            <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
+                        </svg>
+                        Go Back
+                    </button>
                     <h2 className='mt-6 text-center text-3xl font-bold text-gray-900'>
                         Sign in to your account
                     </h2>

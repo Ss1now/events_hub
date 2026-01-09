@@ -19,8 +19,17 @@ const Header = () => {
     const handleLogout = () => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
-        toast.success('Logged out successfully');
-        window.location.reload();
+        toast.success('👋 Logged out successfully! See you soon!', {
+            position: 'top-center',
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
     };
 
     const handlePostEvent = () => {
