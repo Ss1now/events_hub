@@ -7,6 +7,7 @@ import path from 'path';
 const fs = require('fs');
 import jwt from 'jsonwebtoken';
 import { verifyAdmin } from "@/lib/utils/adminAuth";
+import mongoose from 'mongoose';
 
 const LoadDB = async () => {
     await connectDB();
@@ -89,24 +90,26 @@ export async function POST(request){
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
 
-        const formData=await request.formData();
-        const timestamp=Date.now();
-        const image=formData.get('image');
+        const formData = await request.formData();
+        const timestamp = Date.now();
+        const images = formData.getAll('images');
+        const imageUrls = [];
         
-        let imgUrl = '';
-        
-        // Only process image if one was uploaded
-        if (image && image.size > 0) {
-            const imageByteData=await image.arrayBuffer();
-            const buffer = Buffer.from(imageByteData);
-            
-            // Ensure directory exists
+        // Process multiple images
+        if (images && images.length > 0) {
             const dir = './public/images/blogs';
             await mkdir(dir, { recursive: true });
             
-            const filePath = `${dir}/${timestamp}_${image.name}`;
-            await writeFile(filePath, buffer);
-            imgUrl=`/images/blogs/${timestamp}_${image.name}`;
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                if (image && image.size > 0) {
+                    const imageByteData = await image.arrayBuffer();
+                    const buffer = Buffer.from(imageByteData);
+                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
+                    await writeFile(filePath, buffer);
+                    imageUrls.push(`/images/blogs/${timestamp}_${i}_${image.name}`);
+                }
+            }
         }
        
         // Calculate status based on start and end times
@@ -126,7 +129,7 @@ export async function POST(request){
         const blogData = {
             title: `${formData.get('title')}`,
             description: `${formData.get('description')}`,
-            image: imgUrl,
+            images: imageUrls,
             date: new Date(),
             startDateTime: startTime,
             endDateTime: endTime,
@@ -152,6 +155,162 @@ export async function POST(request){
     } catch (error) {
         console.error(error);
         return NextResponse.json({success:false, msg:"Error creating post"}, { status: 500 });
+    }
+}
+
+// API Endpoint for updating/editing post
+export async function PUT(request) {
+    try {
+        // Extract and verify JWT token
+        const authHeader = request.headers.get('authorization');
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const formData = await request.formData();
+        const eventId = formData.get('eventId');
+        
+        if (!eventId) {
+            return NextResponse.json({ success: false, msg: 'Event ID required' }, { status: 400 });
+        }
+
+        await connectDB();
+
+        const event = await Blogmodel.findById(eventId);
+        
+        if (!event) {
+            return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
+        }
+
+        // Check if the user is the author of the event
+        if (event.authorId.toString() !== userId) {
+            return NextResponse.json({ success: false, msg: 'Unauthorized to edit this event' }, { status: 403 });
+        }
+
+        // Check if event can be edited (future or live events only, not past)
+        const now = new Date();
+        const startTime = new Date(event.startDateTime);
+        const endTime = new Date(event.endDateTime);
+        
+        if (now > endTime) {
+            return NextResponse.json({ success: false, msg: 'Cannot edit events that have already ended' }, { status: 400 });
+        }
+
+        // Check if this is a live event being edited
+        const isLiveEdit = now >= startTime && now <= endTime;
+
+        const timestamp = Date.now();
+        const newImages = formData.getAll('images');
+        
+        let imageUrls = event.images || []; // Keep existing images by default
+        
+        // Only process new images if uploaded
+        if (newImages && newImages.length > 0 && newImages[0].size > 0) {
+            const dir = './public/images/blogs';
+            await mkdir(dir, { recursive: true });
+            
+            const uploadedUrls = [];
+            for (let i = 0; i < newImages.length; i++) {
+                const image = newImages[i];
+                if (image && image.size > 0) {
+                    const imageByteData = await image.arrayBuffer();
+                    const buffer = Buffer.from(imageByteData);
+                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
+                    await writeFile(filePath, buffer);
+                    uploadedUrls.push(`/images/blogs/${timestamp}_${i}_${image.name}`);
+                }
+            }
+            
+            // Delete old images if new ones uploaded
+            if (event.images && event.images.length > 0) {
+                event.images.forEach(oldImg => {
+                    try {
+                        fs.unlink(`./public${oldImg}`, () => {});
+                    } catch (err) {
+                        console.log('Error deleting old image:', err);
+                    }
+                });
+            }
+            
+            imageUrls = uploadedUrls;
+        }
+
+        // Update event fields
+        const newStartDateTime = new Date(formData.get('startDateTime'));
+        const newEndDateTime = new Date(formData.get('endDateTime'));
+        
+        // Recalculate status based on new times
+        let currentStatus;
+        if (now < newStartDateTime) {
+            currentStatus = 'future';
+        } else if (now >= newStartDateTime && now <= newEndDateTime) {
+            currentStatus = 'live';
+        } else {
+            currentStatus = 'past';
+        }
+
+        event.title = formData.get('title');
+        event.description = formData.get('description');
+        event.images = imageUrls;
+        event.startDateTime = newStartDateTime;
+        event.endDateTime = newEndDateTime;
+        event.status = currentStatus;
+        event.eventType = formData.get('eventType');
+        event.theme = formData.get('theme');
+        event.dressCode = formData.get('dressCode');
+        event.location = formData.get('location');
+        event.needReservation = formData.get('needReservation') === 'true';
+        event.reserved = parseInt(formData.get('reserved')) || 0;
+        event.capacity = parseInt(formData.get('capacity')) || 0;
+        event.reservationDeadline = formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null;
+        event.host = formData.get('host');
+        event.lastUpdated = new Date();
+
+        // If this is a live event edit, create notification for interested/reserved users
+        if (isLiveEdit) {
+            const updateMessage = `Event details have been updated for "${event.title}"`;
+            const notificationId = new mongoose.Types.ObjectId();
+            
+            event.updateNotifications.push({
+                _id: notificationId,
+                message: updateMessage,
+                timestamp: new Date(),
+                notifiedUsers: []
+            });
+
+            // Get all users who are interested or reserved
+            const affectedUsers = [...new Set([
+                ...event.interestedUsers.map(id => id.toString()),
+                ...event.reservedUsers.map(id => id.toString())
+            ])];
+
+            // Add notification to each affected user
+            await userModel.updateMany(
+                { _id: { $in: affectedUsers } },
+                {
+                    $push: {
+                        pendingNotifications: {
+                            eventId: event._id,
+                            notificationId: notificationId,
+                            timestamp: new Date()
+                        }
+                    }
+                }
+            );
+        }
+
+        await event.save();
+        console.log("Event Updated");
+
+        return NextResponse.json({success: true, msg: "Event Updated Successfully", isLiveEdit});
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({success: false, msg: "Error updating event"}, { status: 500 });
     }
 }
 
@@ -191,14 +350,15 @@ export async function DELETE(request){
             return NextResponse.json({ success: false, msg: 'Unauthorized to delete this post' }, { status: 403 });
         }
 
-        // Delete image file if it exists
-        if (blog.image) {
-            try {
-                fs.unlink(`./public${blog.image}`, () => {});
-            } catch (err) {
-                console.log('Error deleting image file:', err);
-                // Continue with deletion even if image file deletion fails
-            }
+        // Delete image files if they exist
+        if (blog.images && blog.images.length > 0) {
+            blog.images.forEach(image => {
+                try {
+                    fs.unlink(`./public${image}`, () => {});
+                } catch (err) {
+                    console.log('Error deleting image file:', err);
+                }
+            });
         }
         
         await Blogmodel.findByIdAndDelete(id);

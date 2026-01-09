@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 export default function PostEventPage() {
     const router = useRouter();
-    const [image,setImage] = useState(false);
+    const [images,setImages] = useState([]);
     const [eventTypeOption, setEventTypeOption] = useState('Socializing');
     const [customEventType, setCustomEventType] = useState('');
     const [data,setData] = useState({
@@ -56,7 +56,12 @@ export default function PostEventPage() {
         const formData = new FormData();
         formData.append('title', data.title);
         formData.append('description', data.description);
-        formData.append('image', image);
+        
+        // Append all images
+        images.forEach((image) => {
+            formData.append('images', image);
+        });
+        
         formData.append('startDateTime', data.startDateTime);
         formData.append('endDateTime', data.endDateTime);
         formData.append('eventType', data.eventType);
@@ -111,15 +116,47 @@ export default function PostEventPage() {
                     
                     <form onSubmit={onSubmitHandler} className='space-y-6'>
                         <div>
-                            <p className='text-xl font-medium mb-2'>Upload Image</p>
+                            <p className='text-xl font-medium mb-2'>Upload Images (Optional, Max 5)</p>
                             <div
-                                onClick={() => document.getElementById('image')?.click()}
+                                onClick={() => document.getElementById('images')?.click()}
                                 className='inline-block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors'
                                 style={{ width: 140, height: 70 }}
                             >
-                                <Image src={!image?assets.upload:URL.createObjectURL(image)} width={140} height={70} alt='upload image' />
+                                <Image src={assets.upload} width={140} height={70} alt='upload images' />
                             </div>
-                            <input onChange={(e)=>setImage(e.target.files[0])} type="file" id='image' hidden />
+                            <input 
+                                onChange={(e) => {
+                                    const files = Array.from(e.target.files).slice(0, 5);
+                                    setImages(files);
+                                }} 
+                                type="file" 
+                                id='images' 
+                                multiple 
+                                accept='image/*'
+                                hidden 
+                            />
+                            {images.length > 0 && (
+                                <div className='mt-4 flex flex-wrap gap-2'>
+                                    {images.map((img, idx) => (
+                                        <div key={idx} className='relative'>
+                                            <Image 
+                                                src={URL.createObjectURL(img)} 
+                                                width={100} 
+                                                height={100} 
+                                                alt={`Preview ${idx + 1}`}
+                                                className='rounded border object-cover'
+                                            />
+                                            <button
+                                                type='button'
+                                                onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                                                className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600'
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div>

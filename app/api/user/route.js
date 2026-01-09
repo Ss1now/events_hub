@@ -70,7 +70,8 @@ export async function GET(request) {
                 name: user.name,
                 email: user.email,
                 residentialCollege: user.residentialCollege,
-                isAdmin: user.isAdmin || false
+                isAdmin: user.isAdmin || false,
+                ratedEvents: user.ratedEvents || []
             },
             events: updatedEvents,
             interestedEvents,

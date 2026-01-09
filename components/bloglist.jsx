@@ -70,7 +70,7 @@ const BlogList = () => {
                             return <BlogItem 
                                 key={item._id} 
                                 id={item._id} 
-                                image={item.image} 
+                                images={item.images} 
                                 title={item.title} 
                                 description={item.description} 
                                 category={item.category}
@@ -88,6 +88,8 @@ const BlogList = () => {
                                 interestedUsers={item.interestedUsers}
                                 reservedUsers={item.reservedUsers}
                                 reservationDeadline={item.reservationDeadline}
+                                averageLiveRating={item.averageLiveRating}
+                                totalLiveRatings={item.totalLiveRatings}
                             />
                         })
                     ) : (

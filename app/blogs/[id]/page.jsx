@@ -8,6 +8,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import SuccessModal from '@/components/SuccessModal';
+import ReviewForm from '@/components/ReviewForm';
+import ReviewList from '@/components/ReviewList';
+import StarRating from '@/components/StarRating';
+import LiveRatingButton from '@/components/LiveRatingButton';
 
 
 const Page = ({ params }) => {
@@ -19,6 +23,9 @@ const Page = ({ params }) => {
     const [isReserved, setIsReserved] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [modalActionType, setModalActionType] = useState('');
+    const [reviews, setReviews] = useState([]);
+    const [hasRated, setHasRated] = useState(false);
+    const [showReviewForm, setShowReviewForm] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,6 +39,9 @@ const Page = ({ params }) => {
             const blogData = await response.json();
             setData(blogData);
             
+            // Fetch reviews
+            await fetchReviews(resolvedParams.id);
+            
             // Check if user is logged in and get their status
             const token = localStorage.getItem('token');
             if (token) {
@@ -40,9 +50,11 @@ const Page = ({ params }) => {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (userResponse.data.success) {
-                        const userId = userResponse.data.user._id;
+                        const userId = userResponse.data.user._id || userResponse.data.user.id;
+                        const ratedEvents = userResponse.data.user.ratedEvents || [];
                         setIsInterested(blogData.interestedUsers?.includes(userId) || false);
                         setIsReserved(blogData.reservedUsers?.includes(userId) || false);
+                        setHasRated(ratedEvents.includes(resolvedParams.id));
                     }
                 } catch (error) {
                     console.error('Error fetching user data:', error);
@@ -54,6 +66,30 @@ const Page = ({ params }) => {
         
         fetchData();
     }, [params]);
+
+    const fetchReviews = async (eventId) => {
+        try {
+            const response = await axios.get(`/api/rating?eventId=${eventId}`);
+            if (response.data.success) {
+                setReviews(response.data.ratings || []);
+                if (data) {
+                    setData(prev => ({
+                        ...prev,
+                        averageRating: response.data.averageRating,
+                        totalRatings: response.data.totalRatings
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    };
+
+    const handleReviewSubmitted = () => {
+        fetchReviews(id);
+        setHasRated(true);
+        setShowReviewForm(false);
+    };
 
     const handleInterested = async () => {
         const token = localStorage.getItem('token');
@@ -231,6 +267,19 @@ const Page = ({ params }) => {
                                 {isReservationDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>Reservation Closed</span>}
                             </div>
 
+                            {/* Live Rating Display - prominent placement for live events */}
+                            {data.status === 'live' && (
+                                <div className='mb-4'>
+                                    <LiveRatingButton 
+                                        eventId={id}
+                                        averageLiveRating={data.averageLiveRating}
+                                        totalLiveRatings={data.totalLiveRatings}
+                                        needReservation={data.needReservation}
+                                        hasReservation={isReserved}
+                                    />
+                                </div>
+                            )}
+
                             <p className='text-sm text-gray-500'>Hosted by <span className='font-semibold'>{data.host}</span></p>
                         </div>
 
@@ -381,7 +430,20 @@ END:VCALENDAR`;
 
                 {/* Event Details */}
                 <div className='bg-white rounded-2xl shadow-sm p-8'>
-                    <Image className='w-full rounded-lg mb-8' src={data.image} width={800} height={500} alt=''/>
+                    {/* Image Gallery - Only show if images exist */}
+                    {data.images && data.images.length > 0 && (
+                        <div className='mb-8'>
+                            {data.images.length === 1 ? (
+                                <Image className='w-full rounded-lg' src={data.images[0]} width={800} height={500} alt='Event image'/>
+                            ) : (
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    {data.images.map((img, idx) => (
+                                        <Image key={idx} className='w-full rounded-lg object-cover h-64' src={img} width={400} height={300} alt={`Event image ${idx + 1}`}/>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
                     
                     <h2 className='text-2xl font-bold mb-4 text-gray-900'>About this Event</h2>
                     <p className='text-gray-700 leading-relaxed mb-6'>{data.description}</p>
@@ -434,6 +496,72 @@ END:VCALENDAR`;
                         </div>
                     </div>
                 </div>
+
+                {/* Ratings & Reviews Section - Only for Past Events */}
+                {data.status === 'past' && (
+                    <div className='space-y-6 mt-6'>
+                        {/* Average Rating Display */}
+                        {data.totalRatings > 0 && (
+                            <div className='bg-white rounded-lg border border-gray-200 p-6'>
+                                <div className='flex items-center gap-4'>
+                                    <div className='flex flex-col items-center'>
+                                        <div className='text-4xl font-bold text-gray-900'>
+                                            {data.averageRating?.toFixed(1) || '0.0'}
+                                        </div>
+                                        <StarRating rating={data.averageRating || 0} readonly size='md' />
+                                        <p className='text-sm text-gray-600 mt-1'>
+                                            {data.totalRatings} {data.totalRatings === 1 ? 'review' : 'reviews'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Review Form or Button */}
+                        {!hasRated && !showReviewForm && (
+                            <div className='text-center py-6'>
+                                <button
+                                    onClick={() => {
+                                        const token = localStorage.getItem('token');
+                                        if (!token) {
+                                            toast.error('Please login to write a review');
+                                            router.push('/login');
+                                            return;
+                                        }
+                                        setShowReviewForm(true);
+                                    }}
+                                    className='px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto'
+                                >
+                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
+                                    </svg>
+                                    Write a Review
+                                </button>
+                            </div>
+                        )}
+
+                        {showReviewForm && !hasRated && (
+                            <ReviewForm 
+                                eventId={id}
+                                eventTitle={data.title}
+                                onReviewSubmitted={handleReviewSubmitted}
+                            />
+                        )}
+
+                        {hasRated && (
+                            <div className='bg-green-50 border border-green-200 rounded-lg p-4 text-center'>
+                                <p className='text-green-800 font-medium'>Thank you for your review!</p>
+                            </div>
+                        )}
+
+                        {/* Reviews List */}
+                        <ReviewList 
+                            reviews={reviews}
+                            averageRating={data.averageRating || 0}
+                            totalRatings={data.totalRatings || 0}
+                        />
+                    </div>
+                )}
             </div>
         </div>
         <Footer />

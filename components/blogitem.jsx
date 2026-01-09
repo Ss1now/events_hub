@@ -7,8 +7,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import SuccessModal from './SuccessModal';
+import StarRating from './StarRating';
+import LiveRatingButton from './LiveRatingButton';
 
-const BlogItem = ({title, description, category, image, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, interestedUsers = [], reservedUsers = [], reservationDeadline}) => {
+const BlogItem = ({title, description, category, images, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings}) => {
     console.log('BlogItem ID:', id);
     const router = useRouter();
     const [interestedCount, setInterestedCount] = useState(interestedUsers?.length || 0);
@@ -17,6 +19,11 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [modalActionType, setModalActionType] = useState('');
     const [eventData, setEventData] = useState(null);
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState('');
+    const [ratingImages, setRatingImages] = useState([]);
+    const [submittingRating, setSubmittingRating] = useState(false);
     
     // Format date and time from startDateTime and endDateTime
     const formatDateTime = (dateString) => {
@@ -159,6 +166,56 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
         window.open(googleCalendarUrl, '_blank');
     };
 
+    const handleSubmitRating = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (rating === 0) {
+            toast.error('Please select a rating');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login to rate events');
+            router.push('/login');
+            return;
+        }
+
+        setSubmittingRating(true);
+
+        try {
+            const formData = new FormData();
+            formData.append('eventId', id);
+            formData.append('rating', rating);
+            formData.append('comment', comment);
+            
+            ratingImages.forEach((image) => {
+                formData.append('images', image);
+            });
+
+            const response = await axios.post('/api/rating', formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.data.success) {
+                toast.success('Rating submitted successfully!');
+                setShowRatingModal(false);
+                setRating(0);
+                setComment('');
+                setRatingImages([]);
+                // Refresh page to show updated rating
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.msg || 'Error submitting rating');
+        } finally {
+            setSubmittingRating(false);
+        }
+    };
+
     // Check if reservation deadline has passed
     const isReservationDeadlinePassed = reservationDeadline && new Date() > new Date(reservationDeadline);
     const isCapacityReached = needReservation && reservedCount >= capacity;
@@ -189,6 +246,19 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
                         <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium'>Reservation Closed</span>
                     )}
                 </div>
+
+                {/* Live Rating Display - only for live events */}
+                {status === 'live' && (
+                    <div className='mb-4'>
+                        <LiveRatingButton 
+                            eventId={id}
+                            averageLiveRating={averageLiveRating}
+                            totalLiveRatings={totalLiveRatings}
+                            needReservation={needReservation}
+                            hasReservation={reservedUsers?.some(userId => userId === localStorage.getItem('userId'))}
+                        />
+                    </div>
+                )}
                 
                 {/* Location & Capacity */}
                 <div className='flex gap-6 text-sm text-gray-600 mb-3 flex-wrap'>
@@ -281,6 +351,21 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
                             )}
                         </>
                     )}
+                    {status === 'past' && (
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setShowRatingModal(true);
+                            }}
+                            className='px-6 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1'
+                        >
+                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
+                            </svg>
+                            Rate
+                        </button>
+                    )}
                     <Link href={`/blogs/${id}`}>
                         <button className='bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors'>View</button>
                     </Link>
@@ -295,6 +380,115 @@ const BlogItem = ({title, description, category, image, id, status, eventType, t
             eventData={eventData}
             actionType={modalActionType}
         />
+
+        {/* Rating Modal */}
+        {showRatingModal && (
+            <div 
+                className='fixed inset-0 flex items-center justify-center z-50 p-4'
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setShowRatingModal(false);
+                }}
+            >
+                <div 
+                    className='bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto'
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className='flex justify-between items-start mb-4'>
+                        <div>
+                            <h3 className='text-xl font-bold text-gray-900'>Rate Event</h3>
+                            <p className='text-sm text-gray-600 mt-1'>{title}</p>
+                        </div>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setShowRatingModal(false);
+                            }}
+                            className='text-gray-400 hover:text-gray-600'
+                        >
+                            <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmitRating}>
+                        <div className='mb-4'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>Your Rating</label>
+                            <StarRating rating={rating} onRatingChange={setRating} size='lg' />
+                        </div>
+
+                        <div className='mb-4'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>Comment (Optional)</label>
+                            <textarea
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                rows={3}
+                                placeholder='Share your experience...'
+                            />
+                        </div>
+
+                        <div className='mb-4'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>Photos (Optional, Max 5)</label>
+                            <input
+                                type='file'
+                                accept='image/*'
+                                multiple
+                                onChange={(e) => {
+                                    const files = Array.from(e.target.files).slice(0, 5);
+                                    setRatingImages(files);
+                                }}
+                                className='w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
+                            />
+                            {ratingImages.length > 0 && (
+                                <div className='mt-2 flex flex-wrap gap-2'>
+                                    {ratingImages.map((img, idx) => (
+                                        <div key={idx} className='relative'>
+                                            <Image
+                                                src={URL.createObjectURL(img)}
+                                                width={60}
+                                                height={60}
+                                                alt={`Preview ${idx + 1}`}
+                                                className='rounded object-cover'
+                                            />
+                                            <button
+                                                type='button'
+                                                onClick={() => setRatingImages(ratingImages.filter((_, i) => i !== idx))}
+                                                className='absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600'
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className='flex gap-2'>
+                            <button
+                                type='button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowRatingModal(false);
+                                }}
+                                className='flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type='submit'
+                                disabled={submittingRating || rating === 0}
+                                className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
+                            >
+                                {submittingRating ? 'Submitting...' : 'Submit Rating'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        )}
         </>
     )
 }
