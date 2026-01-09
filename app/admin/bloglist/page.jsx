@@ -6,10 +6,49 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
     
     const [blogs,setBlogs] = useState ([]);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        const checkAdminAndFetchBlogs = async () => {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                toast.error('Please login to access admin panel');
+                router.push('/login');
+                return;
+            }
+
+            try {
+                // Check if user is admin
+                const userResponse = await axios.get('/api/user', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (userResponse.data.success && userResponse.data.user.isAdmin) {
+                    setIsAdmin(true);
+                    fetchBlogs();
+                } else {
+                    toast.error('Access denied. Admin privileges required.');
+                    router.push('/');
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error('Authentication error');
+                router.push('/login');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAdminAndFetchBlogs();
+    }, [router]);
 
     const fetchBlogs = async () => {
         const response = await axios.get('/api/blog');
@@ -45,12 +84,18 @@ export default function Page() {
             console.error(error);
         }
     }
+    
+    if (loading) {
+        return (
+            <div className='flex-1 pt-5 px-5 sm:pt-12 sm:pl-16'>
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
-    useEffect(()=>{
-        fetchBlogs();
-    },[])
-    
-    
+    if (!isAdmin) {
+        return null;
+    }
     
     return (
         <div className='flex-1 pt-5 px-5 sm:pt-12 sm:pl-16'>

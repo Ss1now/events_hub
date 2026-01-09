@@ -6,6 +6,7 @@ import userModel from "@/lib/models/usermodel";
 import path from 'path';
 const fs = require('fs');
 import jwt from 'jsonwebtoken';
+import { verifyAdmin } from "@/lib/utils/adminAuth";
 
 const LoadDB = async () => {
     await connectDB();
@@ -170,6 +171,12 @@ export async function DELETE(request){
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
 
+        await connectDB();
+        
+        // Get user to check if admin
+        const user = await userModel.findById(userId);
+        const isAdmin = user?.isAdmin || false;
+
         const id = await request.nextUrl.searchParams.get('id');
         const blog = await Blogmodel.findById(id);
         
@@ -177,8 +184,10 @@ export async function DELETE(request){
             return NextResponse.json({ success: false, msg: 'Blog not found' }, { status: 404 });
         }
 
-        // Check if the user is the author of the blog
-        if (blog.authorId.toString() !== userId) {
+        // Check if the user is the author of the blog OR an admin
+        const isAuthor = blog.authorId.toString() === userId;
+        
+        if (!isAuthor && !isAdmin) {
             return NextResponse.json({ success: false, msg: 'Unauthorized to delete this post' }, { status: 403 });
         }
 

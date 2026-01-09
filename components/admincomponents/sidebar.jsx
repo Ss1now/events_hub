@@ -11,14 +11,8 @@ const Sidebar = () => {
             </Link>
             <div className='w-28 sm:w-80 h-[100vh] relative py-12 border border-black'>
                 <div className='w-[50%] sm:w-[80%] absolute right-0'>
-                    <Link href='/admin/addproduct' className='flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white'>
-                        <Image src={assets.post_icon} alt='post' width={28} /><p>Post Events</p>
-                    </Link>
-                    <Link href='/admin/bloglist' className='mt-5 flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white'>
-                        <Image src={assets.post_icon} alt='post' width={28} /><p>Blog lists</p>
-                    </Link>
-                    <Link href='/admin/subscription'className='mt-5 flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white'>
-                        <Image src={assets.post_icon} alt='post' width={28} /><p>Subscription</p>
+                    <Link href='/admin/bloglist' className='flex items-center border border-black gap-3 font-medium px-3 py-2 bg-white shadow-sm hover:shadow-md transition-shadow'>
+                        <Image src={assets.post_icon} alt='manage events' width={28} /><p>Manage All Events</p>
                     </Link>
                 </div>
             </div>

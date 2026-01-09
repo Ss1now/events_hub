@@ -69,7 +69,8 @@ export async function GET(request) {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                residentialCollege: user.residentialCollege
+                residentialCollege: user.residentialCollege,
+                isAdmin: user.isAdmin || false
             },
             events: updatedEvents,
             interestedEvents,
