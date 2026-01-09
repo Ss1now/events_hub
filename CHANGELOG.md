@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0
+## v0.0.0
 - first version
 - fully functioning
 - no styling
