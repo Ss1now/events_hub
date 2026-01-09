@@ -2,10 +2,9 @@
 
 ## Making a User an Admin
 
-Since there's no admin yet in your system, you need to manually set a user as admin in MongoDB.
 
 ### Option 1: Using MongoDB Compass (GUI)
-1. Open MongoDB Compass and connect to your database
+1. Open MongoDB Compass and connect to the database using your MongoDB URI from `.env.local`
 2. Navigate to: `rice-events` database → `users` collection
 3. Find your user account by email
 4. Click "Edit Document"

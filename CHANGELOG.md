@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.2] - 2026-01-09
+
+### Security
+
+#### Critical Security Fixes
+- **Removed all hardcoded MongoDB credentials from public repository**
+  - Removed exposed MongoDB URI from `lib/config/db.js`
+  - Updated `ADMIN_SETUP.md` to use environment variables instead of hardcoded connection strings
+  - Cleaned all example credentials from `README.md`
+  - Fixed GitHub Secret Scanning alerts
+
+#### Database Connection Security
+- **Enhanced `lib/config/db.js` with environment variable validation**
+  - Now requires `process.env.MONGODB_URI` to be set
+  - Throws descriptive error if MongoDB URI is missing
+  - Removed insecure fallback to hardcoded credentials
+  - Added comprehensive error messages for debugging
+
+#### Environment Variable Management
+- **Updated `.env.example` with security best practices**
+  - Removed placeholder credentials
+  - Added instructions for generating secure JWT_SECRET using Node.js crypto
+  - Added reference to MongoDB Atlas for obtaining connection URI
+  - Included security warnings and setup instructions
+
+### Added
+
+#### Security Documentation
+- **Created comprehensive `SECURITY.md`**
+  - Environment variable security best practices
+  - MongoDB credential management guide
+  - JWT token security recommendations
+  - API security guidelines
+  - File upload security considerations
+  - Admin access security protocols
+  - Step-by-step guide for credential rotation
+  - Security checklist for deployment and maintenance
+  - Incident response procedures for exposed credentials
+  - Links to OWASP, MongoDB security docs, and JWT best practices
+
+### Changed
+
+#### Documentation Security Updates
+- **Updated `README.md` security sections**
+  - Removed example MongoDB URIs with real credentials
+  - Added instructions to copy `.env.example` to `.env.local`
+  - Enhanced security warnings in development guide
+  - Improved environment setup documentation
+
+- **Updated `ADMIN_SETUP.md`**
+  - Removed hardcoded MongoDB connection string
+  - Instructions now reference `.env.local` for database URI
+  - Maintained all three admin setup methods with secure practices
+
+### Technical
+- `.gitignore` verified to protect all `.env*` files (except `.env.example`)
+- All source code now uses `process.env.MONGODB_URI` exclusively
+- Zero hardcoded credentials remaining in version control
+- Ready for safe public repository deployment
+
+---
+
 ## [0.2.1] - 2026-01-09
 
 ### Changed

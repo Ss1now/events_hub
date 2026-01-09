@@ -21,6 +21,7 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 - [Admin Features](#-admin-features)
 - [Component Architecture](#-component-architecture)
 - [Development Guide](#-development-guide)
+- [Security](#-security)
 - [Deployment](#-deployment)
 
 ---
@@ -128,15 +129,15 @@ npm install
 Create a `.env.local` file in the root directory:
 
 ```env
-# MongoDB Connection
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database-name
+# Copy .env.example to .env.local and fill in your values
+cp .env.example .env.local
 
-# JWT Secret (generate a random string)
-JWT_SECRET=your-super-secret-jwt-key-here
-
-# Next.js
-NEXT_PUBLIC_API_URL=http://localhost:3000
+# Then edit .env.local with your actual credentials:
+# - Get MongoDB URI from https://cloud.mongodb.com/
+# - Generate JWT_SECRET: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
+
+**Security Note:** Never commit `.env.local` to Git! It's already in `.gitignore`.
 
 4. **Run the development server**
 ```bash
@@ -496,10 +497,15 @@ db.user.updateOne(
 
 ### Environment Variables
 ```env
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/db
-JWT_SECRET=your-secret-key-min-32-chars
+# See .env.example for complete template
+# Generate JWT_SECRET with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+MONGODB_URI=your-mongodb-connection-string
+JWT_SECRET=your-generated-secret-key
 NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
+
+**⚠️ Security:** Never commit actual credentials. Use `.env.local` for secrets.
 
 ### Common Tasks
 
@@ -523,6 +529,38 @@ db.blog.createIndex({ status: 1, startDateTime: -1 })
 db.blog.createIndex({ authorId: 1 })
 db.user.createIndex({ email: 1 }, { unique: true })
 ```
+
+---
+
+## 🔒 Security
+
+### Environment Variables
+
+**CRITICAL:** Never commit `.env.local` or any file containing real credentials to version control.
+
+```bash
+# Copy template and fill with your credentials
+cp .env.example .env.local
+```
+
+### Required Variables
+- `MONGODB_URI` - MongoDB Atlas connection string with username/password
+- `JWT_SECRET` - Cryptographically secure random string (generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
+
+### Security Best Practices
+- ✅ `.env.local` is protected by `.gitignore`
+- ✅ No hardcoded credentials in source code
+- ✅ MongoDB connection validated at runtime
+- ✅ JWT tokens expire after 7 days
+- ✅ Passwords hashed with bcryptjs
+
+### For Complete Security Guide
+See [SECURITY.md](./SECURITY.md) for:
+- Credential management and rotation procedures
+- MongoDB Atlas security configuration
+- API security guidelines
+- What to do if credentials are exposed
+- Security checklist for deployment
 
 ---
 
@@ -555,6 +593,7 @@ db.user.createIndex({ email: 1 }, { unique: true })
 ## 📝 Additional Documentation
 
 - [CHANGELOG.md](./CHANGELOG.md) - Complete version history
+- [SECURITY.md](./SECURITY.md) - Security best practices and guidelines
 - [ADMIN_SETUP.md](./ADMIN_SETUP.md) - Admin user setup guide
 - [Next.js Docs](https://nextjs.org/docs) - Framework documentation
 - [MongoDB Docs](https://docs.mongodb.com/) - Database documentation
