@@ -3,10 +3,10 @@ import { loginUser, registerUser } from '@/auth/users';
 
 export async function POST(request) {
     try {
-        const { action, name, email, password } = await request.json();
+        const { action, name, email, password, residentialCollege } = await request.json();
 
         if (action === 'register') {
-            const result = await registerUser(name, email, password);
+            const result = await registerUser(name, email, password, residentialCollege);
             return NextResponse.json(result);
         } else if (action === 'login') {
             const result = await loginUser(email, password);

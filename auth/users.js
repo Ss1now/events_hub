@@ -34,7 +34,7 @@ const createToken = (id) => {
 }
 
 //register user
-const registerUser = async (name, email, password) => {
+const registerUser = async (name = '', email, password, residentialCollege = '') => {
     try {
         await connectDB();
         //checking if user already exists
@@ -53,9 +53,10 @@ const registerUser = async (name, email, password) => {
 
         // creating user
         const newUser = new userModel({
-            name:name,
+            name: name || '',
             email:email,
-            password:hashedPassword
+            password:hashedPassword,
+            residentialCollege:residentialCollege
         });
 
         const user = await newUser.save()

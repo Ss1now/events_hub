@@ -44,39 +44,40 @@ const page = async ({ params }) => {
                                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                                     </svg>
-                                    <span>Tue, Dec 30, 4:51 PM → 7:51 PM</span>
+                                    <span>{new Date(data.startDateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, {new Date(data.startDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} → {new Date(data.endDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                                 </div>
                                 <div className='flex items-center gap-2'>
                                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
                                     </svg>
-                                    <span>Jones College Rooftop</span>
+                                    <span>{data.location}</span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
-                                    </svg>
-                                    <span>64/120 reserved</span>
-                                </div>
+                                {data.needReservation && (
+                                    <div className='flex items-center gap-2'>
+                                        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
+                                        </svg>
+                                        <span>{data.reserved || 0}/{data.capacity} reserved</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
-                                <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#LIVE</span>
-                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.category}</span>
-                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Verified host</span>
-                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Theme: Warm neutrals</span>
-                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Dress: Cozy chic</span>
+                                {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#LIVE</span>}
+                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
+                                {data.theme && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Theme: {data.theme}</span>}
+                                {data.dressCode && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Dress: {data.dressCode}</span>}
                             </div>
 
-                            <p className='text-sm text-gray-500'>Hosted by <span className='font-semibold'>{data.author || 'Howard Zhao'}</span> · @howard</p>
+                            <p className='text-sm text-gray-500'>Hosted by <span className='font-semibold'>{data.host}</span></p>
                         </div>
 
                         {/* Date Badge */}
                         <div className='text-center bg-gray-50 rounded-xl p-4 ml-6'>
-                            <div className='text-sm text-gray-500 uppercase'>Dec</div>
-                            <div className='text-4xl font-bold text-gray-900'>30</div>
+                            <div className='text-sm text-gray-500 uppercase'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
+                            <div className='text-4xl font-bold text-gray-900'>{new Date(data.startDateTime).getDate()}</div>
                         </div>
                     </div>
 
@@ -94,17 +95,47 @@ const page = async ({ params }) => {
                     <h2 className='text-2xl font-bold mb-4 text-gray-900'>About this Event</h2>
                     <p className='text-gray-700 leading-relaxed mb-6'>{data.description}</p>
                     
-                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>What to Expect</h3>
-                    <p className='text-gray-700 leading-relaxed mb-4'>Minimal lights, maximal vibes. Bring a friend, bring a sweater. This rooftop gathering is all about cozy conversations under the winter sky.</p>
-                    
-                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>Details</h3>
-                    <p className='text-gray-700 leading-relaxed mb-4'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lorem dui, rhoncus id elementum sit amet, pellentesque et lectus. Nunc tempor venenatis elementum. Integer placerat enim vel diam varius convallis.</p>
-                    
-                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>Location Info</h3>
-                    <p className='text-gray-700 leading-relaxed mb-4'>Jones College Rooftop - Access through the main entrance. Take the stairs to the top floor and follow the signs. Please be respectful of the space and neighbors.</p>
-                    
-                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>Important Notes</h3>
-                    <p className='text-gray-700 leading-relaxed'>Please RSVP in advance as space is limited to 120 people. Feel free to bring friends but make sure they also reserve a spot. Looking forward to seeing you there!</p>
+                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>Event Details</h3>
+                    <div className='space-y-3 text-gray-700'>
+                        <div className='flex gap-2'>
+                            <span className='font-semibold min-w-[120px]'>Event Type:</span>
+                            <span>{data.eventType}</span>
+                        </div>
+                        {data.theme && (
+                            <div className='flex gap-2'>
+                                <span className='font-semibold min-w-[120px]'>Theme:</span>
+                                <span>{data.theme}</span>
+                            </div>
+                        )}
+                        {data.dressCode && (
+                            <div className='flex gap-2'>
+                                <span className='font-semibold min-w-[120px]'>Dress Code:</span>
+                                <span>{data.dressCode}</span>
+                            </div>
+                        )}
+                        <div className='flex gap-2'>
+                            <span className='font-semibold min-w-[120px]'>Location:</span>
+                            <span>{data.location}</span>
+                        </div>
+                        <div className='flex gap-2'>
+                            <span className='font-semibold min-w-[120px]'>Date & Time:</span>
+                            <span>{new Date(data.startDateTime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        <div className='flex gap-2'>
+                            <span className='font-semibold min-w-[120px]'>Time:</span>
+                            <span>{new Date(data.startDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} - {new Date(data.endDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                        </div>
+                        {data.needReservation && (
+                            <div className='flex gap-2'>
+                                <span className='font-semibold min-w-[120px]'>Capacity:</span>
+                                <span>{data.reserved || 0} reserved out of {data.capacity} spots</span>
+                            </div>
+                        )}
+                        <div className='flex gap-2'>
+                            <span className='font-semibold min-w-[120px]'>Hosted by:</span>
+                            <span>{data.host}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

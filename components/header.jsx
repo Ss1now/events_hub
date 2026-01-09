@@ -34,9 +34,9 @@ const Header = () => {
 
     const handlePostEvent = () => {
         if (isLoggedIn) {
-            router.push('/admin/addproduct');
+            router.push('/me/postevent');
         } else {
-            localStorage.setItem('redirectAfterLogin', '/admin/addproduct');
+            localStorage.setItem('redirectAfterLogin', '/me/postevent');
             router.push('/login');
         }
     };
@@ -50,6 +50,12 @@ const Header = () => {
                 <div className='flex items-center gap-3'>
                     {isLoggedIn ? (
                         <>
+                            <button 
+                                onClick={() => router.push('/me')}
+                                className='bg-white text-black font-medium py-2 px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-sm'
+                            >
+                                My Profile
+                            </button>
                             <button 
                                 onClick={handleLogout}
                                 className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'

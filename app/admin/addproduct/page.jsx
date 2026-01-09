@@ -16,7 +16,6 @@ export default function Page() {
         description:'',
         startDateTime:'',
         endDateTime:'',
-        status:'future',
         eventType:eventTypeOption,
         theme:'',
         dressCode:'',
@@ -43,7 +42,6 @@ export default function Page() {
         formData.append('image', image);
         formData.append('startDateTime', data.startDateTime);
         formData.append('endDateTime', data.endDateTime);
-        formData.append('status', data.status);
         formData.append('eventType', data.eventType);
         formData.append('theme', data.theme);
         formData.append('dressCode', data.dressCode);
@@ -91,14 +89,6 @@ export default function Page() {
             {/* End Date & Time */}
             <p className='text-xl mt-6'>End Date & Time</p>
             <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='datetime-local' required/>
-
-            {/* Status */}
-            <p className='text-xl mt-6'>Status</p>
-            <select name='status' onChange={onChangeHandler} value={data.status} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' required>
-                <option value='live'>live</option>
-                <option value='future'>future</option>
-                <option value='past'>past</option>
-            </select>
 
             {/* Event Type */}
             <p className='text-xl mt-6'>Event Type</p>

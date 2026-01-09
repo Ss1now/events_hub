@@ -10,6 +10,7 @@ export default function RegisterPage() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [residentialCollege, setResidentialCollege] = useState('')
     const router = useRouter()
 
     const handleSubmit = async (e) => {
@@ -20,7 +21,8 @@ export default function RegisterPage() {
                 action: 'register',
                 name,
                 email,
-                password
+                password,
+                residentialCollege
             })
 
             if (response.data.success) {
@@ -67,21 +69,6 @@ export default function RegisterPage() {
                 <form className='mt-8 space-y-6' onSubmit={handleSubmit}>
                     <div className='rounded-md shadow-sm -space-y-px'>
                         <div>
-                            <label htmlFor='name' className='sr-only'>
-                                Name
-                            </label>
-                            <input
-                                id='name'
-                                name='name'
-                                type='text'
-                                required
-                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
-                                placeholder='Full name'
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>
-                        <div>
                             <label htmlFor='email-address' className='sr-only'>
                                 Email address
                             </label>
@@ -91,7 +78,7 @@ export default function RegisterPage() {
                                 type='email'
                                 autoComplete='email'
                                 required
-                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
+                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
                                 placeholder='Email address'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -107,11 +94,37 @@ export default function RegisterPage() {
                                 type='password'
                                 autoComplete='new-password'
                                 required
-                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
+                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
                                 placeholder='Password'
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
+                        </div>
+                        <div>
+                            <label htmlFor='residential-college' className='sr-only'>
+                                Residential College
+                            </label>
+                            <select
+                                id='residential-college'
+                                name='residential-college'
+                                className='appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm'
+                                value={residentialCollege}
+                                onChange={(e) => setResidentialCollege(e.target.value)}
+                            >
+                                <option value=''>Select your residential college (optional)</option>
+                                <option value='Baker College'>Baker College</option>
+                                <option value='Brown College'>Brown College</option>
+                                <option value='Duncan College'>Duncan College</option>
+                                <option value='Hanszen College'>Hanszen College</option>
+                                <option value='Jones College'>Jones College</option>
+                                <option value='Lovett College'>Lovett College</option>
+                                <option value='Martel College'>Martel College</option>
+                                <option value='McMurtry College'>McMurtry College</option>
+                                <option value='Sid Richardson College'>Sid Richardson College</option>
+                                <option value='Wiess College'>Wiess College</option>
+                                <option value='Will Rice College'>Will Rice College</option>
+                                <option value='Others'>Others</option>
+                            </select>
                         </div>
                     </div>
 
