@@ -18,13 +18,32 @@ export default function Page() {
     }
 
     const deleterBlogs = async (mongoId) => {
-        const response = await axios.delete('/api/blog', {
-            params: {
-                id:mongoId
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login to delete posts');
+            return;
+        }
+        
+        try {
+            const response = await axios.delete('/api/blog', {
+                params: {
+                    id:mongoId
+                },
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            
+            if (response.data.success) {
+                toast.success(response.data.msg);
+                fetchBlogs();
+            } else {
+                toast.error(response.data.msg);
             }
-        })
-        toast.success(response.data.msg);
-        fetchBlogs();
+        } catch (error) {
+            toast.error('Error deleting post');
+            console.error(error);
+        }
     }
 
     useEffect(()=>{

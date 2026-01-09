@@ -26,7 +26,7 @@ const Page = ({ params }) => {
             setId(resolvedParams.id);
             
             // Fetch blog data
-            const response = await fetch(`http://localhost:3000/api/blog?id=${resolvedParams.id}`, {
+            const response = await fetch(`/api/blog?id=${resolvedParams.id}`, {
                 cache: 'no-store'
             });
             const blogData = await response.json();
