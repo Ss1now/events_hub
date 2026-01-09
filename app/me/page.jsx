@@ -12,11 +12,12 @@ export default function MePage() {
     const [events, setEvents] = useState([])
     const [interestedEvents, setInterestedEvents] = useState([])
     const [reservedEvents, setReservedEvents] = useState([])
+    const [participatedEvents, setParticipatedEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false)
     const [editName, setEditName] = useState('')
     const [selectedCollege, setSelectedCollege] = useState('')
-    const [activeTab, setActiveTab] = useState('hosted') // 'hosted', 'interested', 'reserved'
+    const [activeTab, setActiveTab] = useState('hosted') // 'hosted', 'interested', 'reserved', 'participated'
     const router = useRouter()
 
     // Calendar functions
@@ -90,8 +91,29 @@ END:VCALENDAR`;
                 if (response.data.success) {
                     setUser(response.data.user)
                     setEvents(response.data.events)
-                    setInterestedEvents(response.data.interestedEvents || [])
-                    setReservedEvents(response.data.reservedEvents || [])
+                    
+                    // Filter events based on their status
+                    const now = new Date()
+                    const interested = response.data.interestedEvents || []
+                    const reserved = response.data.reservedEvents || []
+                    
+                    // Events that are still future or live
+                    const activeInterested = interested.filter(e => new Date(e.endDateTime) > now)
+                    const activeReserved = reserved.filter(e => new Date(e.endDateTime) > now)
+                    
+                    // Events that have ended (participated)
+                    const pastInterested = interested.filter(e => new Date(e.endDateTime) <= now)
+                    const pastReserved = reserved.filter(e => new Date(e.endDateTime) <= now)
+                    
+                    // Combine and deduplicate participated events
+                    const participated = [...pastInterested, ...pastReserved]
+                    const uniqueParticipated = participated.filter((event, index, self) =>
+                        index === self.findIndex((e) => e._id === event._id)
+                    )
+                    
+                    setInterestedEvents(activeInterested)
+                    setReservedEvents(activeReserved)
+                    setParticipatedEvents(uniqueParticipated)
                     setSelectedCollege(response.data.user.residentialCollege || '')
                     setEditName(response.data.user.name || '')
                 } else {
@@ -364,6 +386,16 @@ END:VCALENDAR`;
                         >
                             Reserved ({reservedEvents.length})
                         </button>
+                        <button
+                            onClick={() => setActiveTab('participated')}
+                            className={`pb-3 px-4 font-medium transition-colors ${
+                                activeTab === 'participated'
+                                    ? 'border-b-2 border-black text-black'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Participated ({participatedEvents.length})
+                        </button>
                     </div>
 
                     {/* Hosted Events Tab */}
@@ -605,6 +637,59 @@ END:VCALENDAR`;
                                                 >
                                                     Cancel
                                                 </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Participated Events Tab */}
+                    {activeTab === 'participated' && (
+                        <>
+                            {participatedEvents.length === 0 ? (
+                                <div className='text-center py-12'>
+                                    <p className='text-gray-500 text-lg mb-4'>You haven&apos;t participated in any events yet</p>
+                                </div>
+                            ) : (
+                                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+                                    {participatedEvents.map((event) => (
+                                        <div key={event._id} className='border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow bg-gray-50'>
+                                            <div className='aspect-w-16 aspect-h-9 bg-gray-200'>
+                                                <Image
+                                                    src={event.image}
+                                                    alt={event.title}
+                                                    width={400}
+                                                    height={225}
+                                                    className='w-full h-48 object-cover'
+                                                />
+                                            </div>
+                                            <div className='p-4'>
+                                                <div className='mb-2'>
+                                                    <span className='inline-block bg-gray-300 text-gray-700 text-xs px-3 py-1 rounded-full font-semibold'>
+                                                        Past Event
+                                                    </span>
+                                                </div>
+                                                <h3 className='font-bold text-lg mb-2 text-gray-700'>{event.title}</h3>
+                                                <p className='text-sm text-gray-600 mb-2'>{event.description.slice(0, 100)}...</p>
+                                                <div className='text-sm text-gray-500 mb-4'>
+                                                    <p>📅 {new Date(event.startDateTime).toLocaleDateString()}</p>
+                                                    <p>📍 {event.location}</p>
+                                                </div>
+                                                <div className='flex flex-col gap-2'>
+                                                    <Link href={`/blogs/${event._id}`}>
+                                                        <button className='w-full bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700 transition-colors text-sm'>
+                                                            View Details
+                                                        </button>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleAddToGoogleCalendar(event)}
+                                                        className='w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 transition-colors text-sm'
+                                                    >
+                                                        📅 Add to Calendar
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     ))}
