@@ -85,6 +85,9 @@ const BlogList = () => {
                                 startDateTime={item.startDateTime}
                                 endDateTime={item.endDateTime}
                                 host={item.host}
+                                interestedUsers={item.interestedUsers}
+                                reservedUsers={item.reservedUsers}
+                                reservationDeadline={item.reservationDeadline}
                             />
                         })
                     ) : (

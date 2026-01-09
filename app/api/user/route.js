@@ -29,6 +29,16 @@ export async function GET(request) {
         // Fetch user's events
         const events = await Blogmodel.find({ authorId: decoded.id }).sort({ date: -1 });
 
+        // Fetch user's interested events
+        const interestedEvents = await Blogmodel.find({ 
+            _id: { $in: user.interestedEvents || [] } 
+        }).sort({ startDateTime: 1 });
+
+        // Fetch user's reserved events
+        const reservedEvents = await Blogmodel.find({ 
+            _id: { $in: user.reservedEvents || [] } 
+        }).sort({ startDateTime: 1 });
+
         // Update status for all events based on current time
         const now = new Date();
         const updatedEvents = await Promise.all(events.map(async (event) => {
@@ -61,7 +71,9 @@ export async function GET(request) {
                 email: user.email,
                 residentialCollege: user.residentialCollege
             },
-            events: updatedEvents 
+            events: updatedEvents,
+            interestedEvents,
+            reservedEvents
         });
     } catch (error) {
         console.log(error);

@@ -1,20 +1,169 @@
-import React from 'react'
+'use client'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import { assets } from '@/assets/assets';
 import Footer from '@/components/footer';
 import Link from 'next/link';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
+import SuccessModal from '@/components/SuccessModal';
 
 
-const page = async ({ params }) => {
-    const { id } = await params;
+const Page = ({ params }) => {
+    const router = useRouter();
+    const [id, setId] = useState(null);
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isInterested, setIsInterested] = useState(false);
+    const [isReserved, setIsReserved] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [modalActionType, setModalActionType] = useState('');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const resolvedParams = await params;
+            setId(resolvedParams.id);
+            
+            // Fetch blog data
+            const response = await fetch(`http://localhost:3000/api/blog?id=${resolvedParams.id}`, {
+                cache: 'no-store'
+            });
+            const blogData = await response.json();
+            setData(blogData);
+            
+            // Check if user is logged in and get their status
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userResponse = await axios.get('/api/user', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (userResponse.data.success) {
+                        const userId = userResponse.data.user._id;
+                        setIsInterested(blogData.interestedUsers?.includes(userId) || false);
+                        setIsReserved(blogData.reservedUsers?.includes(userId) || false);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
+            
+            setLoading(false);
+        };
+        
+        fetchData();
+    }, [params]);
+
+    const handleInterested = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login to mark as interested');
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await axios.patch('/api/blog', 
+                { action: 'interested', eventId: id },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            if (response.data.success) {
+                setIsInterested(response.data.isInterested);
+                setData(prev => ({
+                    ...prev,
+                    interestedUsers: response.data.isInterested 
+                        ? [...(prev.interestedUsers || []), 'currentUser']
+                        : (prev.interestedUsers || []).filter(u => u !== 'currentUser')
+                }));
+                
+                // Show success modal only when marking as interested (not removing)
+                if (response.data.isInterested) {
+                    setModalActionType('interested');
+                    setShowSuccessModal(true);
+                } else {
+                    toast.success(response.data.msg);
+                }
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.msg || 'Error marking as interested');
+        }
+    };
+
+    const handleReserve = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login to reserve');
+            router.push('/login');
+            return;
+        }
+
+        try {
+            const response = await axios.patch('/api/blog', 
+                { action: 'reserve', eventId: id },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            if (response.data.success) {
+                setIsReserved(true);
+                setData(prev => ({
+                    ...prev,
+                    reserved: response.data.reserved
+                }));
+                
+                // Show success modal
+                setModalActionType('reserve');
+                setShowSuccessModal(true);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.msg || 'Error reserving event');
+        }
+    };
+
+    const handleCancelReservation = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login first');
+            return;
+        }
+
+        try {
+            const response = await axios.patch('/api/blog', 
+                { action: 'cancel-reservation', eventId: id },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            );
+
+            if (response.data.success) {
+                setIsReserved(false);
+                setData(prev => ({
+                    ...prev,
+                    reserved: response.data.reserved
+                }));
+                toast.success(response.data.msg);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.msg || 'Error cancelling reservation');
+        }
+    };
+
+    if (loading) {
+        return <div className='min-h-screen flex items-center justify-center'>
+            <p className='text-xl'>Loading...</p>
+        </div>;
+    }
+
+    if (!data) {
+        return <div className='min-h-screen flex items-center justify-center'>
+            <p className='text-xl'>Event not found</p>
+        </div>;
+    }
+
+    const isReservationDeadlinePassed = data.reservationDeadline && new Date() > new Date(data.reservationDeadline);
+    const isCapacityReached = data.needReservation && data.reserved >= data.capacity;
     
-    // Fetch blog data from API
-    const response = await fetch(`http://localhost:3000/api/blog?id=${id}`, {
-        cache: 'no-store'
-    });
-    const data = await response.json();
-
-    return (data?<>
+    return (
+        <>
         <div className='bg-white py-6 px-5 md:px-12 lg:px-28 border-b border-gray-200'>
             <div className='flex justify-between items-center'>
             <Link href='/'>
@@ -61,31 +210,173 @@ const page = async ({ params }) => {
                                         <span>{data.reserved || 0}/{data.capacity} reserved</span>
                                     </div>
                                 )}
+                                {!data.needReservation && (data.status === 'future' || data.status === 'live') && (
+                                    <div className='flex items-center gap-2'>
+                                        <svg className='w-5 h-5 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
+                                        </svg>
+                                        <span className='text-blue-600 font-medium'>{data.interestedUsers?.length || 0} interested</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
                                 {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#LIVE</span>}
+                                {data.status === 'future' && <span className='bg-blue-500 text-white text-xs px-3 py-1 rounded-full'>#FUTURE</span>}
                                 <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
                                 {data.theme && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Theme: {data.theme}</span>}
                                 {data.dressCode && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Dress: {data.dressCode}</span>}
+                                {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full'>FULL</span>}
+                                {isReservationDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>Reservation Closed</span>}
                             </div>
 
                             <p className='text-sm text-gray-500'>Hosted by <span className='font-semibold'>{data.host}</span></p>
                         </div>
 
                         {/* Date Badge */}
-                        <div className='text-center bg-gray-50 rounded-xl p-4 ml-6'>
-                            <div className='text-sm text-gray-500 uppercase'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
-                            <div className='text-4xl font-bold text-gray-900'>{new Date(data.startDateTime).getDate()}</div>
-                        </div>
+                        <button 
+                            onClick={() => {
+                                const formatGoogleDate = (dateString) => {
+                                    const date = new Date(dateString);
+                                    return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                                };
+                                const startDate = formatGoogleDate(data.startDateTime);
+                                const endDate = formatGoogleDate(data.endDateTime);
+                                const eventDescription = `${data.description}\n\nEvent Type: ${data.eventType}\nTheme: ${data.theme}\nDress Code: ${data.dressCode}\nHosted by: ${data.host}`;
+                                const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(data.location)}`;
+                                window.open(googleCalendarUrl, '_blank');
+                            }}
+                            className='text-center bg-gray-50 rounded-xl p-4 ml-6 hover:bg-gray-100 transition-colors cursor-pointer group'
+                            title='Add to Google Calendar'
+                        >
+                            <div className='text-sm text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
+                            <div className='text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).getDate()}</div>
+                            <div className='text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add to Cal</div>
+                        </button>
                     </div>
 
                     {/* Action Buttons */}
                     <div className='flex gap-3 pt-6 border-t border-gray-200'>
-                        <button className='flex-1 bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors'>Reserve Spot</button>
+                        {(data.status === 'future' || data.status === 'live') && (
+                            <>
+                                {data.needReservation ? (
+                                    <>
+                                        {!isReserved ? (
+                                            <button 
+                                                onClick={handleReserve}
+                                                disabled={isCapacityReached || isReservationDeadlinePassed}
+                                                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                                                    isCapacityReached || isReservationDeadlinePassed
+                                                        ? 'bg-gray-400 text-white cursor-not-allowed'
+                                                        : 'bg-black text-white hover:bg-gray-800'
+                                                }`}
+                                            >
+                                                {isCapacityReached ? 'Event Full' : isReservationDeadlinePassed ? 'Reservation Closed' : 'Reserve Spot'}
+                                            </button>
+                                        ) : (
+                                            <button 
+                                                onClick={handleCancelReservation}
+                                                className='flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors'
+                                            >
+                                                Cancel Reservation
+                                            </button>
+                                        )}
+                                    </>
+                                ) : (
+                                    <button 
+                                        onClick={handleInterested}
+                                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                                            isInterested 
+                                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                                : 'bg-black text-white hover:bg-gray-800'
+                                        }`}
+                                    >
+                                        {isInterested ? "I'm Going!" : "I'm Going"}
+                                    </button>
+                                )}
+                            </>
+                        )}
                         <button className='px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors'>Share</button>
                     </div>
+                    
+                    {/* Reservation deadline info */}
+                    {data.needReservation && data.reservationDeadline && (
+                        <div className='mt-4 p-3 bg-blue-50 rounded-lg'>
+                            <p className='text-sm text-blue-800'>
+                                <span className='font-semibold'>Reservation Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                            </p>
+                        </div>
+                    )}
+                    
+                    {/* Add to Calendar Section */}
+                    {(isInterested || isReserved) && (
+                        <div className='mt-4 p-4 bg-gray-50 rounded-lg'>
+                            <p className='text-sm font-semibold text-gray-700 mb-3'>Add to Calendar</p>
+                            <div className='flex gap-3'>
+                                <button
+                                    onClick={() => {
+                                        const formatGoogleDate = (dateString) => {
+                                            const date = new Date(dateString);
+                                            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                                        };
+                                        const startDate = formatGoogleDate(data.startDateTime);
+                                        const endDate = formatGoogleDate(data.endDateTime);
+                                        const description = `${data.description}\n\nEvent Type: ${data.eventType}\nTheme: ${data.theme}\nDress Code: ${data.dressCode}\nHosted by: ${data.host}`;
+                                        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(data.location)}`;
+                                        window.open(googleCalendarUrl, '_blank');
+                                    }}
+                                    className='flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
+                                >
+                                    <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
+                                        <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
+                                    </svg>
+                                    Google Calendar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const formatDate = (dateString) => {
+                                            const date = new Date(dateString);
+                                            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                                        };
+                                        const startDate = formatDate(data.startDateTime);
+                                        const endDate = formatDate(data.endDateTime);
+                                        const now = formatDate(new Date());
+                                        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Rice Party//Event Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:${data._id}@riceparty.com
+DTSTAMP:${now}
+DTSTART:${startDate}
+DTEND:${endDate}
+SUMMARY:${data.title}
+DESCRIPTION:${data.description}\\n\\nEvent Type: ${data.eventType}\\nTheme: ${data.theme}\\nDress Code: ${data.dressCode}\\nHosted by: ${data.host}
+LOCATION:${data.location}
+STATUS:CONFIRMED
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR`;
+                                        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                                        const link = document.createElement('a');
+                                        link.href = window.URL.createObjectURL(blob);
+                                        link.setAttribute('download', `${data.title.replace(/[^a-z0-9]/gi, '_')}.ics`);
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }}
+                                    className='flex-1 bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2'
+                                >
+                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10' />
+                                    </svg>
+                                    Download .ics
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Event Details */}
@@ -131,6 +422,12 @@ const page = async ({ params }) => {
                                 <span>{data.reserved || 0} reserved out of {data.capacity} spots</span>
                             </div>
                         )}
+                        {data.needReservation && data.reservationDeadline && (
+                            <div className='flex gap-2'>
+                                <span className='font-semibold min-w-[120px]'>Reserve By:</span>
+                                <span>{new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                            </div>
+                        )}
                         <div className='flex gap-2'>
                             <span className='font-semibold min-w-[120px]'>Hosted by:</span>
                             <span>{data.host}</span>
@@ -140,8 +437,16 @@ const page = async ({ params }) => {
             </div>
         </div>
         <Footer />
-        </>:<></>
+        
+        {/* Success Modal */}
+        <SuccessModal 
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            eventData={data}
+            actionType={modalActionType}
+        />
+        </>
     )
 }
 
-export default page
+export default Page

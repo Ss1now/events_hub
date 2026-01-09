@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/config/db"
 const { NextResponse } = require("next/server")
 import {writeFile, mkdir} from 'fs/promises';
 import Blogmodel from "@/lib/models/blogmodel";
+import userModel from "@/lib/models/usermodel";
 import path from 'path';
 const fs = require('fs');
 import jwt from 'jsonwebtoken';
@@ -135,7 +136,10 @@ export async function POST(request){
             location: `${formData.get('location')}`,
             needReservation: formData.get('needReservation') === 'true',
             reserved: parseInt(formData.get('reserved')) || 0,
-            capacity: parseInt(formData.get('capacity')),
+            capacity: parseInt(formData.get('capacity')) || 0,
+            reservationDeadline: formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null,
+            interestedUsers: [],
+            reservedUsers: [],
             host: `${formData.get('host')}`,
             authorId: userId
         }
@@ -193,5 +197,142 @@ export async function DELETE(request){
     } catch (error) {
         console.error('Error deleting post:', error);
         return NextResponse.json({ success: false, msg: 'Error deleting post' }, { status: 500 });
+    }
+}
+
+// API Endpoint for guest actions (mark interested, reserve, cancel)
+export async function PATCH(request){
+    try {
+        await connectDB(); // Ensure database connection
+        
+        // Extract and verify JWT token
+        const authHeader = request.headers.get('authorization');
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const body = await request.json();
+        const { action, eventId } = body;
+
+        const event = await Blogmodel.findById(eventId);
+        
+        if (!event) {
+            return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
+        }
+
+        switch(action) {
+            case 'interested':
+                // Initialize interestedUsers if it doesn't exist
+                if (!event.interestedUsers) {
+                    event.interestedUsers = [];
+                }
+                
+                // Toggle interested status
+                const isInterested = event.interestedUsers.some(id => id.toString() === userId.toString());
+                
+                if (isInterested) {
+                    // Remove from interested
+                    event.interestedUsers = event.interestedUsers.filter(id => id.toString() !== userId.toString());
+                    await userModel.findByIdAndUpdate(userId, {
+                        $pull: { interestedEvents: eventId }
+                    });
+                    console.log(`User ${userId} removed from interested for event ${eventId}`);
+                } else {
+                    // Add to interested
+                    event.interestedUsers.push(userId);
+                    await userModel.findByIdAndUpdate(userId, {
+                        $addToSet: { interestedEvents: eventId }
+                    });
+                    console.log(`User ${userId} added to interested for event ${eventId}`);
+                }
+                
+                const savedEvent = await event.save();
+                console.log(`Event saved. Interested users count: ${savedEvent.interestedUsers.length}`);
+                
+                return NextResponse.json({ 
+                    success: true, 
+                    msg: isInterested ? 'Removed from interested' : 'Marked as interested',
+                    interestedCount: savedEvent.interestedUsers.length,
+                    isInterested: !isInterested
+                });
+
+            case 'reserve':
+                // Initialize reservedUsers if it doesn't exist
+                if (!event.reservedUsers) {
+                    event.reservedUsers = [];
+                }
+                
+                // Check if event needs reservation
+                if (!event.needReservation) {
+                    return NextResponse.json({ success: false, msg: 'This event does not require reservation' }, { status: 400 });
+                }
+
+                // Check reservation deadline
+                if (event.reservationDeadline && new Date() > new Date(event.reservationDeadline)) {
+                    return NextResponse.json({ success: false, msg: 'Reservation deadline has passed' }, { status: 400 });
+                }
+
+                // Check if already reserved
+                if (event.reservedUsers.some(id => id.toString() === userId.toString())) {
+                    return NextResponse.json({ success: false, msg: 'You have already reserved this event' }, { status: 400 });
+                }
+
+                // Check capacity
+                if (event.reservedUsers.length >= event.capacity) {
+                    return NextResponse.json({ success: false, msg: 'Event has reached capacity' }, { status: 400 });
+                }
+
+                // Add to reserved
+                event.reservedUsers.push(userId);
+                event.reserved = event.reservedUsers.length;
+                await userModel.findByIdAndUpdate(userId, {
+                    $addToSet: { reservedEvents: eventId }
+                });
+                
+                await event.save();
+                return NextResponse.json({ 
+                    success: true, 
+                    msg: 'Successfully reserved',
+                    reserved: event.reserved,
+                    capacity: event.capacity
+                });
+
+            case 'cancel-reservation':
+                // Initialize reservedUsers if it doesn't exist
+                if (!event.reservedUsers) {
+                    event.reservedUsers = [];
+                }
+                
+                // Check if user has reserved
+                if (!event.reservedUsers.some(id => id.toString() === userId.toString())) {
+                    return NextResponse.json({ success: false, msg: 'You have not reserved this event' }, { status: 400 });
+                }
+
+                // Remove from reserved
+                event.reservedUsers = event.reservedUsers.filter(id => id.toString() !== userId.toString());
+                event.reserved = event.reservedUsers.length;
+                await userModel.findByIdAndUpdate(userId, {
+                    $pull: { reservedEvents: eventId }
+                });
+                
+                await event.save();
+                return NextResponse.json({ 
+                    success: true, 
+                    msg: 'Reservation cancelled',
+                    reserved: event.reserved,
+                    capacity: event.capacity
+                });
+
+            default:
+                return NextResponse.json({ success: false, msg: 'Invalid action' }, { status: 400 });
+        }
+    } catch (error) {
+        console.error('Error processing guest action:', error);
+        return NextResponse.json({ success: false, msg: 'Error processing request' }, { status: 500 });
     }
 }

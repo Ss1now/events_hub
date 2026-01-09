@@ -10,11 +10,65 @@ import Image from 'next/image'
 export default function MePage() {
     const [user, setUser] = useState(null)
     const [events, setEvents] = useState([])
+    const [interestedEvents, setInterestedEvents] = useState([])
+    const [reservedEvents, setReservedEvents] = useState([])
     const [loading, setLoading] = useState(true)
     const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false)
     const [editName, setEditName] = useState('')
     const [selectedCollege, setSelectedCollege] = useState('')
+    const [activeTab, setActiveTab] = useState('hosted') // 'hosted', 'interested', 'reserved'
     const router = useRouter()
+
+    // Calendar functions
+    const handleAddToGoogleCalendar = (event) => {
+        const formatGoogleDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+
+        const startDate = formatGoogleDate(event.startDateTime);
+        const endDate = formatGoogleDate(event.endDateTime);
+        const description = `${event.description}\n\nEvent Type: ${event.eventType}\nTheme: ${event.theme}\nDress Code: ${event.dressCode}\nHosted by: ${event.host}`;
+        const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(event.location)}`;
+        window.open(googleCalendarUrl, '_blank');
+    };
+
+    const handleDownloadICS = (event) => {
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        };
+
+        const startDate = formatDate(event.startDateTime);
+        const endDate = formatDate(event.endDateTime);
+        const now = formatDate(new Date());
+
+        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Rice Party//Event Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:${event._id}@riceparty.com
+DTSTAMP:${now}
+DTSTART:${startDate}
+DTEND:${endDate}
+SUMMARY:${event.title}
+DESCRIPTION:${event.description}\\n\\nEvent Type: ${event.eventType}\\nTheme: ${event.theme}\\nDress Code: ${event.dressCode}\\nHosted by: ${event.host}
+LOCATION:${event.location}
+STATUS:CONFIRMED
+SEQUENCE:0
+END:VEVENT
+END:VCALENDAR`;
+
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute('download', `${event.title.replace(/[^a-z0-9]/gi, '_')}.ics`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -36,6 +90,8 @@ export default function MePage() {
                 if (response.data.success) {
                     setUser(response.data.user)
                     setEvents(response.data.events)
+                    setInterestedEvents(response.data.interestedEvents || [])
+                    setReservedEvents(response.data.reservedEvents || [])
                     setSelectedCollege(response.data.user.residentialCollege || '')
                     setEditName(response.data.user.name || '')
                 } else {
@@ -107,6 +163,50 @@ export default function MePage() {
         } catch (error) {
             console.error(error)
             toast.error('Error deleting event')
+        }
+    }
+
+    const handleCancelReservation = async (eventId) => {
+        if (!confirm('Are you sure you want to cancel this reservation?')) return
+
+        const token = localStorage.getItem('token')
+
+        try {
+            const response = await axios.patch('/api/blog', 
+                { action: 'cancel-reservation', eventId },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            )
+
+            if (response.data.success) {
+                toast.success('Reservation cancelled successfully')
+                setReservedEvents(reservedEvents.filter(event => event._id !== eventId))
+            } else {
+                toast.error('Failed to cancel reservation')
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error('Error cancelling reservation')
+        }
+    }
+
+    const handleRemoveInterested = async (eventId) => {
+        const token = localStorage.getItem('token')
+
+        try {
+            const response = await axios.patch('/api/blog', 
+                { action: 'interested', eventId },
+                { headers: { 'Authorization': `Bearer ${token}` } }
+            )
+
+            if (response.data.success) {
+                toast.success('Removed from interested events')
+                setInterestedEvents(interestedEvents.filter(event => event._id !== eventId))
+            } else {
+                toast.error('Failed to remove from interested')
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error('Error removing from interested')
         }
     }
 
@@ -232,76 +332,290 @@ export default function MePage() {
                         </Link>
                     </div>
 
-                    {events.length === 0 ? (
-                        <div className='text-center py-12'>
-                            <p className='text-gray-500 text-lg mb-4'>You haven't posted any events yet</p>
-                            <Link href='/me/postevent'>
-                                <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
-                                    Create Your First Event
-                                </button>
-                            </Link>
-                        </div>
-                    ) : (
-                        <div className='overflow-x-auto'>
-                            <table className='min-w-full divide-y divide-gray-200'>
-                                <thead className='bg-gray-50'>
-                                    <tr>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Event</th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Status</th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Date</th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Location</th>
-                                        <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className='bg-white divide-y divide-gray-200'>
-                                    {events.map((event) => (
-                                        <tr key={event._id} className='hover:bg-gray-50'>
-                                            <td className='px-6 py-4'>
-                                                <div className='flex items-center'>
-                                                    {event.image && (
-                                                        <Image 
-                                                            src={event.image} 
-                                                            alt={event.title}
-                                                            width={50}
-                                                            height={50}
-                                                            className='rounded mr-3 object-cover'
-                                                        />
-                                                    )}
-                                                    <div>
-                                                        <div className='text-sm font-medium text-gray-900'>{event.title}</div>
-                                                        <div className='text-sm text-gray-500'>{event.eventType}</div>
-                                                    </div>
+                    {/* Tabs */}
+                    <div className='flex gap-4 mb-6 border-b border-gray-200'>
+                        <button
+                            onClick={() => setActiveTab('hosted')}
+                            className={`pb-3 px-4 font-medium transition-colors ${
+                                activeTab === 'hosted'
+                                    ? 'border-b-2 border-black text-black'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Events I Host ({events.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('interested')}
+                            className={`pb-3 px-4 font-medium transition-colors ${
+                                activeTab === 'interested'
+                                    ? 'border-b-2 border-black text-black'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            I&apos;m Going ({interestedEvents.length})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('reserved')}
+                            className={`pb-3 px-4 font-medium transition-colors ${
+                                activeTab === 'reserved'
+                                    ? 'border-b-2 border-black text-black'
+                                    : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        >
+                            Reserved ({reservedEvents.length})
+                        </button>
+                    </div>
+
+                    {/* Hosted Events Tab */}
+                    {activeTab === 'hosted' && (
+                        <>
+                            {events.length === 0 ? (
+                                <div className='text-center py-12'>
+                                    <p className='text-gray-500 text-lg mb-4'>You haven&apos;t posted any events yet</p>
+                                    <Link href='/me/postevent'>
+                                        <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
+                                            Create Your First Event
+                                        </button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className='overflow-x-auto'>
+                                    <table className='min-w-full divide-y divide-gray-200'>
+                                        <thead className='bg-gray-50'>
+                                            <tr>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Event</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Status</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Date</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Location</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className='bg-white divide-y divide-gray-200'>
+                                            {events.map((event) => (
+                                                <tr key={event._id} className='hover:bg-gray-50'>
+                                                    <td className='px-6 py-4'>
+                                                        <div className='flex items-center'>
+                                                            {event.image && (
+                                                                <Image 
+                                                                    src={event.image} 
+                                                                    alt={event.title}
+                                                                    width={50}
+                                                                    height={50}
+                                                                    className='rounded mr-3 object-cover'
+                                                                />
+                                                            )}
+                                                            <div>
+                                                                <div className='text-sm font-medium text-gray-900'>{event.title}</div>
+                                                                <div className='text-sm text-gray-500'>{event.eventType}</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className='px-6 py-4'>
+                                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                            ${event.status === 'live' ? 'bg-green-100 text-green-800' : 
+                                                              event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
+                                                              'bg-gray-100 text-gray-800'}`}>
+                                                            {event.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className='px-6 py-4 text-sm text-gray-500'>
+                                                        {new Date(event.startDateTime).toLocaleDateString()}
+                                                    </td>
+                                                    <td className='px-6 py-4 text-sm text-gray-500'>{event.location}</td>
+                                                    <td className='px-6 py-4 text-sm font-medium'>
+                                                        <button
+                                                            onClick={() => handleDeleteEvent(event._id)}
+                                                            className='text-red-600 hover:text-red-900'
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Interested Events Tab */}
+                    {activeTab === 'interested' && (
+                        <>
+                            {interestedEvents.length === 0 ? (
+                                <div className='text-center py-12'>
+                                    <p className='text-gray-500 text-lg mb-4'>You haven&apos;t marked interest in any events yet</p>
+                                    <Link href='/'>
+                                        <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
+                                            Browse Events
+                                        </button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    {interestedEvents.map((event) => (
+                                        <div key={event._id} className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'>
+                                            <div className='flex justify-between items-start mb-3'>
+                                                <div className='flex-1'>
+                                                    <Link href={`/blogs/${event._id}`}>
+                                                        <h3 className='text-lg font-semibold text-gray-900 hover:text-gray-700 cursor-pointer'>{event.title}</h3>
+                                                    </Link>
+                                                    <p className='text-sm text-gray-600 mt-1'>{event.eventType}</p>
                                                 </div>
-                                            </td>
-                                            <td className='px-6 py-4'>
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    ${event.status === 'live' ? 'bg-green-100 text-green-800' : 
-                                                      event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
-                                                      'bg-gray-100 text-gray-800'}`}>
+                                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    event.status === 'live' ? 'bg-green-100 text-green-800' : 
+                                                    event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
+                                                    'bg-gray-100 text-gray-800'
+                                                }`}>
                                                     {event.status}
                                                 </span>
-                                            </td>
-                                            <td className='px-6 py-4 text-sm text-gray-500'>
-                                                {new Date(event.startDateTime).toLocaleDateString()}
-                                            </td>
-                                            <td className='px-6 py-4 text-sm text-gray-500'>{event.location}</td>
-                                            <td className='px-6 py-4 text-sm font-medium'>
+                                            </div>
+                                            <div className='flex items-center gap-2 text-sm text-gray-600 mb-2'>
+                                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                                </svg>
+                                                <span>{new Date(event.startDateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2 text-sm text-gray-600 mb-3'>
+                                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
+                                                </svg>
+                                                <span>{event.location}</span>
+                                            </div>
+                                            <div className='flex gap-2 mb-2'>
                                                 <button
-                                                    onClick={() => handleDeleteEvent(event._id)}
-                                                    className='text-red-600 hover:text-red-900'
+                                                    onClick={() => handleAddToGoogleCalendar(event)}
+                                                    className='flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center justify-center gap-1'
                                                 >
-                                                    Delete
+                                                    <svg className='w-4 h-4' viewBox='0 0 24 24' fill='currentColor'>
+                                                        <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
+                                                    </svg>
+                                                    Google
                                                 </button>
-                                            </td>
-                                        </tr>
+                                                <button
+                                                    onClick={() => handleDownloadICS(event)}
+                                                    className='flex-1 bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800 transition-colors text-sm flex items-center justify-center gap-1'
+                                                >
+                                                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10' />
+                                                    </svg>
+                                                    .ics
+                                                </button>
+                                            </div>
+                                            <div className='flex gap-2'>
+                                                <Link href={`/blogs/${event._id}`} className='flex-1'>
+                                                    <button className='w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors text-sm'>
+                                                        View Details
+                                                    </button>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleRemoveInterested(event._id)}
+                                                    className='px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors text-sm'
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Reserved Events Tab */}
+                    {activeTab === 'reserved' && (
+                        <>
+                            {reservedEvents.length === 0 ? (
+                                <div className='text-center py-12'>
+                                    <p className='text-gray-500 text-lg mb-4'>You haven&apos;t reserved any events yet</p>
+                                    <Link href='/'>
+                                        <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
+                                            Browse Events
+                                        </button>
+                                    </Link>
+                                </div>
+                            ) : (
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                    {reservedEvents.map((event) => (
+                                        <div key={event._id} className='border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow'>
+                                            <div className='flex justify-between items-start mb-3'>
+                                                <div className='flex-1'>
+                                                    <Link href={`/blogs/${event._id}`}>
+                                                        <h3 className='text-lg font-semibold text-gray-900 hover:text-gray-700 cursor-pointer'>{event.title}</h3>
+                                                    </Link>
+                                                    <p className='text-sm text-gray-600 mt-1'>{event.eventType}</p>
+                                                </div>
+                                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    event.status === 'live' ? 'bg-green-100 text-green-800' : 
+                                                    event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
+                                                    'bg-gray-100 text-gray-800'
+                                                }`}>
+                                                    {event.status}
+                                                </span>
+                                            </div>
+                                            <div className='flex items-center gap-2 text-sm text-gray-600 mb-2'>
+                                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
+                                                </svg>
+                                                <span>{new Date(event.startDateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2 text-sm text-gray-600 mb-2'>
+                                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
+                                                </svg>
+                                                <span>{event.location}</span>
+                                            </div>
+                                            <div className='flex items-center gap-2 text-sm text-gray-600 mb-3'>
+                                                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
+                                                </svg>
+                                                <span className='font-medium'>{event.reserved}/{event.capacity} reserved</span>
+                                            </div>
+                                            <div className='flex gap-2 mb-2'>
+                                                <button
+                                                    onClick={() => handleAddToGoogleCalendar(event)}
+                                                    className='flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors text-sm flex items-center justify-center gap-1'
+                                                >
+                                                    <svg className='w-4 h-4' viewBox='0 0 24 24' fill='currentColor'>
+                                                        <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
+                                                    </svg>
+                                                    Google
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDownloadICS(event)}
+                                                    className='flex-1 bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800 transition-colors text-sm flex items-center justify-center gap-1'
+                                                >
+                                                    <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10' />
+                                                    </svg>
+                                                    .ics
+                                                </button>
+                                            </div>
+                                            <div className='flex gap-2'>
+                                                <Link href={`/blogs/${event._id}`} className='flex-1'>
+                                                    <button className='w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors text-sm'>
+                                                        View Details
+                                                    </button>
+                                                </Link>
+                                                <button
+                                                    onClick={() => handleCancelReservation(event._id)}
+                                                    className='px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors text-sm'
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {/* Summary Stats */}
-                    <div className='mt-8 grid grid-cols-1 md:grid-cols-3 gap-4'>
+                    {activeTab === 'hosted' && events.length > 0 && (
+                        <div className='mt-8 grid grid-cols-1 md:grid-cols-3 gap-4'>
                         <div className='bg-blue-50 rounded-lg p-4'>
                             <p className='text-sm font-medium text-blue-600'>Total Events</p>
                             <p className='text-2xl font-bold text-blue-900'>{events.length}</p>
@@ -319,6 +633,7 @@ export default function MePage() {
                             </p>
                         </div>
                     </div>
+                    )}
                 </div>
             </div>
         </div>

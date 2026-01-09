@@ -23,6 +23,7 @@ export default function Page() {
         needReservation:false,
         reserved:0,
         capacity:0,
+        reservationDeadline:'',
         host:''
     })
 
@@ -49,6 +50,7 @@ export default function Page() {
         formData.append('needReservation', data.needReservation);
         formData.append('reserved', data.reserved);
         formData.append('capacity', data.capacity);
+        formData.append('reservationDeadline', data.reservationDeadline);
         formData.append('host', data.host);
 
         const response = await axios.post('/api/blog', formData);
@@ -142,8 +144,41 @@ export default function Page() {
                 <label htmlFor='needReservation' className='text-base'>Need Reservation</label>
             </div>
 
-            {/* Reserved & Capacity */}
-            <div className='mt-6 flex gap-4'>
+            {/* Conditional fields for reservation */}
+            {data.needReservation && (
+                <>
+                    {/* Reservation Deadline */}
+                    <div className='mt-6'>
+                        <p className='text-xl'>Reservation Deadline</p>
+                        <input 
+                            name='reservationDeadline' 
+                            onChange={onChangeHandler} 
+                            value={data.reservationDeadline} 
+                            className='w-full sm:w-[500px] mt-4 px-4 py-3 border' 
+                            type='datetime-local' 
+                            required={data.needReservation}
+                        />
+                    </div>
+
+                    {/* Capacity */}
+                    <div className='mt-6'>
+                        <p className='text-xl'>Capacity</p>
+                        <input 
+                            name='capacity' 
+                            onChange={onChangeHandler} 
+                            value={data.capacity} 
+                            className='w-full sm:w-[500px] mt-4 px-4 py-3 border' 
+                            type='number' 
+                            min='1' 
+                            placeholder='120' 
+                            required={data.needReservation}
+                        />
+                    </div>
+                </>
+            )}
+
+            {/* Reserved & Capacity - Old section removed as capacity moved above */}
+            {/* <div className='mt-6 flex gap-4'>
                 <div className='flex-1'>
                     <p className='text-xl'>Reserved</p>
                     <input name='reserved' onChange={onChangeHandler} value={data.reserved} className='w-full mt-4 px-4 py-3 border' type='number' min='0' placeholder='64'/>
@@ -152,7 +187,7 @@ export default function Page() {
                     <p className='text-xl'>Capacity</p>
                     <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full mt-4 px-4 py-3 border' type='number' min='1' placeholder='120' required/>
                 </div>
-            </div>
+            </div> */}
 
             {/* Host */}
             <div className='mt-6'>
