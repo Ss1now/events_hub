@@ -23,6 +23,15 @@ const Header = () => {
         window.location.reload();
     };
 
+    const handlePostEvent = () => {
+        if (isLoggedIn) {
+            router.push('/admin/addproduct');
+        } else {
+            localStorage.setItem('redirectAfterLogin', '/admin/addproduct');
+            router.push('/login');
+        }
+    };
+
     return (
         <div className='py-6 px-5 md:px-12 lg:px-28 bg-white'>
             <div className='flex justify-between items-center mb-8'>
@@ -38,7 +47,12 @@ const Header = () => {
                             >
                                 Logout
                             </button>
-                            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Post an event</button>
+                            <button 
+                                onClick={handlePostEvent}
+                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'
+                            >
+                                Post an event
+                            </button>
                         </>
                     ) : (
                         <>
@@ -52,6 +66,12 @@ const Header = () => {
                                     Register
                                 </button>
                             </Link>
+                            <button 
+                                onClick={handlePostEvent}
+                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
+                            >
+                                Post an event
+                            </button>
                         </>
                     )}
                 </div>

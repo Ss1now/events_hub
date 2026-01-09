@@ -24,7 +24,15 @@ export default function LoginPage() {
             if (response.data.success) {
                 localStorage.setItem('token', response.data.token)
                 toast.success('Login successful!')
-                router.push('/')
+                
+                // Check if there's a redirect URL stored
+                const redirectUrl = localStorage.getItem('redirectAfterLogin')
+                if (redirectUrl) {
+                    localStorage.removeItem('redirectAfterLogin')
+                    router.push(redirectUrl)
+                } else {
+                    router.push('/')
+                }
                 window.location.reload()
             } else {
                 toast.error(response.data.msg)
