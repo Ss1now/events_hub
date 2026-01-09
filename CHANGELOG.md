@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] - 2026-01-09
+
+### Changed
+
+#### Documentation
+- **Complete README.md rewrite**
+  - Comprehensive project overview with all features documented
+  - Detailed tech stack breakdown with version numbers
+  - Step-by-step installation and setup guide
+  - Complete project structure with file/folder explanations
+  - Full database schema documentation for Event and User models
+  - Extensive API documentation with all endpoints, request/response examples
+  - User workflow diagrams and explanations
+  - Admin features and setup instructions
+  - Component architecture breakdown
+  - Development guide with common tasks and best practices
+  - Deployment instructions for Vercel and MongoDB Atlas
+  - Professional formatting with badges, emojis, and table of contents
+  - Production-ready onboarding document for new developers
+
+- **Updated CHANGELOG.md format**
+  - Reformatted to follow Keep a Changelog standard
+  - Added semantic versioning links
+  - Organized into Added/Changed/Fixed/Removed/Technical sections
+  - Better categorization and readability
+  - Version comparison links at bottom
+
+### Technical
+- Improved project documentation structure
+- Enhanced developer onboarding experience
+- Added comprehensive API reference documentation
+- Documented all user workflows and system architecture
+
+---
+
 ## [0.2.0] - 2026-01-09
 
 ### Added
@@ -189,6 +224,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[0.2.1]: https://github.com/Ss1now/events_hub/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Ss1now/events_hub/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Ss1now/events_hub/compare/v0.0.0...v0.1.0
 [0.0.0]: https://github.com/Ss1now/events_hub/releases/tag/v0.0.0
