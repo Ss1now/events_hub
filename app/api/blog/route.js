@@ -135,23 +135,21 @@ export async function POST(request){
             endDateTime: endTime,
             status: currentStatus,
             eventType: `${formData.get('eventType')}`,
-            theme: `${formData.get('theme')}`,
-            dressCode: `${formData.get('dressCode')}`,
             location: `${formData.get('location')}`,
             needReservation: formData.get('needReservation') === 'true',
-            reserved: parseInt(formData.get('reserved')) || 0,
             capacity: parseInt(formData.get('capacity')) || 0,
             reservationDeadline: formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null,
             interestedUsers: [],
             reservedUsers: [],
             host: `${formData.get('host')}`,
-            authorId: userId
+            authorId: userId,
+            cohosts: []
         }
 
-        await Blogmodel.create(blogData);
+        const createdBlog = await Blogmodel.create(blogData);
         console.log("Post Created");
 
-        return NextResponse.json({success:true, msg:"Post Created Successfully"});
+        return NextResponse.json({success:true, msg:"Post Created Successfully", blog: createdBlog});
     } catch (error) {
         console.error(error);
         return NextResponse.json({success:false, msg:"Error creating post"}, { status: 500 });
@@ -187,8 +185,11 @@ export async function PUT(request) {
             return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
         }
 
-        // Check if the user is the author of the event
-        if (event.authorId.toString() !== userId) {
+        // Check if the user is the author or a cohost of the event
+        const isAuthor = event.authorId.toString() === userId;
+        const isCohost = event.cohosts && event.cohosts.some(c => c.userId.toString() === userId);
+        
+        if (!isAuthor && !isCohost) {
             return NextResponse.json({ success: false, msg: 'Unauthorized to edit this event' }, { status: 403 });
         }
 
@@ -261,47 +262,43 @@ export async function PUT(request) {
         event.endDateTime = newEndDateTime;
         event.status = currentStatus;
         event.eventType = formData.get('eventType');
-        event.theme = formData.get('theme');
-        event.dressCode = formData.get('dressCode');
         event.location = formData.get('location');
         event.needReservation = formData.get('needReservation') === 'true';
-        event.reserved = parseInt(formData.get('reserved')) || 0;
         event.capacity = parseInt(formData.get('capacity')) || 0;
         event.reservationDeadline = formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null;
         event.host = formData.get('host');
         event.lastUpdated = new Date();
 
-        // If this is a live event edit, create notification for interested/reserved users
-        if (isLiveEdit) {
-            const updateMessage = `Event details have been updated for "${event.title}"`;
-            const notificationId = new mongoose.Types.ObjectId();
-            
-            event.updateNotifications.push({
-                _id: notificationId,
-                message: updateMessage,
-                timestamp: new Date(),
-                notifiedUsers: []
-            });
-
+        // Notify interested/reserved users about event update (for future or live events)
+        if (currentStatus === 'future' || currentStatus === 'live') {
             // Get all users who are interested or reserved
             const affectedUsers = [...new Set([
                 ...event.interestedUsers.map(id => id.toString()),
                 ...event.reservedUsers.map(id => id.toString())
             ])];
 
-            // Add notification to each affected user
-            await userModel.updateMany(
-                { _id: { $in: affectedUsers } },
-                {
-                    $push: {
-                        pendingNotifications: {
-                            eventId: event._id,
-                            notificationId: notificationId,
-                            timestamp: new Date()
+            if (affectedUsers.length > 0) {
+                // Create a summary of changes
+                const changes = `Event updated`;
+                
+                // Add notification to each affected user
+                await userModel.updateMany(
+                    { _id: { $in: affectedUsers } },
+                    {
+                        $push: {
+                            eventUpdateNotifications: {
+                                eventId: event._id,
+                                eventTitle: event.title,
+                                changes: changes,
+                                timestamp: new Date(),
+                                read: false
+                            }
                         }
                     }
-                }
-            );
+                );
+                
+                console.log(`Notified ${affectedUsers.length} users about event update`);
+            }
         }
 
         await event.save();
@@ -436,14 +433,14 @@ export async function PATCH(request){
                     event.reservedUsers = [];
                 }
                 
-                // Check if event needs reservation
+                // Check if event needs RSVP
                 if (!event.needReservation) {
-                    return NextResponse.json({ success: false, msg: 'This event does not require reservation' }, { status: 400 });
+                    return NextResponse.json({ success: false, msg: 'This event does not require RSVP' }, { status: 400 });
                 }
 
-                // Check reservation deadline
+                // Check RSVP deadline
                 if (event.reservationDeadline && new Date() > new Date(event.reservationDeadline)) {
-                    return NextResponse.json({ success: false, msg: 'Reservation deadline has passed' }, { status: 400 });
+                    return NextResponse.json({ success: false, msg: 'RSVP deadline has passed' }, { status: 400 });
                 }
 
                 // Check if already reserved
@@ -458,7 +455,6 @@ export async function PATCH(request){
 
                 // Add to reserved
                 event.reservedUsers.push(userId);
-                event.reserved = event.reservedUsers.length;
                 await userModel.findByIdAndUpdate(userId, {
                     $addToSet: { reservedEvents: eventId }
                 });
@@ -467,11 +463,11 @@ export async function PATCH(request){
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'Successfully reserved',
-                    reserved: event.reserved,
+                    reserved: event.reservedUsers.length,
                     capacity: event.capacity
                 });
 
-            case 'cancel-reservation':
+            case 'cancel-rsvp':
                 // Initialize reservedUsers if it doesn't exist
                 if (!event.reservedUsers) {
                     event.reservedUsers = [];
@@ -483,8 +479,7 @@ export async function PATCH(request){
                 }
 
                 // Remove from reserved
-                event.reservedUsers = event.reservedUsers.filter(id => id.toString() !== userId.toString());
-                event.reserved = event.reservedUsers.length;
+                event.reservedUsers = event.reservedUsers.filter(id => id.toString() !== userId);
                 await userModel.findByIdAndUpdate(userId, {
                     $pull: { reservedEvents: eventId }
                 });
@@ -492,8 +487,8 @@ export async function PATCH(request){
                 await event.save();
                 return NextResponse.json({ 
                     success: true, 
-                    msg: 'Reservation cancelled',
-                    reserved: event.reserved,
+                    msg: 'RSVP cancelled',
+                    reserved: event.reservedUsers.length,
                     capacity: event.capacity
                 });
 

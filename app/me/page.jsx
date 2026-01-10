@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 import Link from 'next/link'
 import Image from 'next/image'
+import CohostInviteModal from '@/components/CohostInviteModal'
 
 export default function MePage() {
     const [user, setUser] = useState(null)
@@ -16,8 +17,11 @@ export default function MePage() {
     const [loading, setLoading] = useState(true)
     const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false)
     const [editName, setEditName] = useState('')
+    const [editUsername, setEditUsername] = useState('')
     const [selectedCollege, setSelectedCollege] = useState('')
     const [activeTab, setActiveTab] = useState('hosted') // 'hosted', 'interested', 'reserved', 'participated'
+    const [showCohostModal, setShowCohostModal] = useState(false)
+    const [selectedEventForCohost, setSelectedEventForCohost] = useState(null)
     const router = useRouter()
 
     // Calendar functions
@@ -29,7 +33,7 @@ export default function MePage() {
 
         const startDate = formatGoogleDate(event.startDateTime);
         const endDate = formatGoogleDate(event.endDateTime);
-        const description = `${event.description}\n\nEvent Type: ${event.eventType}\nTheme: ${event.theme}\nDress Code: ${event.dressCode}\nHosted by: ${event.host}`;
+        const description = `${event.description}\n\nEvent Type: ${event.eventType}\nHosted by: ${event.host}`;
         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(event.location)}`;
         window.open(googleCalendarUrl, '_blank');
     };
@@ -55,7 +59,7 @@ DTSTAMP:${now}
 DTSTART:${startDate}
 DTEND:${endDate}
 SUMMARY:${event.title}
-DESCRIPTION:${event.description}\\n\\nEvent Type: ${event.eventType}\\nTheme: ${event.theme}\\nDress Code: ${event.dressCode}\\nHosted by: ${event.host}
+DESCRIPTION:${event.description}\\n\\nEvent Type: ${event.eventType}\\nHosted by: ${event.host}
 LOCATION:${event.location}
 STATUS:CONFIRMED
 SEQUENCE:0
@@ -116,6 +120,7 @@ END:VCALENDAR`;
                     setParticipatedEvents(uniqueParticipated)
                     setSelectedCollege(response.data.user.residentialCollege || '')
                     setEditName(response.data.user.name || '')
+                    setEditUsername(response.data.user.username || '')
                 } else {
                     toast.error('Failed to load profile')
                     router.push('/login')
@@ -140,6 +145,7 @@ END:VCALENDAR`;
             const response = await axios.put('/api/user', 
                 { 
                     name: editName,
+                    username: editUsername,
                     residentialCollege: selectedCollege
                 },
                 {
@@ -155,7 +161,7 @@ END:VCALENDAR`;
                 setIsEditingPersonalInfo(false)
                 toast.success('Personal information updated successfully')
             } else {
-                toast.error('Failed to update personal information')
+                toast.error(response.data.msg || 'Failed to update personal information')
             }
         } catch (error) {
             console.error('Error updating personal info:', error)
@@ -188,26 +194,26 @@ END:VCALENDAR`;
         }
     }
 
-    const handleCancelReservation = async (eventId) => {
-        if (!confirm('Are you sure you want to cancel this reservation?')) return
+    const handleCancelRSVP = async (eventId) => {
+        if (!confirm('Are you sure you want to cancel this RSVP?')) return
 
         const token = localStorage.getItem('token')
 
         try {
             const response = await axios.patch('/api/blog', 
-                { action: 'cancel-reservation', eventId },
+                { action: 'cancel-rsvp', eventId },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             )
 
             if (response.data.success) {
-                toast.success('Reservation cancelled successfully')
+                toast.success('RSVP cancelled successfully')
                 setReservedEvents(reservedEvents.filter(event => event._id !== eventId))
             } else {
-                toast.error('Failed to cancel reservation')
+                toast.error('Failed to cancel RSVP')
             }
         } catch (error) {
             console.error(error)
-            toast.error('Error cancelling reservation')
+            toast.error('Error cancelling RSVP')
         }
     }
 
@@ -289,6 +295,24 @@ END:VCALENDAR`;
                             )}
                         </div>
                         <div>
+                            <label className='text-sm font-medium text-gray-500'>Username</label>
+                            {isEditingPersonalInfo ? (
+                                <div>
+                                    <input
+                                        type='text'
+                                        value={editUsername}
+                                        onChange={(e) => setEditUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                                        className='mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                        placeholder='username'
+                                        maxLength={20}
+                                    />
+                                    <p className='text-xs text-gray-500 mt-1'>3-20 characters, lowercase letters, numbers, and underscores only</p>
+                                </div>
+                            ) : (
+                                <p className='text-lg font-semibold text-gray-900'>@{user?.username}</p>
+                            )}
+                        </div>
+                        <div>
                             <label className='text-sm font-medium text-gray-500'>Email</label>
                             <p className='text-lg font-semibold text-gray-900'>{user?.email}</p>
                         </div>
@@ -327,6 +351,7 @@ END:VCALENDAR`;
                                 onClick={() => {
                                     setIsEditingPersonalInfo(false)
                                     setEditName(user?.name || '')
+                                    setEditUsername(user?.username || '')
                                     setSelectedCollege(user?.residentialCollege || '')
                                 }}
                                 className='bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors'
@@ -424,7 +449,7 @@ END:VCALENDAR`;
                                         </thead>
                                         <tbody className='bg-white divide-y divide-gray-200'>
                                             {events.map((event) => (
-                                                <tr key={event._id} className='hover:bg-gray-50'>
+                                                <tr key={event._id} className='hover:bg-gray-50 cursor-pointer' onClick={() => router.push(`/blogs/${event._id}`)}>
                                                     <td className='px-6 py-4'>
                                                         <div className='flex items-center'>
                                                             {event.images && event.images.length > 0 && (
@@ -454,7 +479,7 @@ END:VCALENDAR`;
                                                         {new Date(event.startDateTime).toLocaleDateString()}
                                                     </td>
                                                     <td className='px-6 py-4 text-sm text-gray-500'>{event.location}</td>
-                                                    <td className='px-6 py-4 text-sm font-medium'>
+                                                    <td className='px-6 py-4 text-sm font-medium' onClick={(e) => e.stopPropagation()}>
                                                         <div className='flex gap-3'>
                                                             {(event.status === 'future' || event.status === 'live') && (
                                                                 <Link href={`/me/editevent/${event._id}`}>
@@ -465,6 +490,20 @@ END:VCALENDAR`;
                                                                         Edit
                                                                     </button>
                                                                 </Link>
+                                                            )}
+                                                            {event.status === 'future' && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setSelectedEventForCohost(event)
+                                                                        setShowCohostModal(true)
+                                                                    }}
+                                                                    className='text-purple-600 hover:text-purple-900 flex items-center gap-1'
+                                                                >
+                                                                    <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
+                                                                        <path strokeLinecap='round' strokeLinejoin='round' d='M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z' />
+                                                                    </svg>
+                                                                    Invite
+                                                                </button>
                                                             )}
                                                             <button
                                                                 onClick={() => handleDeleteEvent(event._id)}
@@ -647,7 +686,7 @@ END:VCALENDAR`;
                                                     </button>
                                                 </Link>
                                                 <button
-                                                    onClick={() => handleCancelReservation(event._id)}
+                                                    onClick={() => handleCancelRSVP(event._id)}
                                                     className='px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50 transition-colors text-sm'
                                                 >
                                                     Cancel
@@ -717,12 +756,6 @@ END:VCALENDAR`;
                                                             </button>
                                                         </Link>
                                                     )}
-                                                    <button
-                                                        onClick={() => handleAddToGoogleCalendar(event)}
-                                                        className='w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 transition-colors text-sm'
-                                                    >
-                                                        📅 Add to Calendar
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -755,6 +788,24 @@ END:VCALENDAR`;
                     )}
                 </div>
             </div>
+
+            {/* Cohost Invite Modal */}
+            {showCohostModal && selectedEventForCohost && (
+                <CohostInviteModal
+                    isOpen={showCohostModal}
+                    eventId={selectedEventForCohost._id}
+                    eventTitle={selectedEventForCohost.title}
+                    onClose={() => {
+                        setShowCohostModal(false)
+                        setSelectedEventForCohost(null)
+                    }}
+                    onCohostAdded={() => {
+                        // Optionally refresh events data here
+                        setShowCohostModal(false)
+                        setSelectedEventForCohost(null)
+                    }}
+                />
+            )}
         </div>
     )
 }

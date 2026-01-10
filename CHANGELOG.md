@@ -7,6 +7,342 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-01-10
+
+### Added
+
+#### Event Update Notification System
+- **Real-time Notifications for Event Changes**
+  - Users who clicked "I'm Going" or RSVP'd receive notifications when event is updated
+  - Notifications appear for both future and live events
+  - Slide-in notification popup in top-right corner
+  - Similar design to co-host invitation notifications
+  - Shows event title, update timestamp, and quick actions
+  - "View Event" and "Dismiss" action buttons
+  - Auto-polling every 30 seconds for new notifications
+  - Multiple notifications queued and displayed one at a time
+  - Read/unread status tracking
+
+- **EventUpdateNotification Component**
+  - Framer Motion slide-in animations
+  - Blue gradient header design
+  - Bell icon with event information
+  - Notification counter for multiple updates
+  - Smooth exit animations
+
+#### Co-host Feature
+- **Auto-generated Username System**
+  - Usernames automatically generated from email on registration
+  - Format: email prefix (alphanumeric only) with numeric suffix if needed
+  - Example: john.doe@rice.edu → johndoe, johndoe1, etc.
+  - All usernames are unique and sparse (optional for existing users)
+
+- **Username Management**
+  - Users can edit their username in Personal Information dashboard
+  - Username editing alongside name, email, and residential college
+  - Validation: 3-20 characters, lowercase letters, numbers, underscores only
+  - Real-time duplicate checking
+  - Username format enforced with live input sanitization
+
+- **Event Co-hosting Functionality**
+  - Invite co-hosts by username or email search
+  - Real-time user search with autocomplete
+  - Search results show full name and username together
+  - Send co-host invitations to other users
+  - Invitations appear as notifications
+  - Accept or decline co-host invitations
+  - Co-hosts gain full editing permissions for events
+  - **Invite button in "Events I Host" section**
+  - Invite functionality available from event management table
+  - Invite button only visible for future events
+  
+- **EventCreatedModal Component**
+  - Shows after successful event creation
+  - Displays event details preview
+  - "View Event Details" button
+  - "Invite Co-host" button for immediate invitation
+  - Clean, modern design with gradient accents
+
+- **CohostInviteModal Component**
+  - Search users by username or email
+  - Live search results with user avatars
+  - One-click invitation system
+  - Visual feedback during invitation process
+  - Filters out existing co-hosts and event author
+
+- **CohostInvitationNotification Component**
+  - Real-time notification system for co-host invitations
+  - Accept/Decline/View Event actions
+  - Shows invitation sender and event details
+  - Queues multiple invitations
+  - Auto-polling for new invitations (30s interval)
+
+#### Database Schema Updates
+- **User Model**
+  - `username`: String (unique, sparse) - auto-generated from email, optional for existing users
+  - `cohostInvitations`: Array of invitation objects with event details, inviter info, and status
+  - `eventUpdateNotifications`: Array of event update notifications with read status
+  - Username generation logic ensures uniqueness with numeric suffixes
+
+- **Blog/Event Model**
+  - `cohosts`: Array of co-host objects (userId, name, username)
+  - Each co-host entry stores username for quick display
+
+#### API Endpoints
+- **`GET /api/cohost`** - Search users by username or email
+- **`POST /api/cohost`** - Send co-host invitation
+- **`PATCH /api/cohost`** - Accept or decline co-host invitation
+- **`DELETE /api/cohost`** - Remove co-host (author only)
+- **`PATCH /api/user/notifications`** - Mark event update notifications as read
+
+#### UI Enhancements
+- **Co-host Display**
+  - Event detail pages: "Hosted by [Host Name] • Co-hosts: @username1, @username2"
+  - Event cards: "Hosted by [Host Name] • Co-hosts: @username1, @username2"
+  - Purple-themed username display for co-hosts
+  - Clear visual separation between host and co-hosts
+
+- **Event Creation Flow**
+  - New success modal after event creation
+  - Direct access to invite co-hosts
+  - Improved onboarding for event hosts
+
+- **Personal Information Dashboard**
+  - Username field added to profile editor
+  - Displays as @username in view mode
+  - Live validation and format enforcement
+  - Shows character requirements and limits
+  - Auto-generation of username from email on first profile load
+
+- **Event Management Table**
+  - Clickable event rows navigate to event details
+  - Action buttons (Edit, Invite, Delete) stop click propagation
+  - Invite button only appears for future events
+  - Improved user experience with hover effects
+
+#### Files Added
+- `components/EventCreatedModal.jsx` - Post-creation success modal
+- `components/CohostInviteModal.jsx` - Co-host invitation interface
+- `components/CohostInvitationNotification.jsx` - Real-time invitation notifications
+- `components/EventUpdateNotification.jsx` - Real-time event update notifications
+- `app/api/cohost/route.js` - Co-host management API
+
+#### Files Updated
+- `lib/models/usermodel.js` - Username now sparse (optional), added eventUpdateNotifications
+- `auth/users.js` - Auto-generate usernames on registration
+- `lib/models/blogmodel.js` - Added cohosts array
+- `app/api/blog/route.js` - Return created event data, check cohost permissions, notify users on event updates
+- `app/api/user/route.js` - Include cohosted events, invitations, username editing, auto-generate missing usernames, return eventUpdateNotifications
+- `app/api/user/notifications/route.js` - Added PATCH endpoint for marking notifications as read
+- `app/me/page.jsx` - Added username editing in personal info, cohost invite modal integration, clickable event rows
+- `app/me/postevent/page.jsx` - Integrated EventCreatedModal
+- `app/blogs/[id]/page.jsx` - Display host name + cohost usernames
+- `components/blogitem.jsx` - Show host name + cohost usernames on cards
+- `components/bloglist.jsx` - Pass cohosts prop to BlogItem
+- `components/CohostInviteModal.jsx` - Show name and username in search results
+- `app/layout.js` - Added CohostInvitationNotification and EventUpdateNotification
+
+### Changed
+
+#### Event Update Notifications
+- **Automatic notification creation when hosts edit future or live events**
+  - All users who clicked "I'm Going" or RSVP'd receive notifications
+  - Notifications created in user's `eventUpdateNotifications` array
+  - Includes event title, timestamp, and read status
+  - PUT /api/blog now notifies affected users automatically
+
+#### Permissions System
+- **Event editing now available to co-hosts**
+  - Co-hosts have same editing permissions as original author
+  - Authorization checks updated in PUT /api/blog
+  - Only original author can remove co-hosts
+
+#### User Profile
+- **Cohosted Events Section** (Data available, UI to be added)
+  - API returns events where user is a co-host
+  - Separate from "Events I Host"
+
+#### Username System
+- **Existing users supported**
+  - Username field made optional (sparse) for backward compatibility
+  - Auto-generation on first profile load for users without usernames
+  - Username saved to database after generation or editing
+
+### Fixed
+- **MongoDB connection import case sensitivity**
+  - Fixed `ConnectDB` vs `connectDB` import error in cohost API
+  - Standardized to `connectDB` across all files
+
+- **Username persistence issues**
+  - Fixed username not saving to MongoDB
+  - Updated findByIdAndUpdate to use $set operator with strict: false
+  - Fixed username not loading after page refresh
+  - Auto-generation triggers when username field missing
+
+### Technical
+- Username-based search system with case-insensitive matching
+- Real-time invitation notification system with polling (30s interval)
+- Real-time event update notification system with polling (30s interval)
+- Sparse indexing for optional username field (backward compatibility)
+- Co-host permissions layered onto existing authorization
+- Modal system expanded with event creation flow and update notifications
+- Enhanced user search with filtering logic
+- Notification read/unread status tracking in database
+- Event row click navigation with action button click prevention
+- Conditional rendering of invite button based on event status
+
+---
+
+## [0.2.6] - 2026-01-10
+
+### Removed
+
+#### Theme and Dress Code Properties
+- **Simplified event creation by removing theme and dress code fields**
+  - Removed theme input field from all event forms
+  - Removed dress code input field from all event forms
+  - Removed theme and dress code from database schema
+  - Removed theme and dress code displays from event detail pages
+  - Removed theme and dress code from search filters
+  - Removed theme and dress code from calendar exports (Google Calendar & ICS)
+  - Removed theme and dress code from event cards and lists
+
+#### Backend Changes
+- `lib/models/blogmodel.js` - Removed theme and dressCode schema fields
+- `app/api/blog/route.js` - Removed theme and dressCode from POST and PUT operations
+
+#### Frontend Changes
+- `app/admin/addproduct/page.jsx` - Removed theme and dress code inputs
+- `app/me/postevent/page.jsx` - Removed theme and dress code inputs
+- `app/me/editevent/[id]/page.jsx` - Removed theme and dress code inputs
+- `app/blogs/[id]/page.jsx` - Removed theme and dress code badges and detail rows
+- `app/me/page.jsx` - Removed from calendar export descriptions
+- `components/blogitem.jsx` - Removed props and calendar export references
+- `components/bloglist.jsx` - Removed from search filter and component props
+
+### Technical
+- Streamlined event data model for better user experience
+- Reduced form complexity for event hosts
+- Simplified event detail displays
+- Updated search functionality to focus on core event attributes
+
+---
+
+## [0.2.5] - 2026-01-10
+
+### Added
+
+#### Modern Share Functionality
+- **New ShareModal component with mainstream share capabilities**
+  - Copy link to clipboard with one click
+  - Share to WhatsApp, Instagram, Messages (SMS), LinkedIn
+  - Share via Email
+  - Beautiful mobile-responsive modal design
+  - Animated slide-up modal on mobile, centered on desktop
+  - Event preview card showing title, description, and image
+  - Visual feedback when link is copied
+  - Quick access link display with copy button
+  - Blurred glass-effect background (bg-black/40 backdrop-blur-md)
+
+#### UI Enhancements
+- **Updated Share button on event detail page**
+  - Added share icon for better visual clarity
+  - Opens modern share modal on click
+  - Consistent styling with other action buttons
+
+### Changed
+- **Participated Events Calendar Button**
+  - Removed "Add to Calendar" button from participated events tab
+  - Past events now only show: View Details and Rate Event buttons
+  - Improved UX by removing unnecessary actions for past events
+
+#### Files Added
+- `components/ShareModal.jsx` - Complete share modal component
+
+#### Files Updated
+- `app/blogs/[id]/page.jsx` - Integrated ShareModal component
+- `app/me/page.jsx` - Removed calendar button from participated events
+
+### Technical
+- Framer Motion animations for smooth modal transitions
+- Responsive grid layout for share options (3 columns)
+- Social media platform integrations with proper URL encoding
+- Clipboard API for modern copy functionality
+- Toast notifications for user feedback
+- Instagram workaround: Copies link with toast notification
+- Messages integration: SMS protocol with pre-filled text
+
+---
+
+## [0.2.4] - 2026-01-10
+
+### Changed
+
+#### RSVP Count Auto-calculation
+- **Removed manual "Reserved" input field from event creation and editing forms**
+  - Hosts no longer need to manually enter reserved count
+  - Reserved count now automatically calculated from `reservedUsers` array length
+  - Prevents inconsistencies between reserved count and actual RSVP list
+
+#### Database Schema Update
+- **Converted `reserved` from stored field to virtual property**
+  - `reserved` is now dynamically calculated as `reservedUsers.length`
+  - Reduces data redundancy and ensures accuracy
+  - Virtual field automatically included in JSON/Object responses
+  - No database migration required - field automatically calculated for all events
+
+#### Files Updated
+- `app/admin/addproduct/page.jsx` - Removed reserved input
+- `app/me/postevent/page.jsx` - Removed reserved input
+- `app/me/editevent/[id]/page.jsx` - Removed reserved input
+- `lib/models/blogmodel.js` - Converted to virtual field
+- `app/api/blog/route.js` - Removed manual count updates
+
+### Technical
+- Backward compatible - virtual field returns same value as before
+- API responses unchanged - `reserved` still returned in all endpoints
+- Frontend displays continue to work without modifications
+
+---
+
+## [0.2.3] - 2026-01-10
+
+### Changed
+
+#### UI/UX Terminology Update
+- **Renamed "Reservation" to "RSVP" across entire application**
+  - Updated all user-facing labels, buttons, and messages
+  - Changed "Reserve Spot" to "RSVP"
+  - Changed "Cancel Reservation" to "Cancel RSVP"  
+  - Changed "Reservation Closed" to "RSVP Closed"
+  - Changed "Reservation Deadline" to "RSVP Deadline"
+  - Changed "Reservation Confirmed!" to "RSVP Confirmed!"
+  - Updated all error messages and toast notifications
+  - Updated API action from `cancel-reservation` to `cancel-rsvp`
+  - Updated function names (handleCancelReservation → handleCancelRSVP)
+  - Updated variable names (isReservationDeadlinePassed → isRSVPDeadlinePassed)
+  
+#### Files Updated
+- `app/admin/addproduct/page.jsx` - Admin event creation form
+- `app/me/postevent/page.jsx` - User event creation form
+- `app/me/editevent/[id]/page.jsx` - Event editing form
+- `app/me/page.jsx` - User profile with RSVP management
+- `app/blogs/[id]/page.jsx` - Event detail page
+- `app/api/blog/route.js` - Event API endpoints
+- `app/api/rating/route.js` - Rating API with RSVP checks
+- `app/api/live-rating/route.js` - Live rating API with RSVP checks
+- `components/blogitem.jsx` - Event card component
+- `components/SuccessModal.jsx` - Success confirmation modal
+- `components/LiveRatingButton.jsx` - Live rating component
+- `README.md` - Documentation updates
+
+### Technical
+- Database field names remain unchanged (`needReservation`, `reservationDeadline`) for backward compatibility
+- All existing events and RSVPs continue to work without migration
+- API backwards compatible with `cancel-rsvp` action (previously `cancel-reservation`)
+
+---
+
 ## [0.2.2] - 2026-01-09
 
 ### Security
@@ -278,7 +614,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic event management functionality
 - User authentication system
 - Event creation, editing, and deletion
-- Event reservation system
+- Event RSVP system
 - Interest tracking for events
 - MongoDB database integration
 - JWT-based authentication

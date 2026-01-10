@@ -53,7 +53,7 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
         }
 
         if (needReservation && !hasReservation) {
-            toast.error('Only users with reservations can rate this event');
+            toast.error('Only users with RSVPs can rate this event');
             return;
         }
 

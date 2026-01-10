@@ -1,6 +1,6 @@
 # 🎉 Rice Party - Events Hub
 
-A modern, full-stack event management platform built with Next.js 16, MongoDB, and React. Users can create, discover, and manage campus events with real-time ratings, reservations, and notifications.
+A modern, full-stack event management platform built with Next.js 16, MongoDB, and React. Users can create, discover, and manage campus events with real-time ratings, RSVPs, and notifications.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.2.3-blue)](https://reactjs.org/)
@@ -31,15 +31,15 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 ### 🎫 Event Management
 - **Create Events** - Rich event creation with multiple images (up to 5), detailed info, and custom fields
 - **Dynamic Status** - Automatic status calculation (Future → Live → Past) based on real-time
-- **Reservations** - Event capacity management with reservation deadlines
-- **Interest Tracking** - Users can mark interest in events without formal reservations
+- **RSVPs** - Event capacity management with RSVP deadlines
+- **Interest Tracking** - Users can mark interest in events without formal RSVPs
 - **Live Editing** - Hosts can edit ongoing events with automatic user notifications
 - **Search & Filter** - Smart search by title, location, theme, type, host with status filtering
 
 ### ⭐ Dual Rating System
 - **Live Ratings** - Real-time ratings during ongoing events to help users decide attendance
   - Amber/gold themed display on event cards
-  - Access control based on reservation requirements
+  - Access control based on RSVP requirements
   - Instant average calculation
   - Update ratings anytime during event
 
@@ -52,15 +52,28 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 
 ### 🔔 Smart Notifications
 - **Event Updates** - Users receive notifications when events they're interested in/reserved get edited
-- **Notification Queue** - MongoDB-based queueing system
-- **Duplicate Prevention** - Double-layer protection (database + localStorage)
+- **Co-host Invitations** - Real-time notifications for co-host invitations
+- **Notification Queue** - MongoDB-based queueing system with 30s polling
+- **Duplicate Prevention** - Multi-layer protection (database + localStorage)
 - **Action Options** - View event details or dismiss notifications
+- **Slide-in Animations** - Smooth Framer Motion animations from top-right
+
+### 🤝 Co-hosting System
+- **Auto-generated Usernames** - Unique usernames created from email on registration
+- **Username Management** - Edit usernames in profile with validation (3-20 chars)
+- **Search & Invite** - Search users by username or email with autocomplete
+- **Co-host Permissions** - Co-hosts gain full event editing permissions
+- **Invitation Flow** - Accept/decline invitations with real-time notifications
+- **Visual Display** - "Hosted by [Name] • Co-hosts: @username1, @username2"
+- **Event Creation Flow** - Invite co-hosts immediately after creating events
 
 ### 👤 User Features
 - **Authentication** - JWT-based secure login/registration
-- **User Profile** - Personal dashboard showing interested/reserved events
-- **My Events** - View and manage your created events
+- **User Profile** - Personal dashboard showing interested/reserved/participated events
+- **Username System** - Unique @usernames with editing capability
+- **My Events** - View and manage your created and co-hosted events
 - **Event History** - Track past, current, and future event participation
+- **Clickable Event Rows** - Navigate to event details from management table
 - **Rating History** - Keep track of events you've rated
 
 ### 🛡️ Admin Panel
@@ -86,6 +99,7 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 - **Next.js 16.1.1** - React framework with App Router
 - **React 19.2.3** - UI library
 - **Tailwind CSS 4** - Utility-first CSS framework
+- **Framer Motion 11.18.0** - Animation library for modals and notifications
 - **Axios 1.13.2** - HTTP client for API requests
 - **React Toastify 11.0.5** - Toast notifications
 
@@ -169,12 +183,12 @@ events_hub/
 │   │   │   └── route.js         # GET, POST /api/live-rating
 │   │   ├── rating/               # Post-event reviews
 │   │   │   └── route.js         # GET, POST /api/rating
+│   │   ├── cohost/               # Co-host management
+│   │   │   └── route.js         # GET, POST, PATCH, DELETE /api/cohost
 │   │   └── user/                 # User management
-│   │       ├── route.js         # GET /api/user
+│   │       ├── route.js         # GET, PUT /api/user
 │   │       └── notifications/    # Notification system
-│   │           ├── route.js     # GET /api/user/notifications
-│   │           └── dismiss/
-│   │               └── route.js # POST /api/user/notifications/dismiss
+│   │           └── route.js     # GET, PATCH /api/user/notifications
 │   ├── admin/                    # Admin panel pages
 │   │   ├── layout.jsx           # Admin layout with sidebar
 │   │   ├── page.jsx             # Admin dashboard (redirects to bloglist)
@@ -207,13 +221,17 @@ events_hub/
 │   ├── header.jsx               # Main navigation header
 │   ├── footer.jsx               # Page footer
 │   ├── SuccessModal.jsx         # Success confirmation modal
+│   ├── ShareModal.jsx           # Modern share modal (WhatsApp, Messages, etc.)
 │   ├── StarRating.jsx           # Reusable star rating component
 │   ├── LiveRatingButton.jsx     # Live rating display & modal
 │   ├── RatingPrompt.jsx         # Auto-prompt for post-event rating
 │   ├── RatingPopup.jsx          # Post-event rating modal
 │   ├── ReviewForm.jsx           # Review submission form
 │   ├── ReviewList.jsx           # Display list of reviews
-│   └── EventUpdateNotification.jsx # Global notification popup
+│   ├── EventUpdateNotification.jsx # Event update notification popup
+│   ├── EventCreatedModal.jsx    # Post-creation success modal
+│   ├── CohostInviteModal.jsx    # Co-host invitation interface
+│   └── CohostInvitationNotification.jsx # Co-host invitation notifications
 │
 ├── lib/                          # Backend utilities
 │   ├── config/
@@ -270,13 +288,11 @@ events_hub/
   
   // Event Details
   eventType: String (required),
-  theme: String (required),
-  dressCode: String (required),
   location: String (required),
   
-  // Reservation System
+  // RSVP System
   needReservation: Boolean,
-  reserved: Number (count),
+  reserved: Number (virtual - calculated from reservedUsers.length),
   capacity: Number,
   reservationDeadline: Date,
   
@@ -287,6 +303,11 @@ events_hub/
   // Host Info
   host: String (required),
   authorId: ObjectId (ref to user),
+  cohosts: [{
+    userId: ObjectId (ref to user),
+    name: String,
+    username: String
+  }],
   
   // Update Tracking
   lastUpdated: Date,
@@ -327,6 +348,7 @@ events_hub/
   name: String,
   email: String (required, unique),
   password: String (required, hashed),
+  username: String (unique, sparse - auto-generated from email),
   residentialCollege: String,
   
   // Authorization
@@ -337,7 +359,24 @@ events_hub/
   reservedEvents: [ObjectId] (refs to events),
   ratedEvents: [ObjectId] (refs to events),
   
+  // Co-hosting
+  cohostInvitations: [{
+    eventId: ObjectId,
+    invitedBy: ObjectId,
+    invitedByName: String,
+    eventTitle: String,
+    timestamp: Date,
+    status: String (enum: 'pending', 'accepted', 'declined')
+  }],
+  
   // Notifications
+  eventUpdateNotifications: [{
+    eventId: ObjectId,
+    eventTitle: String,
+    changes: String,
+    timestamp: Date,
+    read: Boolean
+  }],
   pendingNotifications: [{
     eventId: ObjectId,
     notificationId: ObjectId,
@@ -401,7 +440,7 @@ events_hub/
 ### Ratings
 
 #### `POST /api/live-rating`
-**Submit live rating** - Rate ongoing events (1-5 stars), respects reservation requirements
+**Submit live rating** - Rate ongoing events (1-5 stars), respects RSVP requirements
 
 #### `GET /api/live-rating?eventId=<id>`
 **Get live rating status** - Check if user rated and view event's live rating stats
@@ -409,18 +448,108 @@ events_hub/
 #### `POST /api/rating`
 **Submit post-event review** - Full review with rating, comment, and up to 5 images
 
+### Co-hosting
+
+#### `GET /api/cohost?search=<query>&eventId=<id>`
+**Search users** - Search by username or email, filters out existing co-hosts
+
+**Response:**
+```json
+{
+  "success": true,
+  "users": [{
+    "_id": "user-id",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "username": "janedoe"
+  }]
+}
+```
+
+#### `POST /api/cohost`
+**Send co-host invitation**
+
+**Request Body:**
+```json
+{
+  "eventId": "event-id",
+  "userId": "user-id"
+}
+```
+
+#### `PATCH /api/cohost`
+**Accept/Decline invitation**
+
+**Request Body:**
+```json
+{
+  "invitationId": "invitation-id",
+  "action": "accept" | "decline"
+}
+```
+
+#### `DELETE /api/cohost?eventId=<id>&userId=<id>`
+**Remove co-host** - Only event author can remove co-hosts
+
 #### `GET /api/rating?eventId=<id>`
 **Get event reviews** - Fetch all reviews for an event with average rating
 
 ### User & Notifications
 
 #### `GET /api/user`
-**Get user profile** - Returns user data with interested/reserved events populated
+**Get user profile** - Returns user data with interested/reserved/cohosted events populated
 
-#### `GET /api/user/notifications`
-**Get pending notifications** - Fetch unread event update notifications
+**Response:**
+```json
+{
+  "success": true,
+  "user": {
+    "id": "user-id",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "username": "johndoe",
+    "residentialCollege": "Martel",
+    "isAdmin": false,
+    "ratedEvents": [],
+    "cohostInvitations": [],
+    "eventUpdateNotifications": []
+  },
+  "events": [],
+  "cohostedEvents": [],
+  "interestedEvents": [],
+  "reservedEvents": []
+}
+```
 
-#### `POST /api/user/notifications/dismiss`
+#### `PUT /api/user`
+**Update user profile** - Edit name, username, residential college
+
+**Request Body:**
+```json
+{
+  "name": "John Doe",
+  "username": "johndoe2",
+  "residentialCollege": "Martel College"
+}
+```
+
+#### `PATCH /api/user/notifications`
+**Mark notification as read**
+
+**Request Body:**
+```json
+{
+  "notificationId": "notification-id",
+  "type": "eventUpdate"
+}
+```
+
+}
+```
+
+---
+
+## 👥 User Workflows
 **Dismiss notification** - Mark notification as read and remove from queue
 
 ---
@@ -431,8 +560,26 @@ events_hub/
 1. Navigate to `/me/postevent` (requires login)
 2. Fill form with event details
 3. Upload 0-5 images (optional)
-4. Set reservation requirements if needed
-5. Submit → Event created and visible to all users
+4. Set RSVP requirements if needed
+5. Submit → Event created successfully
+6. See EventCreatedModal with option to invite co-hosts
+7. (Optional) Invite co-hosts by searching usernames/emails
+
+### Co-hosting Workflow
+1. **Host invites co-host:**
+   - Click "Invite" button on event (only future events)
+   - Search by username or email
+   - Click invite on desired user
+   
+2. **User receives invitation:**
+   - Real-time notification appears (30s polling)
+   - Shows event details and inviter name
+   - Can Accept, Decline, or View Event
+   
+3. **Co-host gains permissions:**
+   - Full editing access to the event
+   - Can invite additional co-hosts
+   - Username displayed with purple styling
 
 ### Rating System
 
@@ -448,12 +595,12 @@ events_hub/
 - Full review with stars, comment, and photos
 
 ### Notification Flow
-1. Host edits a live event
+1. Host/co-host edits a future or live event
 2. System identifies interested/reserved users
 3. Notifications created in database queue
-4. Users see popup on next page load
+4. Users see slide-in popup on next page load (30s polling)
 5. Can view event or dismiss
-6. Double-layer prevention (database removal + localStorage tracking)
+6. Read status tracked in database
 
 ---
 
@@ -584,7 +731,7 @@ See [SECURITY.md](./SECURITY.md) for:
 ### Post-Deployment Checklist
 - [ ] Test user registration/login
 - [ ] Create and edit test event
-- [ ] Test reservations and ratings
+- [ ] Test RSVPs and ratings
 - [ ] Set up admin user
 - [ ] Verify all features work on mobile
 

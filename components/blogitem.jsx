@@ -10,7 +10,7 @@ import SuccessModal from './SuccessModal';
 import StarRating from './StarRating';
 import LiveRatingButton from './LiveRatingButton';
 
-const BlogItem = ({title, description, category, images, id, status, eventType, theme, dressCode, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings}) => {
+const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings}) => {
     console.log('BlogItem ID:', id);
     const router = useRouter();
     const [interestedCount, setInterestedCount] = useState(interestedUsers?.length || 0);
@@ -94,8 +94,6 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         endDateTime,
                         location,
                         eventType,
-                        theme,
-                        dressCode,
                         host
                     });
                     setModalActionType('interested');
@@ -138,8 +136,6 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     endDateTime,
                     location,
                     eventType,
-                    theme,
-                    dressCode,
                     host
                 });
                 setModalActionType('reserve');
@@ -161,7 +157,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
 
         const startDate = formatGoogleDate(startDateTime);
         const endDate = formatGoogleDate(endDateTime);
-        const eventDescription = `${description}\n\nEvent Type: ${eventType}\nTheme: ${theme}\nDress Code: ${dressCode}\nHosted by: ${host}`;
+        const eventDescription = `${description}\n\nEvent Type: ${eventType}\nHosted by: ${host}`;
         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(location)}`;
         window.open(googleCalendarUrl, '_blank');
     };
@@ -216,8 +212,8 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
         }
     };
 
-    // Check if reservation deadline has passed
-    const isReservationDeadlinePassed = reservationDeadline && new Date() > new Date(reservationDeadline);
+    // Check if RSVP deadline has passed
+    const isRSVPDeadlinePassed = reservationDeadline && new Date() > new Date(reservationDeadline);
     const isCapacityReached = needReservation && reservedCount >= capacity;
     
     return (
@@ -237,13 +233,11 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 <div className='flex flex-wrap gap-2 mb-4'>
                     <span className={`${statusBadge.bg} text-white text-xs px-3 py-1 rounded-full font-medium`}>{statusBadge.text}</span>
                     <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors'>{eventType}</span>
-                    <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors'>Theme: {theme}</span>
-                    <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors'>Dress: {dressCode}</span>
                     {isCapacityReached && (
                         <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium'>FULL</span>
                     )}
-                    {isReservationDeadlinePassed && needReservation && (
-                        <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium'>Reservation Closed</span>
+                    {isRSVPDeadlinePassed && needReservation && (
+                        <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium'>RSVP Closed</span>
                     )}
                 </div>
 
@@ -282,7 +276,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                     <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                                     </svg>
-                                    <span className='text-xs'>Reserve by: {new Date(reservationDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                                    <span className='text-xs'>RSVP by: {new Date(reservationDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                                 </div>
                             )}
                         </>
@@ -308,7 +302,21 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 </div>
 
                 {/* Hosted by */}
-                <p className='text-xs text-gray-500 mt-3'>Hosted by <span className='font-medium'>{host}</span></p>
+                <div className='text-xs text-gray-500 mt-3'>
+                    Hosted by <span className='font-medium text-gray-700'>{host}</span>
+                    {cohosts && cohosts.length > 0 && (
+                        <>
+                            <span className='mx-1.5 text-gray-400'>•</span>
+                            <span className='text-gray-600'>
+                                Co-hosts: {cohosts.map((cohost, index) => (
+                                    <span key={cohost.userId} className='font-medium text-purple-700'>
+                                        @{cohost.username}{index < cohosts.length - 1 ? ', ' : ''}
+                                    </span>
+                                ))}
+                            </span>
+                        </>
+                    )}
+                </div>
             </div>
             
             {/* Right side - Date badge and actions */}
@@ -328,14 +336,14 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                             {needReservation ? (
                                 <button 
                                     onClick={handleReserve}
-                                    disabled={isCapacityReached || isReservationDeadlinePassed}
-                                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
-                                        isCapacityReached || isReservationDeadlinePassed
+                                    disabled={isCapacityReached || isRSVPDeadlinePassed}
+                                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                                        isCapacityReached || isRSVPDeadlinePassed
                                             ? 'bg-gray-400 text-white cursor-not-allowed'
                                             : 'bg-black text-white hover:bg-gray-800'
                                     }`}
                                 >
-                                    {isCapacityReached ? 'Full' : isReservationDeadlinePassed ? 'Closed' : 'Reserve'}
+                                    {isCapacityReached ? 'Full' : isRSVPDeadlinePassed ? 'Closed' : 'RSVP'}
                                 </button>
                             ) : (
                                 <button 

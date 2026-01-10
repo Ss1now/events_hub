@@ -25,8 +25,11 @@
 - Reservation management with capacity limits
 - Live ratings during events
 - Post-event reviews with photos
-- Event update notifications
+- Event update notifications for participants
+- Co-hosting system with username-based invitations
+- Auto-generated unique usernames
 - Admin panel for event moderation
+- Modern share functionality
 - Google Calendar integration
 - Residential college affiliations
 
@@ -38,6 +41,7 @@
 - **Framework:** Next.js 16.1.1 (App Router)
 - **React:** 19.2.3 with React Compiler enabled
 - **Styling:** Tailwind CSS 4.0
+- **Animations:** Framer Motion 11.18.0
 - **UI Components:** Custom components with modern design
 - **Notifications:** React Toastify 11.0.5
 - **HTTP Client:** Axios 1.13.2
@@ -81,12 +85,12 @@ events_hub/
 │   │   │   └── route.js        # POST, GET (post-event reviews)
 │   │   ├── live-rating/
 │   │   │   └── route.js        # POST, GET (real-time ratings)
+│   │   ├── cohost/
+│   │   │   └── route.js        # GET, POST, PATCH, DELETE (co-host management)
 │   │   └── user/
 │   │       ├── route.js        # GET, PUT (user profile & events)
 │   │       └── notifications/
-│   │           ├── route.js    # GET (fetch notifications)
-│   │           └── dismiss/
-│   │               └── route.js # POST (dismiss notification)
+│   │           └── route.js    # GET, PATCH (notifications)
 │   │
 │   ├── login/
 │   │   └── page.jsx            # Login page
@@ -123,7 +127,11 @@ events_hub/
 │   ├── ReviewList.jsx          # Display list of reviews
 │   ├── LiveRatingButton.jsx    # Live rating display & modal
 │   ├── SuccessModal.jsx        # Success confirmation modal
-│   ├── EventUpdateNotification.jsx  # Global notification system
+│   ├── ShareModal.jsx          # Modern share modal (WhatsApp, Messages, etc.)
+│   ├── EventUpdateNotification.jsx  # Event update notification popup
+│   ├── EventCreatedModal.jsx   # Post-creation success modal
+│   ├── CohostInviteModal.jsx   # Co-host invitation interface
+│   ├── CohostInvitationNotification.jsx  # Co-host invitation notifications
 │   └── admincomponents/
 │       ├── sidebar.jsx         # Admin sidebar navigation
 │       └── blogtableitem.jsx   # Admin event table row
@@ -186,14 +194,12 @@ events_hub/
   
   // Event Details
   eventType: String (required),         // e.g., "Private Party", "Workshop"
-  theme: String (required),             // e.g., "Warm Neutrals"
-  dressCode: String (required),         // e.g., "Cozy Chic"
   location: String (required),          // e.g., "Jones College Rooftop"
   host: String (required),              // Host name
   
   // Reservation System
   needReservation: Boolean (default: false),
-  reserved: Number (default: 0),
+  reserved: Number (virtual - calculated from reservedUsers.length),
   capacity: Number,
   reservationDeadline: Date,
   
@@ -201,6 +207,13 @@ events_hub/
   interestedUsers: [ObjectId] (ref: 'user'),
   reservedUsers: [ObjectId] (ref: 'user'),
   authorId: ObjectId (ref: 'user', required),
+  
+  // Co-hosting
+  cohosts: [{
+    userId: ObjectId (ref: 'user'),
+    name: String,
+    username: String
+  }],
   
   // Notifications
   updateNotifications: [{
@@ -234,6 +247,8 @@ events_hub/
 
 **Key Features:**
 - **Dynamic Status:** Auto-calculated based on current time vs. start/end times
+- **Virtual Reserved Field:** Auto-calculated from reservedUsers.length (no manual input)
+- **Co-hosting System:** Multiple hosts with full editing permissions
 - **Dual Rating Systems:** Separate live and post-event ratings
 - **Notification Queue:** Tracks updates and which users have been notified
 - **Multi-Image Support:** 0-5 images per event
@@ -253,6 +268,7 @@ events_hub/
   
   // Profile
   name: String (optional, default: ''),
+  username: String (unique, sparse),        // Auto-generated from email if missing
   residentialCollege: String (optional),     // Rice University colleges
   isAdmin: Boolean (default: false),
   
@@ -261,19 +277,37 @@ events_hub/
   reservedEvents: [ObjectId] (ref: 'blog'),
   ratedEvents: [ObjectId] (ref: 'blog'),
   
+  // Co-hosting
+  cohostInvitations: [{
+    eventId: ObjectId (ref: 'blog'),
+    eventTitle: String,
+    invitedBy: String,
+    invitedAt: Date,
+    status: String (enum: ['pending', 'accepted', 'declined'])
+  }],
+  
   // Notifications
   pendingNotifications: [{
     eventId: ObjectId (ref: 'blog'),
     notificationId: ObjectId,
     timestamp: Date
+  }],
+  eventUpdateNotifications: [{
+    eventId: ObjectId (ref: 'blog'),
+    eventTitle: String,
+    changes: String,
+    timestamp: Date,
+    read: Boolean (default: false)
   }]
 }
 ```
 
 **Key Features:**
+- **Username System:** Auto-generated from email (alphanumeric + counter), sparse/optional for backward compatibility
 - **Role-Based Access:** Admin flag for privileged operations
 - **Event Relationships:** Tracks all user interactions with events
-- **Notification Queue:** Personal notification inbox
+- **Co-host Invitations:** Tracks pending/accepted/declined invites
+- **Dual Notification System:** Legacy pending + new event update notifications
 - **College Affiliation:** Rice University residential college system
 
 ---
@@ -440,9 +474,9 @@ events_hub/
 5. Updates event and returns status
 
 **Restrictions:**
-- Only event author can edit
+- Author OR co-host can edit
 - Cannot edit past events
-- Live edits trigger notifications
+- Live/future edits trigger notifications to interested/reserved users
 
 ---
 
@@ -697,7 +731,8 @@ events_hub/
 {
   success: boolean,
   user: {
-    id, name, email, residentialCollege, isAdmin, ratedEvents
+    id, name, email, username, residentialCollege, isAdmin, ratedEvents,
+    cohostInvitations, eventUpdateNotifications
   },
   events: [/* user's created events */],
   interestedEvents: [/* events user is interested in */],
@@ -706,8 +741,9 @@ events_hub/
 ```
 
 **Features:**
+- Auto-generates username if missing (from email + counter)
 - Auto-updates event statuses
-- Returns all user's event relationships
+- Returns all user's event relationships and notifications
 - Used for profile page and event tracking
 
 ---
@@ -726,6 +762,7 @@ events_hub/
 ```javascript
 {
   name?: string,
+  username?: string,           // 3-20 chars, lowercase alphanumeric + underscore
   residentialCollege?: string
 }
 ```
@@ -736,17 +773,21 @@ events_hub/
   success: boolean,
   msg: string,
   user: {
-    id, name, email, residentialCollege
+    id, name, email, username, residentialCollege
   }
 }
 ```
+
+**Validation:**
+- Username: /^[a-z0-9_]{3,20}$/
+- Must be unique (case-insensitive check with $ne to exclude self)
 
 ---
 
 ### Notifications (`/api/user/notifications`)
 
 #### GET `/api/user/notifications`
-**Purpose:** Get pending event update notifications
+**Purpose:** Get pending event update notifications (legacy)
 
 **Headers:**
 ```javascript
@@ -770,15 +811,10 @@ events_hub/
 }
 ```
 
-**Flow:**
-1. Fetches user's `pendingNotifications`
-2. Joins with event data
-3. Returns formatted notification list
-
 ---
 
-#### POST `/api/user/notifications/dismiss`
-**Purpose:** Mark notification as read
+#### PATCH `/api/user/notifications`
+**Purpose:** Mark event update notifications as read
 
 **Headers:**
 ```javascript
@@ -790,8 +826,7 @@ events_hub/
 **Request Body:**
 ```javascript
 {
-  eventId: string,
-  notificationId: string
+  notificationIds: [string]    // Array of notification _id
 }
 ```
 
@@ -804,9 +839,152 @@ events_hub/
 ```
 
 **Flow:**
-1. Removes from user's `pendingNotifications`
-2. Adds user to event's `updateNotifications.notifiedUsers`
-3. Prevents re-showing
+1. Finds notifications by notification.id()
+2. Sets read: true for each
+3. Used by EventUpdateNotification component
+
+---
+
+### Co-host Management (`/api/cohost`)
+
+#### GET `/api/cohost?search={query}`
+**Purpose:** Search users by username or email
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Query Parameters:**
+- `search`: Username or email search term
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  users: [{
+    _id,
+    name,
+    username,
+    email
+  }]
+}
+```
+
+**Features:**
+- Case-insensitive regex search
+- Excludes current user from results
+- Searches both username and email fields
+
+---
+
+#### POST `/api/cohost`
+**Purpose:** Send co-host invitation
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Request Body:**
+```javascript
+{
+  eventId: string,
+  userId: string      // Invitee's user ID
+}
+```
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
+
+**Validation:**
+1. Only event author can invite
+2. User cannot be already a co-host
+3. User cannot have pending invitation
+4. Event must exist
+
+**Flow:**
+1. Checks authorization and existing invitations
+2. Adds invitation to invitee's cohostInvitations array
+3. Creates notification entry
+
+---
+
+#### PATCH `/api/cohost`
+**Purpose:** Accept or decline co-host invitation
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Request Body:**
+```javascript
+{
+  eventId: string,
+  action: 'accept' | 'decline'
+}
+```
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
+
+**Flow (Accept):**
+1. Updates invitation status to 'accepted'
+2. Adds user to event's cohosts array with userId, name, username
+3. Grants full edit permissions
+
+**Flow (Decline):**
+1. Updates invitation status to 'declined'
+2. No event permissions granted
+
+---
+
+#### DELETE `/api/cohost?eventId={eventId}&userId={userId}`
+**Purpose:** Remove co-host from event
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Query Parameters:**
+- `eventId`: Event MongoDB ObjectId
+- `userId`: Co-host's user ID to remove
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
+
+**Authorization:**
+- Only event author can remove co-hosts
+
+**Flow:**
+1. Validates author permission
+2. Removes user from cohosts array using $pull
+3. Revokes edit permissions
 
 ---
 
@@ -909,6 +1087,7 @@ export const verifyAdmin = async (request) => {
 - Reservation deadline enforcement
 - Real-time availability tracking
 - Reservation cancellation
+- Virtual reserved field (auto-calculated from reservedUsers.length)
 - Admin override capabilities
 
 **Validation Rules:**
@@ -1072,9 +1251,8 @@ fs.unlink(`./public${imageUrl}`, () => {});
 - Description
 - Event type
 - Location
-- Theme
-- Dress code
 - Host name
+- Username search (co-host invitations)
 
 **Filters:**
 - Future events
@@ -1083,13 +1261,24 @@ fs.unlink(`./public${imageUrl}`, () => {});
 
 **Implementation:**
 ```javascript
+// Event search
 const filteredEvents = blogs.filter((item) => {
   const matchesStatus = item.status === menu;
   const matchesSearch = 
     item.title.toLowerCase().includes(searchTerm) ||
     item.description.toLowerCase().includes(searchTerm) ||
-    // ... other fields
+    item.location.toLowerCase().includes(searchTerm) ||
+    item.host.toLowerCase().includes(searchTerm);
   return matchesStatus && matchesSearch;
+});
+
+// Username search (co-host)
+const users = await UserModel.find({
+  $or: [
+    { username: { $regex: search, $options: 'i' } },
+    { email: { $regex: search, $options: 'i' } }
+  ],
+  _id: { $ne: userId }
 });
 ```
 
@@ -1320,7 +1509,7 @@ Event added to user.ratedEvents
 ### 7. Edit Event
 
 ```
-User (event author) → Profile → "My Events"
+User (event author OR co-host) → Profile → "My Events"
   ↓
 Click "Edit" on event (must be future or live)
   ↓
@@ -1333,13 +1522,13 @@ Make changes
 PUT /api/blog
   ↓
 Server:
-  - Verify ownership
+  - Verify author OR co-host ownership
   - Check event is not past
   - Upload new images (if any)
   - Delete old images
-  - If live → Create notification
+  - If future/live → Create notification
   ↓
-If live edit:
+If future/live edit:
   - Notification sent to interested/reserved users
   - EventUpdateNotification shows popup
   ↓
@@ -1348,7 +1537,58 @@ Event updated
 
 ---
 
-### 8. Delete Event
+### 8. Co-host Invitation
+
+```
+Event author → Profile → "Events I Host"
+  ↓
+Click "Invite Co-host" on future event
+  ↓
+Modal opens with search input
+  ↓
+Search by username or email
+  ↓
+GET /api/cohost?search={query}
+  ↓
+Server: Case-insensitive regex search, exclude self
+  ↓
+Select user from results
+  ↓
+POST /api/cohost (eventId, userId)
+  ↓
+Server:
+  - Validate author permission
+  - Check user not already co-host
+  - Add to cohostInvitations with status 'pending'
+  ↓
+Invitee sees notification in profile
+```
+
+---
+
+### 9. Accept Co-host Invitation
+
+```
+User → Profile → Co-host Invitations section
+  ↓
+See pending invitation with event title, inviter name
+  ↓
+Click "Accept"
+  ↓
+PATCH /api/cohost (action: 'accept')
+  ↓
+Server:
+  - Update invitation status to 'accepted'
+  - Add to event.cohosts array (userId, name, username)
+  ↓
+User gains full edit permissions on event
+  ↓
+Event appears in "Events I Host" section
+```
+
+---
+
+### 10. Delete Event
 
 ```
 User (author or admin) → Event card/detail
@@ -1369,62 +1609,65 @@ Event removed from lists
 
 ---
 
-### 9. Receive Notifications
+### 11. Receive Notifications
 
 ```
-Host edits live event
+Host/co-host edits future or live event
   ↓
-Notification created in event.updateNotifications
+PUT /api/blog triggers notification creation
   ↓
-Added to pendingNotifications of all interested/reserved users
+Server: updateMany adds to eventUpdateNotifications of all interested/reserved users
   ↓
 User visits any page
   ↓
-EventUpdateNotification component:
-  - GET /api/user/notifications
-  - Filter out already-shown (localStorage)
+EventUpdateNotification component (30s polling):
+  - GET /api/user → fetch eventUpdateNotifications
+  - Filter unread notifications
   ↓
-Show frosted glass modal:
+Show frosted glass slide-in modal (Framer Motion):
+  - Blue gradient header with bell icon
   - Event title
-  - Update message
+  - Changes description
   - Timestamp
   ↓
 User actions:
   - View Event → Navigate to /blogs/[id]
-  - Dismiss → POST /api/user/notifications/dismiss
+  - Dismiss → PATCH /api/user/notifications (mark read: true)
   ↓
-Notification removed from queue
+Notification marked as read
   ↓
-Won't show again (database + localStorage)
+Won't show again on next poll
 ```
 
 ---
 
-### 10. Profile Management
+### 12. Profile Management
 
 ```
 User → Click "My Profile"
   ↓
 /me
   ↓
-GET /api/user
+GET /api/user (auto-generates username if missing)
   ↓
 View tabs:
-  - Hosted Events
+  - Events I Host (authored + co-hosted)
   - Interested Events
   - Reserved Events
   - Participated Events (past)
+  - Co-host Invitations
   ↓
 Actions per tab:
-  - Hosted: Edit, Delete
+  - Hosted: Edit, Delete, Invite Co-host (future events only), clickable rows
   - Interested: Remove interest
   - Reserved: Cancel reservation, Add to calendar
   - Participated: Rate (if not rated)
+  - Invitations: Accept/Decline
   ↓
 Edit Personal Info:
   - Click "Edit Personal Info"
-  - Update name, residential college
-  - PUT /api/user
+  - Update name, username (live validation), residential college
+  - PUT /api/user (validates username uniqueness)
   - Profile updated
 ```
 
@@ -1586,11 +1829,12 @@ if (!isAuthor && !isAdmin) {
 - Celebration animation
 
 **EventUpdateNotification (`components/EventUpdateNotification.jsx`):**
-- Global notification listener
-- Polls on page load
-- Frosted glass modal
-- Dismiss or view event
-- Prevents duplicate shows
+- Global notification listener with 30s polling
+- Fetches eventUpdateNotifications from user
+- Slide-in animation (Framer Motion)
+- Blue gradient header with bell icon
+- View Event or Dismiss actions
+- Marks read via PATCH /api/user/notifications
 
 **BlogItem (`components/blogitem.jsx`):**
 - Event card component
@@ -1598,6 +1842,26 @@ if (!isAuthor && !isAdmin) {
 - Quick actions (interest/reserve)
 - Live rating display
 - Responsive design
+
+**ShareModal (`components/ShareModal.jsx`):**
+- Modern share interface
+- 6 platforms: WhatsApp, Facebook, Twitter, LinkedIn, Email, Copy Link
+- Pre-formatted share text with event details
+
+**EventCreatedModal (`components/EventCreatedModal.jsx`):**
+- Confirmation after event creation
+- View Event or Create Another options
+- Success animation
+
+**CohostInviteModal (`components/CohostInviteModal.jsx`):**
+- Search users by username/email
+- Live search results
+- Send invitation to selected user
+
+**CohostInvitationNotification (`components/CohostInvitationNotification.jsx`):**
+- Displays pending co-host invitations
+- Accept/Decline actions
+- Shows inviter name and event title
 
 ---
 
@@ -1742,13 +2006,16 @@ await userModel.updateMany(
 
 **Dismiss Notification:**
 ```javascript
-// Remove from user's queue
+// Mark as read (v0.3.0+)
+const notificationToUpdate = user.eventUpdateNotifications.id(notificationId);
+notificationToUpdate.read = true;
+await user.save();
+
+// Legacy pendingNotifications (v0.2.0)
 user.pendingNotifications = user.pendingNotifications.filter(
   n => !(n.eventId.toString() === eventId && 
          n.notificationId.toString() === notificationId)
 );
-
-// Mark as notified in event
 notification.notifiedUsers.push(userId);
 ```
 
@@ -1942,37 +2209,43 @@ npm run lint
 
 Based on the codebase analysis, here are potential improvements:
 
-1. **Real-Time Updates:** WebSockets for live event changes
-2. **Email Notifications:** Send email alerts for event updates
-3. **Event Categories:** Add category filtering
-4. **User Profiles:** Public user profiles with event history
-5. **Social Features:** Comments, event discussions
-6. **Analytics:** Event attendance tracking, popular events
-7. **Mobile App:** React Native version
-8. **Export Features:** Export attendee lists, event reports
-9. **Calendar Sync:** Two-way Google Calendar sync
-10. **Payment Integration:** Paid event ticketing
+1. **Real-Time Updates:** WebSockets for live event changes instead of polling
+2. **Email Notifications:** Send email alerts for event updates and invitations
+3. **Event Categories:** Add category filtering beyond event types
+4. **User Profiles:** Public user profiles with event history and badges
+5. **Social Features:** Comments, event discussions, user following
+6. **Analytics:** Event attendance tracking, popular events dashboard
+7. **Mobile App:** React Native version with push notifications
+8. **Export Features:** Export attendee lists, event reports, CSV downloads
+9. **Calendar Sync:** Two-way Google Calendar sync with auto-updates
+10. **Payment Integration:** Paid event ticketing with Stripe/PayPal
+11. **Advanced Permissions:** Custom role-based permissions beyond author/co-host
+12. **Event Templates:** Reusable event templates for recurring events
 
 ---
 
 ## Conclusion
 
-Rice Events Hub is a comprehensive, production-ready event management platform with sophisticated features including dual rating systems, real-time notifications, reservation management, and admin capabilities. The codebase demonstrates modern web development practices with Next.js 16, React 19, MongoDB, and JWT authentication.
+Rice Events Hub is a comprehensive, production-ready event management platform with sophisticated features including co-hosting system, event update notifications, dual rating systems, username-based invitations, modern share functionality, reservation management, and admin capabilities. The codebase demonstrates modern web development practices with Next.js 16, React 19, MongoDB with sparse indexes, Framer Motion animations, and JWT authentication.
 
 **Key Strengths:**
-- Clean, modular architecture
-- Comprehensive feature set
-- Strong security practices
-- Responsive design
-- Real-time updates
-- User-friendly workflows
+- Clean, modular architecture with component reusability
+- Comprehensive feature set (v0.3.0 adds co-hosting and notifications)
+- Strong security practices (JWT, bcrypt, sparse indexes)
+- Responsive design with Tailwind CSS
+- Real-time updates via polling (30s intervals)
+- User-friendly workflows with modal-based interactions
+- Auto-generated usernames for backward compatibility
+- Conditional UI rendering (future event actions)
 
 **For New Developers:**
-- Start with authentication flow
-- Understand event lifecycle (future→live→past)
-- Study API endpoint patterns
-- Review component reusability
-- Test user workflows end-to-end
+- Start with authentication flow and username system
+- Understand event lifecycle (future→live→past) and status-based permissions
+- Study API endpoint patterns (GET/POST/PUT/PATCH/DELETE)
+- Review component reusability (modals, notifications, share)
+- Test user workflows end-to-end (create→invite→edit→notify)
+- Explore co-hosting permissions (author vs co-host)
+- Understand sparse indexes and auto-generation logic
 - Explore admin features last
 
 This analysis should provide a complete understanding of the system for onboarding new developers or continuing development.

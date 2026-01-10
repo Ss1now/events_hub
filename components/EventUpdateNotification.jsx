@@ -1,37 +1,32 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
 import axios from 'axios';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const EventUpdateNotification = () => {
     const [notifications, setNotifications] = useState([]);
     const [currentNotification, setCurrentNotification] = useState(null);
-    const [showModal, setShowModal] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchNotifications = async () => {
             const token = localStorage.getItem('token');
             if (!token) return;
 
-            // Get already shown notifications from localStorage
-            const shownNotifications = JSON.parse(localStorage.getItem('shownEventNotifications') || '[]');
-
             try {
-                const response = await axios.get('/api/user/notifications', {
+                const response = await axios.get('/api/user', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
-                if (response.data.success && response.data.notifications.length > 0) {
-                    // Filter out notifications that were already shown in this session
-                    const newNotifications = response.data.notifications.filter(
-                        n => !shownNotifications.includes(n.notificationId.toString())
-                    );
-
-                    if (newNotifications.length > 0) {
-                        setNotifications(newNotifications);
-                        setCurrentNotification(newNotifications[0]);
-                        setShowModal(true);
+                if (response.data.success) {
+                    const unreadNotifications = response.data.user.eventUpdateNotifications?.filter(n => !n.read) || [];
+                    setNotifications(unreadNotifications);
+                    
+                    if (unreadNotifications.length > 0 && !currentNotification) {
+                        setCurrentNotification(unreadNotifications[0]);
                     }
                 }
             } catch (error) {
@@ -39,128 +34,125 @@ const EventUpdateNotification = () => {
             }
         };
 
-        // Check for notifications on component mount
         fetchNotifications();
-    }, []);
+        const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
+
+        return () => clearInterval(interval);
+    }, [currentNotification]);
+
+    const handleViewEvent = async () => {
+        if (!currentNotification) return;
+
+        await markAsRead(currentNotification._id);
+        router.push(`/blogs/${currentNotification.eventId}`);
+    };
 
     const handleDismiss = async () => {
         if (!currentNotification) return;
+        await markAsRead(currentNotification._id);
+    };
 
+    const markAsRead = async (notificationId) => {
         const token = localStorage.getItem('token');
-        
-        try {
-            // Mark as shown in localStorage to prevent re-showing in same session
-            const shownNotifications = JSON.parse(localStorage.getItem('shownEventNotifications') || '[]');
-            if (!shownNotifications.includes(currentNotification.notificationId.toString())) {
-                shownNotifications.push(currentNotification.notificationId.toString());
-                localStorage.setItem('shownEventNotifications', JSON.stringify(shownNotifications));
-            }
+        if (!token) return;
 
-            await axios.post('/api/user/notifications/dismiss', {
-                eventId: currentNotification.eventId,
-                notificationId: currentNotification.notificationId
+        try {
+            await axios.patch('/api/user/notifications', {
+                notificationId,
+                type: 'eventUpdate'
             }, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            // Remove from local state
-            const remaining = notifications.filter(n => n._id !== currentNotification._id);
+            // Remove from current notifications
+            const remaining = notifications.filter(n => n._id !== notificationId);
             setNotifications(remaining);
-
+            
+            // Show next notification if available
             if (remaining.length > 0) {
                 setCurrentNotification(remaining[0]);
             } else {
-                setShowModal(false);
                 setCurrentNotification(null);
             }
         } catch (error) {
-            console.error('Error dismissing notification:', error);
-            setShowModal(false);
+            console.error('Error marking notification as read:', error);
         }
     };
 
-    const handleViewEvent = () => {
-        handleDismiss();
-    };
-
-    if (!showModal || !currentNotification) return null;
-
     return (
-        <div 
-            className='fixed inset-0 z-50 flex items-center justify-center p-4 animate-fadeIn' 
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)' }}
-        >
-            <div className='bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-slideUp'>
-                <button
-                    onClick={handleDismiss}
-                    className='absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors'
+        <AnimatePresence>
+            {currentNotification && (
+                <motion.div
+                    className='fixed top-4 right-4 z-50 max-w-md'
+                    initial={{ x: 400, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: 400, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 >
-                    <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
-                    </svg>
-                </button>
-
-                {/* Icon */}
-                <div className='flex justify-center mb-4'>
-                    <div className='bg-blue-100 rounded-full p-4'>
-                        <svg className='w-12 h-12 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                        </svg>
-                    </div>
-                </div>
-
-                {/* Title */}
-                <h2 className='text-2xl font-bold text-center text-gray-900 mb-2'>
-                    Event Updated
-                </h2>
-
-                {/* Message */}
-                <p className='text-center text-gray-600 mb-4'>
-                    {currentNotification.message}
-                </p>
-
-                {/* Event Details */}
-                <div className='bg-gray-50 rounded-lg p-4 mb-6'>
-                    <p className='text-sm font-semibold text-gray-700 mb-1'>{currentNotification.eventTitle}</p>
-                    <p className='text-xs text-gray-500'>Updated: {new Date(currentNotification.timestamp).toLocaleString()}</p>
-                    {currentNotification.changes && currentNotification.changes.length > 0 && (
-                        <div className='mt-2 pt-2 border-t border-gray-200'>
-                            <p className='text-xs font-medium text-gray-600 mb-1'>Changes:</p>
-                            <ul className='text-xs text-gray-600 space-y-1'>
-                                {currentNotification.changes.map((change, idx) => (
-                                    <li key={idx}>• {change}</li>
-                                ))}
-                            </ul>
+                    <div className='bg-white rounded-xl shadow-2xl border border-blue-100 overflow-hidden'>
+                        {/* Header */}
+                        <div className='bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-3'>
+                            <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                    <div className='bg-white/20 p-2 rounded-lg'>
+                                        <svg className='w-5 h-5 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 className='text-white font-semibold text-sm'>Event Updated</h3>
+                                        <p className='text-blue-100 text-xs'>
+                                            {new Date(currentNotification.timestamp).toLocaleString()}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleDismiss}
+                                    className='text-white/80 hover:text-white transition-colors'
+                                >
+                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Actions */}
-                <div className='flex gap-2'>
-                    <button
-                        onClick={handleDismiss}
-                        className='flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors'
-                    >
-                        Dismiss
-                    </button>
-                    <Link href={`/blogs/${currentNotification.eventId}`} className='flex-1'>
-                        <button
-                            onClick={handleViewEvent}
-                            className='w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors'
-                        >
-                            View Event
-                        </button>
-                    </Link>
-                </div>
+                        {/* Content */}
+                        <div className='p-4'>
+                            <p className='text-gray-900 font-medium mb-2'>
+                                "{currentNotification.eventTitle}"
+                            </p>
+                            <p className='text-gray-600 text-sm mb-4'>
+                                The event details have been updated by the host. Check the latest information.
+                            </p>
 
-                {/* Multiple notifications indicator */}
-                {notifications.length > 1 && (
-                    <p className='text-center text-xs text-gray-500 mt-3'>
-                        {notifications.length - 1} more update{notifications.length - 1 > 1 ? 's' : ''}
-                    </p>
-                )}
-            </div>
-        </div>
+                            {/* Actions */}
+                            <div className='flex gap-2'>
+                                <button
+                                    onClick={handleViewEvent}
+                                    className='flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm'
+                                >
+                                    View Event
+                                </button>
+                                <button
+                                    onClick={handleDismiss}
+                                    className='px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm'
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+
+                            {/* Notification count */}
+                            {notifications.length > 1 && (
+                                <p className='text-center text-xs text-gray-500 mt-3'>
+                                    {notifications.length - 1} more update{notifications.length > 2 ? 's' : ''}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
 

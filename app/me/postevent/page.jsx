@@ -6,23 +6,23 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import EventCreatedModal from '@/components/EventCreatedModal';
 
 export default function PostEventPage() {
     const router = useRouter();
     const [images,setImages] = useState([]);
     const [eventTypeOption, setEventTypeOption] = useState('Socializing');
     const [customEventType, setCustomEventType] = useState('');
+    const [showCreatedModal, setShowCreatedModal] = useState(false);
+    const [createdEvent, setCreatedEvent] = useState(null);
     const [data,setData] = useState({
         title:'',
         description:'',
         startDateTime:'',
         endDateTime:'',
         eventType:eventTypeOption,
-        theme:'',
-        dressCode:'',
         location:'',
         needReservation:false,
-        reserved:0,
         capacity:0,
         host:''
     })
@@ -65,11 +65,8 @@ export default function PostEventPage() {
         formData.append('startDateTime', data.startDateTime);
         formData.append('endDateTime', data.endDateTime);
         formData.append('eventType', data.eventType);
-        formData.append('theme', data.theme);
-        formData.append('dressCode', data.dressCode);
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);
-        formData.append('reserved', data.reserved);
         formData.append('capacity', data.capacity);
         formData.append('host', data.host);
 
@@ -82,9 +79,9 @@ export default function PostEventPage() {
             
             if (response.data.success) {
                 toast.success(response.data.msg);
-                setTimeout(() => {
-                    router.push('/');
-                }, 1500);
+                // Show the event created modal
+                setCreatedEvent(response.data.blog);
+                setShowCreatedModal(true);
             } else {
                 toast.error("Error occurred! Please try again.");
             }
@@ -218,40 +215,22 @@ export default function PostEventPage() {
                             )}
                         </div>
 
-                        {/* Theme */}
-                        <div>
-                            <p className='text-xl font-medium mb-2'>Theme</p>
-                            <input name='theme' onChange={onChangeHandler} value={data.theme} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Warm Neutrals' required/>
-                        </div>
-
-                        {/* Dress Code */}
-                        <div>
-                            <p className='text-xl font-medium mb-2'>Dress Code</p>
-                            <input name='dressCode' onChange={onChangeHandler} value={data.dressCode} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Cozy Chic' required/>
-                        </div>
-
                         {/* Location */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Location</p>
                             <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Jones College Rooftop' required/>
                         </div>
 
-                        {/* Need Reservation */}
-                        <div className='flex items-center gap-3'>
+                        {/* Need RSVP */}
+                        <div className='flex items-center gap-2 mb-6'>
                             <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border' onChange={onChangeHandler} checked={data.needReservation}/>
-                            <label htmlFor='needReservation' className='text-base'>Need Reservation</label>
+                            <label htmlFor='needReservation' className='text-base'>Need RSVP</label>
                         </div>
 
-                        {/* Reserved & Capacity */}
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <div>
-                                <p className='text-xl font-medium mb-2'>Reserved</p>
-                                <input name='reserved' onChange={onChangeHandler} value={data.reserved} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='0' placeholder='64'/>
-                            </div>
-                            <div>
-                                <p className='text-xl font-medium mb-2'>Capacity</p>
-                                <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required/>
-                            </div>
+                        {/* Capacity */}
+                        <div>
+                            <p className='text-xl font-medium mb-2'>Capacity</p>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required/>
                         </div>
 
                         {/* Host */}
@@ -266,6 +245,16 @@ export default function PostEventPage() {
                     </form>
                 </div>
             </div>
+
+            {/* Event Created Success Modal */}
+            <EventCreatedModal
+                isOpen={showCreatedModal}
+                onClose={() => {
+                    setShowCreatedModal(false);
+                    router.push('/');
+                }}
+                eventData={createdEvent}
+            />
         </div>
     )
 }

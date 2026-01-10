@@ -95,13 +95,13 @@ END:VCALENDAR`;
 
                 {/* Title */}
                 <h2 className='text-2xl font-bold text-center text-gray-900 mb-2'>
-                    {isReservation ? 'Reservation Confirmed!' : 'You\'re Going!'}
+                    {isReservation ? 'RSVP Confirmed!' : 'You\'re Going!'}
                 </h2>
 
                 {/* Message */}
                 <p className='text-center text-gray-600 mb-6'>
                     {isReservation 
-                        ? `You've successfully reserved a spot for "${eventData.title}"`
+                        ? `You've successfully RSVP'd for "${eventData.title}"`
                         : `You've marked interest in "${eventData.title}"`
                     }
                 </p>

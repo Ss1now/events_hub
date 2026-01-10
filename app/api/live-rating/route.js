@@ -43,11 +43,11 @@ export async function POST(request) {
             return NextResponse.json({ success: false, msg: "Live ratings are only available during the event" }, { status: 400 });
         }
 
-        // Check reservation requirement
+        // Check RSVP requirement
         if (event.needReservation) {
             const hasReservation = event.reservedUsers.some(id => id.toString() === userId);
             if (!hasReservation) {
-                return NextResponse.json({ success: false, msg: "Only users with reservations can rate this event" }, { status: 403 });
+                return NextResponse.json({ success: false, msg: "Only users with RSVPs can rate this event" }, { status: 403 });
             }
         }
 

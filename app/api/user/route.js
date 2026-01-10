@@ -22,12 +22,37 @@ export async function GET(request) {
         // Fetch user data
         const user = await userModel.findById(decoded.id).select('-password');
         
+        console.log('Fetched user:', user);
+        console.log('User username:', user?.username);
+        
         if (!user) {
             return NextResponse.json({ success: false, msg: 'User not found' }, { status: 404 });
         }
 
+        // If user doesn't have a username, generate one from email
+        if (!user.username) {
+            const baseUsername = user.email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+            let username = baseUsername;
+            let counter = 1;
+            
+            // Check if username exists, if so add a number
+            while (await userModel.findOne({ username })) {
+                username = `${baseUsername}${counter}`;
+                counter++;
+            }
+            
+            user.username = username;
+            await user.save();
+            console.log('Generated username for user:', username);
+        }
+
         // Fetch user's events
         const events = await Blogmodel.find({ authorId: decoded.id }).sort({ date: -1 });
+
+        // Fetch events where user is a cohost
+        const cohostedEvents = await Blogmodel.find({
+            'cohosts.userId': decoded.id
+        }).sort({ date: -1 });
 
         // Fetch user's interested events
         const interestedEvents = await Blogmodel.find({ 
@@ -69,11 +94,15 @@ export async function GET(request) {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                username: user.username,
                 residentialCollege: user.residentialCollege,
                 isAdmin: user.isAdmin || false,
-                ratedEvents: user.ratedEvents || []
+                ratedEvents: user.ratedEvents || [],
+                cohostInvitations: user.cohostInvitations || [],
+                eventUpdateNotifications: user.eventUpdateNotifications || []
             },
             events: updatedEvents,
+            cohostedEvents,
             interestedEvents,
             reservedEvents
         });
@@ -97,7 +126,7 @@ export async function PUT(request) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
         const body = await request.json();
-        const { residentialCollege, name } = body;
+        const { residentialCollege, name, username } = body;
         
         await connectDB();
         
@@ -110,17 +139,42 @@ export async function PUT(request) {
             // Allow empty name (user can clear it)
             updateFields.name = name;
         }
+        if (username !== undefined) {
+            // Validate username format (alphanumeric and underscore only, 3-20 chars)
+            if (!/^[a-z0-9_]{3,20}$/.test(username)) {
+                return NextResponse.json({ 
+                    success: false, 
+                    msg: 'Username must be 3-20 characters long and contain only lowercase letters, numbers, and underscores' 
+                }, { status: 400 });
+            }
+            
+            // Check if username is already taken by another user
+            const existingUser = await userModel.findOne({ 
+                username, 
+                _id: { $ne: decoded.id } 
+            });
+            
+            if (existingUser) {
+                return NextResponse.json({ 
+                    success: false, 
+                    msg: 'Username already taken' 
+                }, { status: 400 });
+            }
+            
+            updateFields.username = username;
+        }
         
         console.log('Updating user:', decoded.id, 'with fields:', updateFields);
         
-        // Update user
+        // Update user using $set operator
         const user = await userModel.findByIdAndUpdate(
             decoded.id,
             { $set: updateFields },
-            { new: true, runValidators: true }
+            { new: true, runValidators: false, strict: false }
         ).select('-password');
         
-        console.log('User after update:', user);
+        console.log('User after update:', JSON.stringify(user, null, 2));
+        console.log('Username specifically:', user?.username);
         
         if (!user) {
             return NextResponse.json({ success: false, msg: 'User not found' }, { status: 404 });
@@ -133,6 +187,7 @@ export async function PUT(request) {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                username: user.username,
                 residentialCollege: user.residentialCollege
             }
         });

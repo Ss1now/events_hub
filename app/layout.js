@@ -3,6 +3,7 @@ import "./globals.css";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EventUpdateNotification from '@/components/EventUpdateNotification';
+import CohostInvitationNotification from '@/components/CohostInvitationNotification';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }) {
       >
         {children}
         <EventUpdateNotification />
+        <CohostInvitationNotification />
         <ToastContainer />
       </body>
     </html>

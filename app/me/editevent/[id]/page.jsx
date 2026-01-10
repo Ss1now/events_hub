@@ -25,7 +25,6 @@ export default function EditEventPage({ params }) {
         dressCode: '',
         location: '',
         needReservation: false,
-        reserved: 0,
         capacity: 0,
         reservationDeadline: '',
         host: ''
@@ -89,12 +88,9 @@ export default function EditEventPage({ params }) {
                     description: eventData.description || '',
                     startDateTime: formatDateTimeLocal(eventData.startDateTime),
                     endDateTime: formatDateTimeLocal(eventData.endDateTime),
-                    eventType: eventData.eventType || 'Socializing',
-                    theme: eventData.theme || '',
-                    dressCode: eventData.dressCode || '',
+                    eventType: eventData.eventType || 'Party',
                     location: eventData.location || '',
                     needReservation: eventData.needReservation || false,
-                    reserved: eventData.reserved || 0,
                     capacity: eventData.capacity || 0,
                     reservationDeadline: eventData.reservationDeadline ? formatDateTimeLocal(eventData.reservationDeadline) : '',
                     host: eventData.host || ''
@@ -153,11 +149,8 @@ export default function EditEventPage({ params }) {
         formData.append('startDateTime', data.startDateTime);
         formData.append('endDateTime', data.endDateTime);
         formData.append('eventType', data.eventType);
-        formData.append('theme', data.theme);
-        formData.append('dressCode', data.dressCode);
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);
-        formData.append('reserved', data.reserved);
         formData.append('capacity', data.capacity);
         formData.append('reservationDeadline', data.reservationDeadline || '');
         formData.append('host', data.host);
@@ -323,41 +316,25 @@ export default function EditEventPage({ params }) {
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Theme</p>
-                            <input name='theme' onChange={onChangeHandler} value={data.theme} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Warm Neutrals' required />
-                        </div>
-
-                        <div>
-                            <p className='text-xl font-medium mb-2'>Dress Code</p>
-                            <input name='dressCode' onChange={onChangeHandler} value={data.dressCode} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Cozy Chic' required />
-                        </div>
-
-                        <div>
                             <p className='text-xl font-medium mb-2'>Location</p>
                             <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Jones College Rooftop' required />
                         </div>
 
                         <div className='flex items-center gap-3'>
                             <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border' onChange={onChangeHandler} checked={data.needReservation} />
-                            <label htmlFor='needReservation' className='text-base'>Need Reservation</label>
+                            <label htmlFor='needReservation' className='text-base'>Need RSVP</label>
                         </div>
 
                         {data.needReservation && (
                             <div>
-                                <p className='text-xl font-medium mb-2'>Reservation Deadline (Optional)</p>
+                                <p className='text-xl font-medium mb-2'>RSVP Deadline (Optional)</p>
                                 <input name='reservationDeadline' onChange={onChangeHandler} value={data.reservationDeadline} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' />
                             </div>
                         )}
 
-                        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                            <div>
-                                <p className='text-xl font-medium mb-2'>Reserved</p>
-                                <input name='reserved' onChange={onChangeHandler} value={data.reserved} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='0' placeholder='64' />
-                            </div>
-                            <div>
-                                <p className='text-xl font-medium mb-2'>Capacity</p>
-                                <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required />
-                            </div>
+                        <div>
+                            <p className='text-xl font-medium mb-2'>Capacity</p>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required />
                         </div>
 
                         <div>

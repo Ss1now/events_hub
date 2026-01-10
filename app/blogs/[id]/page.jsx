@@ -12,6 +12,7 @@ import ReviewForm from '@/components/ReviewForm';
 import ReviewList from '@/components/ReviewList';
 import StarRating from '@/components/StarRating';
 import LiveRatingButton from '@/components/LiveRatingButton';
+import ShareModal from '@/components/ShareModal';
 
 
 const Page = ({ params }) => {
@@ -26,6 +27,7 @@ const Page = ({ params }) => {
     const [reviews, setReviews] = useState([]);
     const [hasRated, setHasRated] = useState(false);
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const [showShareModal, setShowShareModal] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -157,7 +159,7 @@ const Page = ({ params }) => {
         }
     };
 
-    const handleCancelReservation = async () => {
+    const handleCancelRSVP = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
             toast.error('Please login first');
@@ -166,7 +168,7 @@ const Page = ({ params }) => {
 
         try {
             const response = await axios.patch('/api/blog', 
-                { action: 'cancel-reservation', eventId: id },
+                { action: 'cancel-rsvp', eventId: id },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
@@ -179,7 +181,7 @@ const Page = ({ params }) => {
                 toast.success(response.data.msg);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error cancelling reservation');
+            toast.error(error.response?.data?.msg || 'Error cancelling RSVP');
         }
     };
 
@@ -195,7 +197,7 @@ const Page = ({ params }) => {
         </div>;
     }
 
-    const isReservationDeadlinePassed = data.reservationDeadline && new Date() > new Date(data.reservationDeadline);
+    const isRSVPDeadlinePassed = data.reservationDeadline && new Date() > new Date(data.reservationDeadline);
     const isCapacityReached = data.needReservation && data.reserved >= data.capacity;
     
     return (
@@ -261,10 +263,8 @@ const Page = ({ params }) => {
                                 {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#LIVE</span>}
                                 {data.status === 'future' && <span className='bg-blue-500 text-white text-xs px-3 py-1 rounded-full'>#FUTURE</span>}
                                 <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
-                                {data.theme && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Theme: {data.theme}</span>}
-                                {data.dressCode && <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>Dress: {data.dressCode}</span>}
                                 {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full'>FULL</span>}
-                                {isReservationDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>Reservation Closed</span>}
+                                {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>RSVP Closed</span>}
                             </div>
 
                             {/* Live Rating Display - prominent placement for live events */}
@@ -292,7 +292,7 @@ const Page = ({ params }) => {
                                 };
                                 const startDate = formatGoogleDate(data.startDateTime);
                                 const endDate = formatGoogleDate(data.endDateTime);
-                                const eventDescription = `${data.description}\n\nEvent Type: ${data.eventType}\nTheme: ${data.theme}\nDress Code: ${data.dressCode}\nHosted by: ${data.host}`;
+                                const eventDescription = `${data.description}\n\nEvent Type: ${data.eventType}\nHosted by: ${data.host}`;
                                 const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(data.location)}`;
                                 window.open(googleCalendarUrl, '_blank');
                             }}
@@ -314,21 +314,21 @@ const Page = ({ params }) => {
                                         {!isReserved ? (
                                             <button 
                                                 onClick={handleReserve}
-                                                disabled={isCapacityReached || isReservationDeadlinePassed}
+                                                disabled={isCapacityReached || isRSVPDeadlinePassed}
                                                 className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
-                                                    isCapacityReached || isReservationDeadlinePassed
+                                                    isCapacityReached || isRSVPDeadlinePassed
                                                         ? 'bg-gray-400 text-white cursor-not-allowed'
                                                         : 'bg-black text-white hover:bg-gray-800'
                                                 }`}
                                             >
-                                                {isCapacityReached ? 'Event Full' : isReservationDeadlinePassed ? 'Reservation Closed' : 'Reserve Spot'}
+                                                {isCapacityReached ? 'Event Full' : isRSVPDeadlinePassed ? 'RSVP Closed' : 'RSVP'}
                                             </button>
                                         ) : (
                                             <button 
-                                                onClick={handleCancelReservation}
+                                                onClick={handleCancelRSVP}
                                                 className='flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors'
                                             >
-                                                Cancel Reservation
+                                                Cancel RSVP
                                             </button>
                                         )}
                                     </>
@@ -346,14 +346,22 @@ const Page = ({ params }) => {
                                 )}
                             </>
                         )}
-                        <button className='px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors'>Share</button>
+                        <button 
+                            onClick={() => setShowShareModal(true)}
+                            className='px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2'
+                        >
+                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z' />
+                            </svg>
+                            Share
+                        </button>
                     </div>
                     
-                    {/* Reservation deadline info */}
+                    {/* RSVP deadline info */}
                     {data.needReservation && data.reservationDeadline && (
                         <div className='mt-4 p-3 bg-blue-50 rounded-lg'>
                             <p className='text-sm text-blue-800'>
-                                <span className='font-semibold'>Reservation Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                <span className='font-semibold'>RSVP Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                             </p>
                         </div>
                     )}
@@ -371,7 +379,7 @@ const Page = ({ params }) => {
                                         };
                                         const startDate = formatGoogleDate(data.startDateTime);
                                         const endDate = formatGoogleDate(data.endDateTime);
-                                        const description = `${data.description}\n\nEvent Type: ${data.eventType}\nTheme: ${data.theme}\nDress Code: ${data.dressCode}\nHosted by: ${data.host}`;
+                                        const description = `${data.description}\n\nEvent Type: ${data.eventType}\nHosted by: ${data.host}`;
                                         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(data.location)}`;
                                         window.open(googleCalendarUrl, '_blank');
                                     }}
@@ -402,7 +410,7 @@ DTSTAMP:${now}
 DTSTART:${startDate}
 DTEND:${endDate}
 SUMMARY:${data.title}
-DESCRIPTION:${data.description}\\n\\nEvent Type: ${data.eventType}\\nTheme: ${data.theme}\\nDress Code: ${data.dressCode}\\nHosted by: ${data.host}
+DESCRIPTION:${data.description}\\n\\nEvent Type: ${data.eventType}\\nHosted by: ${data.host}
 LOCATION:${data.location}
 STATUS:CONFIRMED
 SEQUENCE:0
@@ -454,18 +462,6 @@ END:VCALENDAR`;
                             <span className='font-semibold min-w-[120px]'>Event Type:</span>
                             <span>{data.eventType}</span>
                         </div>
-                        {data.theme && (
-                            <div className='flex gap-2'>
-                                <span className='font-semibold min-w-[120px]'>Theme:</span>
-                                <span>{data.theme}</span>
-                            </div>
-                        )}
-                        {data.dressCode && (
-                            <div className='flex gap-2'>
-                                <span className='font-semibold min-w-[120px]'>Dress Code:</span>
-                                <span>{data.dressCode}</span>
-                            </div>
-                        )}
                         <div className='flex gap-2'>
                             <span className='font-semibold min-w-[120px]'>Location:</span>
                             <span>{data.location}</span>
@@ -492,7 +488,22 @@ END:VCALENDAR`;
                         )}
                         <div className='flex gap-2'>
                             <span className='font-semibold min-w-[120px]'>Hosted by:</span>
-                            <span>{data.host}</span>
+                            <div className='flex flex-wrap gap-2 items-center'>
+                                <span>{data.host}</span>
+                                {data.cohosts && data.cohosts.length > 0 && (
+                                    <>
+                                        <span className='text-gray-400'>•</span>
+                                        <div className='flex flex-wrap gap-1 items-center'>
+                                            <span className='text-gray-600'>Co-hosts:</span>
+                                            {data.cohosts.map((cohost, index) => (
+                                                <span key={cohost.userId} className='text-purple-700 font-medium'>
+                                                    @{cohost.username}{index < data.cohosts.length - 1 ? ',' : ''}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -572,6 +583,13 @@ END:VCALENDAR`;
             onClose={() => setShowSuccessModal(false)}
             eventData={data}
             actionType={modalActionType}
+        />
+
+        {/* Share Modal */}
+        <ShareModal 
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            eventData={data}
         />
         </>
     )

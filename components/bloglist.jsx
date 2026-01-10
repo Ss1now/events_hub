@@ -30,8 +30,6 @@ const BlogList = () => {
                 item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.eventType.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.theme.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                item.dressCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.host.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesStatus && matchesSearch;
         });
@@ -46,7 +44,7 @@ const BlogList = () => {
                     </svg>
                     <input 
                         type='text' 
-                        placeholder='Search events by name, location, theme, type...' 
+                        placeholder='Search events by name, location, type...' 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
@@ -76,8 +74,6 @@ const BlogList = () => {
                                 category={item.category}
                                 status={item.status}
                                 eventType={item.eventType}
-                                theme={item.theme}
-                                dressCode={item.dressCode}
                                 location={item.location}
                                 needReservation={item.needReservation}
                                 reserved={item.reserved}
@@ -85,6 +81,7 @@ const BlogList = () => {
                                 startDateTime={item.startDateTime}
                                 endDateTime={item.endDateTime}
                                 host={item.host}
+                                cohosts={item.cohosts}
                                 interestedUsers={item.interestedUsers}
                                 reservedUsers={item.reservedUsers}
                                 reservationDeadline={item.reservationDeadline}

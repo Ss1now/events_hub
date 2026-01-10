@@ -47,6 +47,17 @@ const registerUser = async (name = '', email, password, residentialCollege = '')
             return {success:false, msg:"Invalid email format"};
         }
 
+        // Generate username from email
+        const baseUsername = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
+        let username = baseUsername;
+        let counter = 1;
+        
+        // Ensure username is unique
+        while (await userModel.findOne({ username })) {
+            username = `${baseUsername}${counter}`;
+            counter++;
+        }
+
         // hashing password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password,salt);
@@ -56,6 +67,7 @@ const registerUser = async (name = '', email, password, residentialCollege = '')
             name: name || '',
             email:email,
             password:hashedPassword,
+            username:username,
             residentialCollege:residentialCollege
         });
 

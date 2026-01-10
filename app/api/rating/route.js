@@ -51,9 +51,9 @@ export async function POST(request) {
             return NextResponse.json({ success: false, msg: 'Event hosts cannot rate their own events' }, { status: 400 });
         }
 
-        // Check rating eligibility based on reservation requirement
+        // Check rating eligibility based on RSVP requirement
         if (event.needReservation) {
-            // For events that need reservation, only reserved users can rate
+            // For events that need RSVP, only RSVP'd users can rate
             const isReserved = event.reservedUsers && event.reservedUsers.some(id => id.toString() === userId);
             if (!isReserved) {
                 return NextResponse.json({ 
@@ -62,7 +62,7 @@ export async function POST(request) {
                 }, { status: 403 });
             }
         }
-        // For events without reservation requirement, anyone can rate (no additional check needed)
+        // For events without RSVP requirement, anyone can rate (no additional check needed)
 
         // Check if user already rated this event
         const existingRating = event.ratings.find(r => r.userId.toString() === userId);
@@ -154,3 +154,4 @@ export async function GET(request) {
         return NextResponse.json({ success: false, msg: 'Error fetching ratings' }, { status: 500 });
     }
 }
+

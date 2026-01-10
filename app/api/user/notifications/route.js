@@ -56,3 +56,44 @@ export async function GET(request) {
         return NextResponse.json({ success: false, msg: 'Error fetching notifications' }, { status: 500 });
     }
 }
+
+export async function PATCH(request) {
+    try {
+        const authHeader = request.headers.get('authorization');
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ success: false, msg: 'No token provided' }, { status: 401 });
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const body = await request.json();
+        const { notificationId, type } = body;
+
+        await connectDB();
+
+        if (type === 'eventUpdate') {
+            // Mark event update notification as read
+            const user = await userModel.findById(decoded.id);
+            
+            if (!user) {
+                return NextResponse.json({ success: false, msg: 'User not found' }, { status: 404 });
+            }
+
+            // Find and update the notification
+            const notification = user.eventUpdateNotifications.id(notificationId);
+            if (notification) {
+                notification.read = true;
+                await user.save();
+            }
+
+            return NextResponse.json({ success: true, msg: 'Notification marked as read' });
+        }
+
+        return NextResponse.json({ success: false, msg: 'Invalid notification type' }, { status: 400 });
+    } catch (error) {
+        console.error(error);
+        return NextResponse.json({ success: false, msg: 'Error updating notification' }, { status: 500 });
+    }
+}
