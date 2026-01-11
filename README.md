@@ -1,4 +1,4 @@
-# 🎉 Rice Party - Events Hub
+# 🎉 Rice Events - Events Hub
 
 A modern, full-stack event management platform built with Next.js 16, MongoDB, and React. Users can create, discover, and manage campus events with real-time ratings, RSVPs, and notifications.
 
@@ -6,6 +6,7 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 [![React](https://img.shields.io/badge/React-19.2.3-blue)](https://reactjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-9.1.2-green)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC)](https://tailwindcss.com/)
+[![Version](https://img.shields.io/badge/version-0.4.3-purple)](https://github.com/Ss1now/events_hub)
 
 ---
 

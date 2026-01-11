@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.3] - 2026-01-11
+
+### Changed
+
+#### Email System Refinements
+- **Password Reset Email Branding**
+  - Updated email subject from "Rice Events Hub" to "Rice Events"
+  - Updated email header title from "Rice Events Hub" to "Rice Events"
+  - Updated email body text from "Rice Events Hub" to "Rice Events"
+  - Updated email footer from "Rice Events Hub" to "Rice Events"
+  - Removed clock emoji (⏰) from expiration notice
+  - Removed lock emoji (🔒) from security notice
+  - Cleaner, more professional email appearance
+
+#### UI/UX Improvements
+- **Mobile Navigation Enhancement**
+  - Fixed Logout button visibility on mobile devices
+  - Logout button now displays on all screen sizes
+  - Consistent button styling across mobile and desktop
+  - Improved mobile header usability
+
+- **Rating System Refinement**
+  - Removed placeholder text from rating comment textarea
+  - Cleaner, more minimal rating popup interface
+  - Consistent with app-wide form simplification approach
+
+### Technical
+- Responsive button classes standardized across header component
+- Email template HTML updated for brand consistency
+- Form inputs streamlined for better UX
+
+---
+
 ## [0.4.2] - 2026-01-11
 
 ### Added

@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Resend only if API key is available
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // POST - Request password reset (send reset link)
 export async function POST(request) {
@@ -38,22 +39,22 @@ export async function POST(request) {
             const resetURL = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
             
             // Send email with Resend
-            if (process.env.RESEND_API_KEY) {
+            if (resend) {
                 try {
                     await resend.emails.send({
                         from: 'Rice Events <onboarding@resend.dev>', // Use your verified domain in production
                         to: email,
-                        subject: 'Reset Your Password - Rice Events Hub',
+                        subject: 'Reset Your Password - Rice Events',
                         html: `
                             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                                 <div style="text-align: center; margin-bottom: 30px;">
-                                    <h1 style="color: #7c3aed; margin: 0;">Rice Events Hub</h1>
+                                    <h1 style="color: #7c3aed; margin: 0;">Rice Events</h1>
                                 </div>
                                 <div style="background-color: #f9fafb; border-radius: 8px; padding: 30px;">
                                     <h2 style="color: #7c3aed; margin-top: 0;">Password Reset Request</h2>
                                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">Hi there,</p>
                                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-                                        You requested to reset your password for Rice Events Hub. Click the button below to reset it:
+                                        You requested to reset your password for Rice Events. Click the button below to reset it:
                                     </p>
                                     <div style="text-align: center; margin: 30px 0;">
                                         <a href="${resetURL}" 
@@ -69,14 +70,14 @@ export async function POST(request) {
                                     </p>
                                     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
                                         <p style="color: #9ca3af; font-size: 12px; line-height: 1.6; margin: 0;">
-                                            ⏰ This link will expire in <strong>1 hour</strong>.<br>
-                                            🔒 If you didn't request this, please ignore this email and your password will remain unchanged.
+                                            This link will expire in <strong>1 hour</strong>.<br>
+                                            If you didn't request this, please ignore this email and your password will remain unchanged.
                                         </p>
                                     </div>
                                 </div>
                                 <div style="text-align: center; margin-top: 20px;">
                                     <p style="color: #9ca3af; font-size: 12px;">
-                                        © 2026 Rice Events Hub. All rights reserved.
+                                        © 2026 Rice Events. All rights reserved.
                                     </p>
                                 </div>
                             </div>
