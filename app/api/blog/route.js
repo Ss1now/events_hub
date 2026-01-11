@@ -274,6 +274,10 @@ export async function PUT(request) {
                 // Send email notifications to subscribed users (async, don't wait)
                 // Use localhost for server-to-server communication
                 const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+                console.log(`[Email Trigger] Calling email API: ${apiUrl}/api/email/send`);
+                console.log(`[Email Trigger] Event ID: ${event._id.toString()}`);
+                console.log(`[Email Trigger] Event Title: ${event.title}`);
+                
                 fetch(`${apiUrl}/api/email/send`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -283,12 +287,12 @@ export async function PUT(request) {
                         changes: changes
                     })
                 }).then(res => {
-                    console.log('Update email API called, status:', res.status);
+                    console.log('[Email Trigger] Update email API called, status:', res.status);
                     return res.json();
                 }).then(data => {
-                    console.log('Update email response:', data);
+                    console.log('[Email Trigger] Update email response:', data);
                 }).catch(err => {
-                    console.error('Error triggering update emails:', err);
+                    console.error('[Email Trigger] Error triggering update emails:', err);
                 });
             }
         }

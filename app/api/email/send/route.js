@@ -343,6 +343,19 @@ export async function POST(request) {
 
             console.log(`[Email] Event found: ${event.title}`);
             
+            // First, let's see all affected users (for debugging)
+            const allAffectedUsers = await userModel.find({
+                $or: [
+                    { reservedEvents: eventId },
+                    { interestedEvents: eventId }
+                ]
+            }).select('email name emailSubscriptions');
+            
+            console.log(`[Email] Total affected users (RSVP'd or interested): ${allAffectedUsers.length}`);
+            allAffectedUsers.forEach(u => {
+                console.log(`  - ${u.email}, updates opt-in: ${u.emailSubscriptions?.updates || false}`);
+            });
+            
             // Find users who RSVP'd or showed interest and have updates enabled
             const users = await userModel.find({
                 $or: [
@@ -352,10 +365,7 @@ export async function POST(request) {
                 'emailSubscriptions.updates': true
             }).select('email name emailSubscriptions');
 
-            console.log(`[Email] Found ${users.length} users with updates enabled`);
-            users.forEach(u => {
-                console.log(`  - ${u.email}, updates: ${u.emailSubscriptions?.updates}`);
-            });
+            console.log(`[Email] Users with updates ENABLED: ${users.length}`);
 
             let emailsSent = 0;
 

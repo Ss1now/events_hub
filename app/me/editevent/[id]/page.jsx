@@ -71,15 +71,14 @@ export default function EditEventPage({ params }) {
                     }
                 }
 
-                // Format datetime for input (ISO string without timezone)
+                // Format datetime for input (convert to local timezone properly)
                 const formatDateTimeLocal = (dateString) => {
+                    if (!dateString) return '';
                     const date = new Date(dateString);
-                    const year = date.getFullYear();
-                    const month = String(date.getMonth() + 1).padStart(2, '0');
-                    const day = String(date.getDate()).padStart(2, '0');
-                    const hours = String(date.getHours()).padStart(2, '0');
-                    const minutes = String(date.getMinutes()).padStart(2, '0');
-                    return `${year}-${month}-${day}T${hours}:${minutes}`;
+                    // Get local timezone offset and adjust
+                    const offset = date.getTimezoneOffset();
+                    const localDate = new Date(date.getTime() - (offset * 60 * 1000));
+                    return localDate.toISOString().slice(0, 16);
                 };
 
                 // Set form data
