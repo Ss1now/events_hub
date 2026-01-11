@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { verifyAdmin } from "@/lib/utils/adminAuth";
 import mongoose from 'mongoose';
 import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
+import { sendUpdateEmails } from "@/lib/email/sendUpdateEmails";
 
 const LoadDB = async () => {
     await connectDB();
@@ -273,28 +274,9 @@ export async function PUT(request) {
                 
                 console.log(`Notified ${affectedUsers.length} users about event update`);
                 
-                // Send email notifications to subscribed users (async, don't wait)
-                // Use localhost for server-to-server communication
-                const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-                console.log(`[Email Trigger] Calling email API: ${apiUrl}/api/email/send`);
-                console.log(`[Email Trigger] Event ID: ${event._id.toString()}`);
-                console.log(`[Email Trigger] Event Title: ${event.title}`);
-                
-                fetch(`${apiUrl}/api/email/send`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'send-update',
-                        eventId: event._id.toString(),
-                        changes: changes
-                    })
-                }).then(res => {
-                    console.log('[Email Trigger] Update email API called, status:', res.status);
-                    return res.json();
-                }).then(data => {
-                    console.log('[Email Trigger] Update email response:', data);
-                }).catch(err => {
-                    console.error('[Email Trigger] Error triggering update emails:', err);
+                // Send email notifications to subscribed users (async, don't block response)
+                sendUpdateEmails(event._id.toString(), changes).catch(err => {
+                    console.error('[Email Trigger] Error sending update emails:', err);
                 });
             }
         }
