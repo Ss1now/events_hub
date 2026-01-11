@@ -60,8 +60,14 @@ export default function PostEventPage() {
             formData.append('images', image);
         });
         
-        formData.append('startDateTime', data.startDateTime);
-        formData.append('endDateTime', data.endDateTime);
+        // Convert datetime-local to ISO string to preserve timezone
+        // datetime-local gives us "2026-01-12T08:28" (no timezone)
+        // We convert it to a Date object (interprets as local time) then to ISO string
+        const startDateTimeISO = new Date(data.startDateTime).toISOString();
+        const endDateTimeISO = new Date(data.endDateTime).toISOString();
+        
+        formData.append('startDateTime', startDateTimeISO);
+        formData.append('endDateTime', endDateTimeISO);
         formData.append('eventType', data.eventType);
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);

@@ -103,6 +103,7 @@ export async function POST(request){
         }
        
         // Calculate status based on start and end times
+        // Frontend sends ISO strings with timezone (e.g., "2026-01-12T14:28:00.000Z")
         const now = new Date();
         const startTime = new Date(formData.get('startDateTime'));
         const endTime = new Date(formData.get('endDateTime'));
@@ -214,6 +215,7 @@ export async function PUT(request) {
         }
 
         // Update event fields
+        // Frontend sends ISO strings with timezone (e.g., "2026-01-12T14:28:00.000Z")
         const newStartDateTime = new Date(formData.get('startDateTime'));
         const newEndDateTime = new Date(formData.get('endDateTime'));
         
