@@ -35,11 +35,11 @@ const BlogList = () => {
         });
 
     return (
-        <div className='bg-gray-50 min-h-screen py-8'>
+        <div className='bg-gray-50 min-h-screen py-4 md:py-8'>
             {/* Search Bar */}
-            <div className='max-w-4xl mx-auto px-5 mb-8'>
+            <div className='max-w-4xl mx-auto px-4 sm:px-5 mb-4 md:mb-8'>
                 <div className='relative'>
-                    <svg className='absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
                     <input 
@@ -47,21 +47,21 @@ const BlogList = () => {
                         placeholder='Search events' 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
+                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
                     />
                 </div>
             </div>
 
             {/* Filter Tabs */}
-            <div className='flex justify-center gap-4 mb-8'>
-                <button onClick={()=>setMenu('future')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Upcoming</button>
-                <button onClick={()=>setMenu('live')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Happening Now</button>
-                <button onClick={()=>setMenu('past')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
+            <div className='flex justify-center gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8 px-4 overflow-x-auto'>
+                <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Upcoming</button>
+                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Now</button>
+                <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
             </div>
 
             {/* Event Cards */}
-            <div className='max-w-6xl mx-auto px-5'>
-                <div className='space-y-6'>
+            <div className='max-w-6xl mx-auto px-4 sm:px-5'>
+                <div className='space-y-4 md:space-y-6'>
                     {filteredEvents.length > 0 ? (
                         filteredEvents.map((item,index)=>{
                             return <BlogItem 

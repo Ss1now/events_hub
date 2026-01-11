@@ -42,58 +42,58 @@ const Header = () => {
     };
 
     return (
-        <div className='py-6 px-5 md:px-12 lg:px-28 bg-white'>
-            <div className='flex justify-between items-center mb-8'>
-                <Link href='/' className='flex items-center gap-3 cursor-pointer'>
-                    <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-24 sm:w-28 h-auto object-contain'/>
+        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-white'>
+            <div className='flex justify-between items-center mb-6 md:mb-8'>
+                <Link href='/' className='flex items-center gap-2 cursor-pointer'>
+                    <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain'/>
                 </Link>
-                <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-1.5 sm:gap-2 md:gap-3'>
                     {isLoggedIn ? (
                         <>
                             <button 
                                 onClick={() => router.push('/me')}
-                                className='bg-white text-black font-medium py-2 px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-sm'
+                                className='bg-white text-black font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-xs sm:text-sm'
                             >
-                                My Profile
+                                Profile
                             </button>
                             <button 
                                 onClick={handleLogout}
-                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
+                                className='hidden sm:block bg-black text-white font-medium py-2 px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
                             >
                                 Logout
                             </button>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'
+                                className='bg-black text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm whitespace-nowrap'
                             >
-                                Create event
+                                Create
                             </button>
                         </>
                     ) : (
                         <>
                             <Link href='/login'>
-                                <button className='bg-white text-black font-medium py-2 px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-sm'>
+                                <button className='bg-white text-black font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-xs sm:text-sm'>
                                     Login
                                 </button>
                             </Link>
                             <Link href='/register'>
-                                <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'>
+                                <button className='hidden sm:block bg-black text-white font-medium py-2 px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'>
                                     Register
                                 </button>
                             </Link>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
+                                className='bg-black text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm whitespace-nowrap'
                             >
-                                Create event
+                                Create
                             </button>
                         </>
                     )}
                 </div>
             </div>
-            <div className='text-center my-12'>
-                <h1 className='text-4xl sm:text-5xl font-bold mb-3'>What's The Move?</h1>
-                <p className='mt-4 max-w-[800px] m-auto text-sm sm:text-base text-gray-600'>Discover events</p>
+            <div className='text-center my-6 md:my-12'>
+                <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3'>What's The Move?</h1>
+                <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-600 px-4'>Discover events</p>
             </div>
         </div>
     )

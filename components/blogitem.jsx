@@ -218,19 +218,19 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
     
     return (
         <>
-        <div className='bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-6 flex gap-6 items-start border border-gray-100'>
+        <div className='bg-white rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row gap-4 sm:gap-5 md:gap-6 items-start border border-gray-100'>
             {/* Left side - Event info */}
-            <div className='flex-1'>
+            <div className='flex-1 w-full'>
                 {/* Event Title */}
                 <Link href={`/blogs/${id}`}>
-                    <h3 className='text-xl font-semibold text-gray-900 mb-2 hover:text-gray-700 cursor-pointer'>{title}</h3>
+                    <h3 className='text-lg sm:text-xl font-semibold text-gray-900 mb-2 hover:text-gray-700 cursor-pointer'>{title}</h3>
                 </Link>
                 
                 {/* Event Description */}
-                <p className='text-sm text-gray-600 mb-4'>{description}</p>
+                <p className='text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-none'>{description}</p>
                 
                 {/* Tags/Categories */}
-                <div className='flex flex-wrap gap-2 mb-4'>
+                <div className='flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4'>
                     <span className={`${statusBadge.bg} text-white text-xs px-3 py-1 rounded-full font-medium`}>{statusBadge.text}</span>
                     <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors'>{eventType}</span>
                     {isCapacityReached && (
@@ -320,24 +320,24 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
             </div>
             
             {/* Right side - Date badge and actions */}
-            <div className='flex flex-col items-end gap-4'>
+            <div className='flex sm:flex-col items-center sm:items-end gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start'>
                 <button 
                     onClick={handleAddToGoogleCalendar}
-                    className='text-center bg-gray-50 rounded-xl p-3 min-w-[80px] hover:bg-gray-100 transition-colors cursor-pointer group'
+                    className='text-center bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 min-w-[60px] sm:min-w-[80px] hover:bg-gray-100 transition-colors cursor-pointer group'
                     title='Add to Google Calendar'
                 >
-                    <div className='text-xs text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{eventDate?.month || 'Jan'}</div>
-                    <div className='text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{eventDate?.day || '1'}</div>
-                    <div className='text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add to Cal</div>
+                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{eventDate?.month || 'Jan'}</div>
+                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{eventDate?.day || '1'}</div>
+                    <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add Cal</div>
                 </button>
-                <div className='flex gap-2'>
+                <div className='flex gap-1.5 sm:gap-2'>
                     {(status === 'future' || status === 'live') && (
                         <>
                             {needReservation ? (
                                 <button 
                                     onClick={handleReserve}
                                     disabled={isCapacityReached || isRSVPDeadlinePassed}
-                                    className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-md font-medium transition-colors text-xs sm:text-sm ${
                                         isCapacityReached || isRSVPDeadlinePassed
                                             ? 'bg-gray-400 text-white cursor-not-allowed'
                                             : 'bg-black text-white hover:bg-gray-800'
@@ -348,7 +348,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                             ) : (
                                 <button 
                                     onClick={handleInterested}
-                                    className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                    className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                                         isInterested 
                                             ? 'bg-blue-600 text-white hover:bg-blue-700' 
                                             : 'bg-black text-white hover:bg-gray-800'
@@ -366,16 +366,16 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                 e.stopPropagation();
                                 setShowRatingModal(true);
                             }}
-                            className='px-6 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1'
+                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1'
                         >
-                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className='w-3 h-3 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
                             </svg>
-                            Rate
+                            <span className='hidden sm:inline'>Rate</span>
                         </button>
                     )}
                     <Link href={`/blogs/${id}`}>
-                        <button className='bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors'>View</button>
+                        <button className='bg-white border border-gray-300 text-gray-700 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-50 transition-colors whitespace-nowrap'>View</button>
                     </Link>
                 </div>
             </div>

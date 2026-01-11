@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.1] - 2026-01-11
+
+### Changed
+
+#### Mobile Responsive Design
+- **Complete mobile optimization across all pages**
+  - Header: Reduced padding, smaller buttons, compact layout on mobile
+  - Hidden "Logout" and "Register" buttons on small screens for cleaner UI
+  - Button text shortened ("Create event" → "Create", "My Profile" → "Profile")
+  - Responsive font sizes throughout (text-xs to text-base scaling)
+  
+- **Homepage & Event List**
+  - Adjusted search bar sizing for mobile screens
+  - Filter tabs now horizontally scrollable on mobile
+  - Filter button text shortened ("Happening Now" → "Now")
+  - Reduced gaps and padding on small screens
+  - Improved event card spacing (space-y-4 on mobile, space-y-6 on desktop)
+
+- **Event Cards (BlogItem)**
+  - Cards stack vertically on mobile, horizontal on desktop
+  - Date badge and action buttons rearranged for mobile (horizontal layout)
+  - Reduced button padding and text sizes on mobile
+  - Description limited to 2 lines on mobile with line-clamp
+  - Smaller icons and badge text
+  - "Rate" button text hidden on mobile (icon only)
+  - Adjusted calendar badge sizing (min-w-[60px] on mobile, min-w-[80px] on desktop)
+
+- **Event Detail Page**
+  - Responsive header with smaller logo and compact "Create" button
+  - Event title scales from text-2xl (mobile) to text-4xl (desktop)
+  - Event info cards use reduced padding on mobile
+  - Action buttons stack vertically on mobile, horizontal on desktop
+  - Calendar integration buttons stack on mobile
+  - Share button shows icon only on mobile
+  - Download ICS button text shortened to ".ics" on mobile
+  - Responsive date badge with adjusted font sizes
+
+- **Typography & Spacing**
+  - Consistent text scaling: text-xs/sm on mobile → text-sm/base on desktop
+  - Reduced padding throughout: p-4 on mobile → p-6/p-8 on desktop
+  - Smaller gaps between elements on mobile
+  - Border radius adjustments: rounded-xl on mobile → rounded-2xl on desktop
+
+### Technical
+- Added Tailwind responsive classes (sm:, md:, lg:) across all components
+- Implemented flex-col/flex-row transitions for layout changes
+- Used whitespace-nowrap for button text that shouldn't wrap
+- Applied line-clamp for text truncation on mobile
+- Optimized touch targets for mobile interaction
+
+---
+
 ## [0.4.0] - 2026-01-11
 
 ### Added

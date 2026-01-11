@@ -209,45 +209,45 @@ const Page = ({ params }) => {
     
     return (
         <>
-        <div className='bg-white py-6 px-5 md:px-12 lg:px-28 border-b border-gray-200'>
+        <div className='bg-white py-4 px-4 md:py-6 md:px-12 lg:px-28 border-b border-gray-200'>
             <div className='flex justify-between items-center'>
             <Link href='/'>
-                <div className='flex items-center gap-3 cursor-pointer hover:opacity-80'>
-                    <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-12 h-12 object-contain'/>
+                <div className='flex items-center gap-2 cursor-pointer hover:opacity-80'>
+                    <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-10 h-10 md:w-12 md:h-12 object-contain'/>
                     <div>
-                        <h2 className='text-xl font-semibold'>Rice Events</h2>
+                        <h2 className='text-lg md:text-xl font-semibold'>Rice Events</h2>
                     </div>
                 </div>
             </Link>
-            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Create an event</button>
+            <button className='bg-black text-white font-medium py-1.5 px-3 md:py-2 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs md:text-sm whitespace-nowrap'>Create</button>
             </div>
         </div>
-        <div className='bg-gray-50 min-h-screen py-12'>
-            <div className='max-w-4xl mx-auto px-5 md:px-12'>
+        <div className='bg-gray-50 min-h-screen py-6 md:py-12'>
+            <div className='max-w-4xl mx-auto px-4 sm:px-5 md:px-12'>
                 {/* Event Header */}
-                <div className='bg-white rounded-2xl shadow-sm p-8 mb-6'>
-                    <div className='flex justify-between items-start mb-6'>
+                <div className='bg-white rounded-xl md:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8 mb-4 md:mb-6'>
+                    <div className='flex justify-between items-start mb-4 md:mb-6'>
                         <div className='flex-1'>
-                            <h1 className='text-3xl sm:text-4xl font-bold text-gray-900 mb-3'>{data.title}</h1>
-                            <p className='text-lg text-gray-600 mb-4'>{data.description}</p>
+                            <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-3'>{data.title}</h1>
+                            <p className='text-sm sm:text-base md:text-lg text-gray-600 mb-3 md:mb-4'>{data.description}</p>
                             
                             {/* Event Meta Info */}
-                            <div className='flex flex-wrap gap-4 text-sm text-gray-600 mb-4'>
-                                <div className='flex items-center gap-2'>
-                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <div className='flex flex-wrap gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-gray-600 mb-3 md:mb-4'>
+                                <div className='flex items-center gap-1.5 sm:gap-2'>
+                                    <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
                                     </svg>
-                                    <span>{new Date(data.startDateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, {new Date(data.startDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} → {new Date(data.endDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                                    <span className='text-xs sm:text-sm'>{new Date(data.startDateTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}, {new Date(data.startDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })} → {new Date(data.endDateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <div className='flex items-center gap-1.5 sm:gap-2'>
+                                    <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
                                     </svg>
-                                    <span>{data.location}</span>
+                                    <span className='text-xs sm:text-sm'>{data.location}</span>
                                 </div>
                                 {data.needReservation && (
-                                    <div className='flex items-center gap-2'>
+                                    <div className='flex items-center gap-1.5 sm:gap-2'>
                                         <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
                                         </svg>
@@ -302,17 +302,17 @@ const Page = ({ params }) => {
                                 const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(data.location)}`;
                                 window.open(googleCalendarUrl, '_blank');
                             }}
-                            className='text-center bg-gray-50 rounded-xl p-4 ml-6 hover:bg-gray-100 transition-colors cursor-pointer group'
+                            className='text-center bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4 ml-3 md:ml-6 hover:bg-gray-100 transition-colors cursor-pointer group flex-shrink-0'
                             title='Add to Google Calendar'
                         >
-                            <div className='text-sm text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
-                            <div className='text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).getDate()}</div>
-                            <div className='text-xs text-gray-400 mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add to Cal</div>
+                            <div className='text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
+                            <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).getDate()}</div>
+                            <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 md:mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap'>Add Cal</div>
                         </button>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className='flex gap-3 pt-6 border-t border-gray-200'>
+                    <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 md:pt-6 border-t border-gray-200'>
                         {(data.status === 'future' || data.status === 'live') && (
                             <>
                                 {data.needReservation ? (
@@ -321,7 +321,7 @@ const Page = ({ params }) => {
                                             <button 
                                                 onClick={handleReserve}
                                                 disabled={isCapacityReached || isRSVPDeadlinePassed}
-                                                className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                                                className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                                                     isCapacityReached || isRSVPDeadlinePassed
                                                         ? 'bg-gray-400 text-white cursor-not-allowed'
                                                         : 'bg-black text-white hover:bg-gray-800'
@@ -332,7 +332,7 @@ const Page = ({ params }) => {
                                         ) : (
                                             <button 
                                                 onClick={handleCancelRSVP}
-                                                className='flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors'
+                                                className='flex-1 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium hover:bg-red-700 transition-colors'
                                             >
                                                 Cancel RSVP
                                             </button>
@@ -341,7 +341,7 @@ const Page = ({ params }) => {
                                 ) : (
                                     <button 
                                         onClick={handleInterested}
-                                        className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
+                                        className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                                             isInterested 
                                                 ? 'bg-blue-600 text-white hover:bg-blue-700' 
                                                 : 'bg-black text-white hover:bg-gray-800'
@@ -354,29 +354,29 @@ const Page = ({ params }) => {
                         )}
                         <button 
                             onClick={() => setShowShareModal(true)}
-                            className='px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2'
+                            className='px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2'
                         >
-                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z' />
                             </svg>
-                            Share
+                            <span className='hidden sm:inline'>Share</span>
                         </button>
                     </div>
                     
                     {/* RSVP deadline info */}
                     {data.needReservation && data.reservationDeadline && (
-                        <div className='mt-4 p-3 bg-blue-50 rounded-lg'>
-                            <p className='text-sm text-blue-800'>
-                                <span className='font-semibold'>RSVP Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                        <div className='mt-3 md:mt-4 p-2.5 sm:p-3 bg-blue-50 rounded-lg'>
+                            <p className='text-xs sm:text-sm text-blue-800'>
+                                <span className='font-semibold'>RSVP Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                             </p>
                         </div>
                     )}
                     
                     {/* Add to Calendar Section */}
                     {(isInterested || isReserved) && (
-                        <div className='mt-4 p-4 bg-gray-50 rounded-lg'>
-                            <p className='text-sm font-semibold text-gray-700 mb-3'>Add to Calendar</p>
-                            <div className='flex gap-3'>
+                        <div className='mt-3 md:mt-4 p-3 md:p-4 bg-gray-50 rounded-lg'>
+                            <p className='text-xs sm:text-sm font-semibold text-gray-700 mb-2 md:mb-3'>Add to Calendar</p>
+                            <div className='flex flex-col sm:flex-row gap-2 sm:gap-3'>
                                 <button
                                     onClick={() => {
                                         const formatGoogleDate = (dateString) => {
@@ -389,12 +389,12 @@ const Page = ({ params }) => {
                                         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(data.location)}`;
                                         window.open(googleCalendarUrl, '_blank');
                                     }}
-                                    className='flex-1 bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
+                                    className='flex-1 bg-blue-600 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
                                 >
-                                    <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
+                                    <svg className='w-4 h-4 sm:w-5 sm:h-5' viewBox='0 0 24 24' fill='currentColor'>
                                         <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
                                     </svg>
-                                    Google Calendar
+                                    <span>Google Calendar</span>
                                 </button>
                                 <button
                                     onClick={() => {
@@ -430,12 +430,13 @@ END:VCALENDAR`;
                                         link.click();
                                         document.body.removeChild(link);
                                     }}
-                                    className='flex-1 bg-gray-700 text-white py-2 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2'
+                                    className='flex-1 bg-gray-700 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
                                 >
-                                    <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                    <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10' />
                                     </svg>
-                                    Download .ics
+                                    <span className='hidden sm:inline'>Download .ics</span>
+                                    <span className='sm:hidden'>.ics</span>
                                 </button>
                             </div>
                         </div>
@@ -443,10 +444,10 @@ END:VCALENDAR`;
                 </div>
 
                 {/* Event Details */}
-                <div className='bg-white rounded-2xl shadow-sm p-8'>
+                <div className='bg-white rounded-xl md:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8'>
                     {/* Image Gallery - Only show if images exist */}
                     {data.images && data.images.length > 0 && (
-                        <div className='mb-8'>
+                        <div className='mb-6 md:mb-8'>
                             {data.images.length === 1 ? (
                                 <Image className='w-full rounded-lg' src={data.images[0]} width={800} height={500} alt='Event image'/>
                             ) : (
