@@ -7,7 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.5.1] - 2026-01-11
+## [0.5.3] - 2026-01-11
+
+### Changed
+
+#### Email Subscription Modal UI Simplification
+- **Cleaner, more minimal design**
+  - Removed white bell icon box from modal header
+  - Removed privacy note info box
+  - Simplified header layout with centered text
+  - Reduced visual clutter for better user experience
+  - Streamlined appearance while maintaining functionality
+
+---
+
+## [0.5.2] - 2026-01-11
 
 ### Added
 
@@ -48,6 +62,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **User Model**
   - Added `emailSubscriptions.patchNotes`: Boolean (default: false)
 
+#### Documentation
+- **PATCH_NOTES_ADMIN.md** - Complete admin guide
+  - How to view and manage subscribers
+  - Step-by-step guide for sending announcements
+  - Email templates and best practices
+  - Privacy guidelines (using BCC)
+  - Troubleshooting tips
+  
+- **EMAIL_SUBSCRIPTION.md** - Updated with patch notes documentation
+  - Added fourth notification type
+  - Admin panel documentation
+  - API endpoint reference
+
+---
+
+## [0.5.1] - 2026-01-11
+
+### Changed
+
 #### Automated Scheduling Migration
 - **Migrated from Vercel Cron to GitHub Actions** (Free Forever)
   - GitHub Actions workflows for automated email jobs
@@ -66,7 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.github/workflows/hourly-reminders.yml` - Hourly reminder checks
 - Both workflows use GitHub Secrets (APP_URL, CRON_SECRET) for secure API calls
 
-#### Documentation
+### Documentation
 - **GITHUB_ACTIONS_SETUP.md** - Step-by-step GitHub Actions setup
   - Complete setup instructions for free automation
   - GitHub Secrets configuration (APP_URL, CRON_SECRET)
