@@ -7,6 +7,173 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - 2026-01-11
+
+### Added
+
+#### Email Subscription System
+- **Complete email notification preferences management**
+  - Bell icon button in header for easy access
+  - Beautiful subscription preferences modal
+  - Three subscription types: Recommendations, Reminders, Updates
+  - Frequency control (daily or weekly) for recommendations
+  - Privacy information and unsubscribe options
+  - Visual indicator (purple dot) when subscriptions are active
+
+- **Event Recommendations Email**
+  - Intelligent multi-tier recommendation algorithm
+  - **Tier 1**: Personalized suggestions based on user's past event categories/locations
+  - **Tier 2**: Popular events (sorted by ratings) if <3 personalized matches
+  - **Tier 3**: Any upcoming events if still <3 total matches
+  - Handles early launch scenarios with few total events
+  - Works for new users with no interaction history
+  - Sends 1-5 relevant upcoming events (minimum 1 if any available)
+  - Professional HTML email template with event cards
+  - User-configurable frequency (daily or weekly)
+  - Scheduled via cron job
+  
+- **Event Reminders Email**
+  - Automated reminders before events user is attending
+  - Two-tier reminder system: 24 hours + 1 hour before event
+  - Only sent to users who RSVP'd to the event
+  - Yellow alert banner design
+  - Full event details with date, time, location
+  - "View Event Details" call-to-action button
+
+- **Event Updates Email**
+  - Instant notifications when hosts edit events
+  - Sent to users who RSVP'd or showed interest
+  - Highlights what changed in yellow info box
+  - Blue update banner design
+  - Triggered automatically on event edit
+  - Only for future and live events (not past events)
+
+#### Database Schema Updates
+- **User Model**
+  - `emailSubscriptions.recommendations`: Boolean (default: false)
+  - `emailSubscriptions.reminders`: Boolean (default: false)
+  - `emailSubscriptions.updates`: Boolean (default: false)
+  - `emailSubscriptions.frequency`: String ('daily' or 'weekly', default: 'weekly')
+
+- **EmailQueue Model** (New Collection)
+  - Queue system for scheduled email delivery
+  - Tracks sent status and errors
+  - Supports all three email types
+  - Indexed for efficient querying
+  - Stores metadata for personalization
+
+#### API Endpoints
+- **`GET /api/email-subscription`** - Fetch user's email preferences
+- **`POST /api/email-subscription`** - Update email preferences
+- **`POST /api/email/send`** (action: 'send-recommendations') - Trigger recommendation emails
+- **`POST /api/email/send`** (action: 'send-reminder') - Send event reminder
+- **`POST /api/email/send`** (action: 'send-update') - Send event update notification
+- **`GET /api/cron/recommendations`** - Vercel Cron endpoint for weekly recommendations
+- **`GET /api/cron/reminders`** - Vercel Cron endpoint for hourly reminder checks
+
+#### UI Components
+- `components/EmailSubscriptionButton.jsx` - Bell icon with active indicator
+- `components/EmailSubscriptionModal.jsx` - Full preferences management UI
+  - Toggle switches for each notification type
+  - Frequency selector (Daily/Weekly)
+  - Privacy information box
+  - Smooth animations and transitions
+
+#### Email Templates
+- **Professional HTML design** with Rice Events branding
+  - Purple gradient headers
+  - Responsive layouts for mobile and desktop
+  - Clear call-to-action buttons
+  - Event cards with images and details
+  - Unsubscribe/manage preferences links
+  - Consistent footer with copyright
+
+- **Recommendation Template**
+  - Grid of 3-5 event cards
+  - Each card shows: title, date, time, location, description preview
+  - Individual "View Event" buttons
+  - Personalized greeting
+
+- **Reminder Template**
+  - Countdown notice (24h or 1h)
+  - Formatted date display ("Friday, January 12, 2026")
+  - Full event information
+  - Single prominent CTA button
+
+- **Update Template**
+  - Blue alert banner
+  - Changes summary in highlighted box
+  - Updated event details
+  - Direct link to event page
+
+#### Documentation
+- **EMAIL_SUBSCRIPTION.md** - Complete guide for email system
+  - System overview and architecture
+  - Database schema documentation
+  - API endpoint reference
+  - Email template specifications
+  - Scheduling and cron job setup
+  - Resend configuration guide
+  - Testing procedures
+  - Privacy and unsubscribe handling
+  - Troubleshooting guide
+  - Performance considerations
+
+#### Automated Scheduling
+- **Vercel Cron Integration**
+  - `vercel.json` configuration for automated email jobs
+  - Weekly recommendations cron (Monday 9am UTC)
+  - Hourly reminders cron (checks every hour)
+  - Secure cron authentication with CRON_SECRET
+  - Automatic event detection for 24h and 1h reminders
+  - Smart time window detection (23-25h for 24h reminders, 30-90min for 1h reminders)
+  - Error logging and reporting for failed sends
+  - Production-ready with Vercel deployment
+
+### Changed
+
+#### Header Component
+- **Email subscription integration**
+  - Added bell icon button next to Profile
+  - Bell icon fills when user has active subscriptions
+  - Purple notification dot indicator
+  - Responsive sizing for mobile and desktop
+  - Modal integration
+
+#### Event Edit API
+- **Automatic email notifications**
+  - Triggers update emails when event is edited
+  - Async email sending (non-blocking)
+  - Only notifies subscribed users
+  - Passes change summary to email
+
+#### Environment Variables
+- Updated `.env.example` with email system variables
+- RESEND_API_KEY remains optional for development
+- Added CRON_SECRET for secure cron job authentication
+
+### Technical
+- Resend SDK integration with professional templates
+- Async email sending to prevent blocking
+- Email queue system for scheduled delivery
+- Efficient database queries with proper indexing
+- Error handling and logging for failed emails
+- Console fallback when RESEND_API_KEY not set
+- Personalization algorithm for recommendations
+- Event status checking (future/live/past)
+- Batch email processing for recommendations
+- Individual email processing for reminders/updates
+
+### Security
+- JWT authentication for all email preference APIs
+- User can only update own preferences
+- Email addresses never exposed to other users
+- Unsubscribe links in all emails
+- Privacy notes included in UI and emails
+- No email sharing with third parties
+
+---
+
 ## [0.4.3] - 2026-01-11
 
 ### Changed

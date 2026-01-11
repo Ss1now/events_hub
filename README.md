@@ -6,7 +6,7 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 [![React](https://img.shields.io/badge/React-19.2.3-blue)](https://reactjs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-9.1.2-green)](https://www.mongodb.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC)](https://tailwindcss.com/)
-[![Version](https://img.shields.io/badge/version-0.4.3-purple)](https://github.com/Ss1now/events_hub)
+[![Version](https://img.shields.io/badge/version-0.5.0-purple)](https://github.com/Ss1now/events_hub)
 
 ---
 
@@ -71,6 +71,19 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 - **Action Options** - View event details or dismiss notifications
 - **Slide-in Animations** - Smooth Framer Motion animations from top-right
 
+### 📧 Email Subscription System
+- **Event Recommendations** - Intelligent multi-tier algorithm sends personalized event suggestions
+  - Tier 1: Matches based on your past event categories and locations
+  - Tier 2: Popular highly-rated events as fallback
+  - Tier 3: Any upcoming events if needed
+  - Works even during early launch with few events or for new users
+  - Weekly or daily frequency options
+- **Event Reminders** - Automated reminders before events you RSVP'd to (24h + 1h before)
+- **Event Updates** - Instant email notifications when hosts edit events you're interested in
+- **Subscription Management** - Bell icon in header with beautiful preferences modal
+- **Professional Templates** - Rice Events branded HTML emails with event cards
+- **Powered by Resend** - Reliable email delivery with Vercel Cron automation
+
 ### 🤝 Co-hosting System
 - **Auto-generated Usernames** - Unique usernames created from email on registration
 - **Username Management** - Edit usernames in profile with validation (3-20 chars)
@@ -86,6 +99,13 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
   - Secure token-based reset (1-hour expiration)
   - Email delivery via Resend with professional templates
   - Token verification and validation
+- **Email Subscriptions** - Comprehensive notification system with user preferences
+  - **Event Recommendations** - Personalized weekly/daily event suggestions based on interests
+  - **Event Reminders** - Automated notifications 24h and 1h before RSVP'd events
+  - **Event Updates** - Instant alerts when hosts modify events you're interested in
+  - Bell icon in header with subscription management modal
+  - Granular control over each notification type
+  - Beautiful HTML email templates with Rice Events branding
 - **User Profile** - Personal dashboard showing interested/reserved/participated events
 - **Username System** - Unique @usernames with editing capability
 - **My Events** - View and manage your created and co-hosted events

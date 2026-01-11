@@ -253,7 +253,7 @@ export async function PUT(request) {
                 // Create a summary of changes
                 const changes = `Event updated`;
                 
-                // Add notification to each affected user
+                // Add in-app notification to each affected user
                 await userModel.updateMany(
                     { _id: { $in: affectedUsers } },
                     {
@@ -270,6 +270,17 @@ export async function PUT(request) {
                 );
                 
                 console.log(`Notified ${affectedUsers.length} users about event update`);
+                
+                // Send email notifications to subscribed users (async, don't wait)
+                fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/email/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'send-update',
+                        eventId: event._id.toString(),
+                        changes: changes
+                    })
+                }).catch(err => console.error('Error triggering update emails:', err));
             }
         }
 

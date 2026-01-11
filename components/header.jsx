@@ -6,9 +6,12 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import EmailSubscriptionButton from './EmailSubscriptionButton';
+import EmailSubscriptionModal from './EmailSubscriptionModal';
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [showEmailModal, setShowEmailModal] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -50,6 +53,7 @@ const Header = () => {
                 <div className='flex items-center gap-1.5 sm:gap-2 md:gap-3'>
                     {isLoggedIn ? (
                         <>
+                            <EmailSubscriptionButton onOpen={() => setShowEmailModal(true)} />
                             <button 
                                 onClick={() => router.push('/me')}
                                 className='bg-white text-black font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-xs sm:text-sm'
@@ -95,8 +99,10 @@ const Header = () => {
                 <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3'>What's The Move?</h1>
                 <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-600 px-4'>Discover events</p>
             </div>
+            
+            <EmailSubscriptionModal isOpen={showEmailModal} onClose={() => setShowEmailModal(false)} />
         </div>
     )
 }
 
-export default Header
+export default Header;
