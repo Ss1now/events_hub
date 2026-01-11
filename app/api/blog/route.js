@@ -1,13 +1,11 @@
 import { connectDB } from "@/lib/config/db"
 const { NextResponse } = require("next/server")
-import {writeFile, mkdir} from 'fs/promises';
 import Blogmodel from "@/lib/models/blogmodel";
 import userModel from "@/lib/models/usermodel";
-import path from 'path';
-const fs = require('fs');
 import jwt from 'jsonwebtoken';
 import { verifyAdmin } from "@/lib/utils/adminAuth";
 import mongoose from 'mongoose';
+import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
 
 const LoadDB = async () => {
     await connectDB();
@@ -95,20 +93,12 @@ export async function POST(request){
         const images = formData.getAll('images');
         const imageUrls = [];
         
-        // Process multiple images
+        // Process multiple images - upload to Cloudinary
         if (images && images.length > 0) {
-            const dir = './public/images/blogs';
-            await mkdir(dir, { recursive: true });
-            
-            for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                if (image && image.size > 0) {
-                    const imageByteData = await image.arrayBuffer();
-                    const buffer = Buffer.from(imageByteData);
-                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
-                    await writeFile(filePath, buffer);
-                    imageUrls.push(`/images/blogs/${timestamp}_${i}_${image.name}`);
-                }
+            const validImages = images.filter(img => img && img.size > 0);
+            if (validImages.length > 0) {
+                const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'events');
+                imageUrls.push(...uploadedUrls);
             }
         }
        
@@ -212,30 +202,12 @@ export async function PUT(request) {
         
         // Only process new images if uploaded
         if (newImages && newImages.length > 0 && newImages[0].size > 0) {
-            const dir = './public/images/blogs';
-            await mkdir(dir, { recursive: true });
+            const validImages = newImages.filter(img => img && img.size > 0);
+            const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'events');
             
-            const uploadedUrls = [];
-            for (let i = 0; i < newImages.length; i++) {
-                const image = newImages[i];
-                if (image && image.size > 0) {
-                    const imageByteData = await image.arrayBuffer();
-                    const buffer = Buffer.from(imageByteData);
-                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
-                    await writeFile(filePath, buffer);
-                    uploadedUrls.push(`/images/blogs/${timestamp}_${i}_${image.name}`);
-                }
-            }
-            
-            // Delete old images if new ones uploaded
+            // Delete old images from Cloudinary if new ones uploaded
             if (event.images && event.images.length > 0) {
-                event.images.forEach(oldImg => {
-                    try {
-                        fs.unlink(`./public${oldImg}`, () => {});
-                    } catch (err) {
-                        console.log('Error deleting old image:', err);
-                    }
-                });
+                await deleteMultipleFromCloudinary(event.images);
             }
             
             imageUrls = uploadedUrls;
@@ -347,15 +319,9 @@ export async function DELETE(request){
             return NextResponse.json({ success: false, msg: 'Unauthorized to delete this post' }, { status: 403 });
         }
 
-        // Delete image files if they exist
+        // Delete image files from Cloudinary if they exist
         if (blog.images && blog.images.length > 0) {
-            blog.images.forEach(image => {
-                try {
-                    fs.unlink(`./public${image}`, () => {});
-                } catch (err) {
-                    console.log('Error deleting image file:', err);
-                }
-            });
+            await deleteMultipleFromCloudinary(blog.images);
         }
         
         await Blogmodel.findByIdAndDelete(id);

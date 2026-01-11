@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import Blogmodel from "@/lib/models/blogmodel";
 import userModel from "@/lib/models/usermodel";
 import jwt from 'jsonwebtoken';
-import {writeFile, mkdir} from 'fs/promises';
+import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
 
 // POST - Submit a rating/review
 export async function POST(request) {
@@ -70,22 +70,13 @@ export async function POST(request) {
             return NextResponse.json({ success: false, msg: 'You have already rated this event' }, { status: 400 });
         }
 
-        // Process images
+        // Process images - upload to Cloudinary
         const imageUrls = [];
         if (images && images.length > 0) {
-            const timestamp = Date.now();
-            const dir = './public/images/reviews';
-            await mkdir(dir, { recursive: true });
-
-            for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                if (image && image.size > 0) {
-                    const imageByteData = await image.arrayBuffer();
-                    const buffer = Buffer.from(imageByteData);
-                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
-                    await writeFile(filePath, buffer);
-                    imageUrls.push(`/images/reviews/${timestamp}_${i}_${image.name}`);
-                }
+            const validImages = images.filter(img => img && img.size > 0);
+            if (validImages.length > 0) {
+                const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'reviews');
+                imageUrls.push(...uploadedUrls);
             }
         }
 
@@ -200,22 +191,19 @@ export async function PUT(request) {
 
         const existingRating = event.ratings[existingRatingIndex];
 
-        // Process images
+        // Process images - upload to Cloudinary
         let imageUrls = keepExistingImages ? existingRating.images : [];
+        
+        // If not keeping existing images and they exist, delete them from Cloudinary
+        if (!keepExistingImages && existingRating.images && existingRating.images.length > 0) {
+            await deleteMultipleFromCloudinary(existingRating.images);
+        }
+        
         if (images && images.length > 0 && images[0].size > 0) {
-            const timestamp = Date.now();
-            const dir = './public/images/reviews';
-            await mkdir(dir, { recursive: true });
-
-            for (let i = 0; i < images.length; i++) {
-                const image = images[i];
-                if (image && image.size > 0) {
-                    const imageByteData = await image.arrayBuffer();
-                    const buffer = Buffer.from(imageByteData);
-                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
-                    await writeFile(filePath, buffer);
-                    imageUrls.push(`/images/reviews/${timestamp}_${i}_${image.name}`);
-                }
+            const validImages = images.filter(img => img && img.size > 0);
+            if (validImages.length > 0) {
+                const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'reviews');
+                imageUrls = [...imageUrls, ...uploadedUrls];
             }
         }
 
