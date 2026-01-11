@@ -30,7 +30,7 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
                     type='checkbox'
                     checked={isSelected}
                     onChange={() => toggleSelect(mongoId)}
-                    className='w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500'
+                    className='w-4 h-4 text-[#00205B] rounded focus:ring-2 focus:ring-blue-500'
                 />
             </td>
             <td className='px-6 py-4 whitespace-nowrap'>

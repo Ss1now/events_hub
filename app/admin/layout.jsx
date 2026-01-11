@@ -55,7 +55,7 @@ export default function Layout({children}){
                                     <p className='text-sm font-medium text-gray-900'>{user.name || 'Admin'}</p>
                                     <p className='text-xs text-gray-500'>{user.email}</p>
                                 </div>
-                                <div className='w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold'>
+                                <div className='w-10 h-10 bg-[#00205B] rounded-full flex items-center justify-center text-white font-semibold'>
                                     {(user.name || user.email || 'A').charAt(0).toUpperCase()}
                                 </div>
                             </div>

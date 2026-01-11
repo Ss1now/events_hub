@@ -148,7 +148,7 @@ const CohostInvitationNotification = () => {
                                 </button>
                                 <button
                                     onClick={handleViewEvent}
-                                    className='bg-blue-600 text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors'
+                                    className='bg-[#00205B] text-white py-2 px-3 rounded-lg text-sm font-medium hover:bg-[#001840] transition-colors'
                                     title='View Event'
                                 >
                                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

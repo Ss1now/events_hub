@@ -82,7 +82,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
             case 'live':
                 return { bg: 'bg-green-500', text: '#HAPPENING NOW' };
             case 'future':
-                return { bg: 'bg-blue-500', text: '#UPCOMING' };
+                return { bg: 'bg-[#00205B]', text: '#UPCOMING' };
             case 'past':
                 return { bg: 'bg-gray-500', text: '#PAST' };
             default:
@@ -311,11 +311,11 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </>
                     )}
                     {!needReservation && (status === 'future' || status === 'live') && (
-                        <div className='flex items-center gap-1'>
-                            <svg className='w-4 h-4 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <div className='flex items-center gap-1.5 text-xs sm:text-sm'>
+                            <svg className='w-4 h-4 text-[#00205B]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
                             </svg>
-                            <span className='text-blue-600 font-medium'>{interestedCount} interested</span>
+                            <span className='text-[#00205B] font-medium'>{interestedCount} interested</span>
                         </div>
                     )}
                 </div>
@@ -355,8 +355,8 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     className='text-center bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 min-w-[60px] sm:min-w-[80px] hover:bg-gray-100 transition-colors cursor-pointer group'
                     title='Add to Google Calendar'
                 >
-                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{eventDate?.month || 'Jan'}</div>
-                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{eventDate?.day || '1'}</div>
+                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-[#00205B] transition-colors'>{eventDate?.month || 'Jan'}</div>
+                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-[#00205B] transition-colors'>{eventDate?.day || '1'}</div>
                     <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add Cal</div>
                 </button>
                 <div className='flex gap-1.5 sm:gap-2'>
@@ -379,7 +379,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                     onClick={handleInterested}
                                     className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                                         isInterested 
-                                            ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                            ? 'bg-[#00205B] text-white hover:bg-[#001840]' 
                                             : 'bg-black text-white hover:bg-gray-800'
                                     }`}
                                 >
@@ -395,7 +395,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                 e.stopPropagation();
                                 setShowRatingModal(true);
                             }}
-                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center gap-1'
+                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-[#00205B] text-white hover:bg-[#001840] transition-colors flex items-center gap-1'
                         >
                             <svg className='w-3 h-3 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
@@ -517,7 +517,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                             <button
                                 type='submit'
                                 disabled={submittingRating || rating === 0}
-                                className='flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                className='flex-1 px-4 py-2 bg-[#00205B] text-white rounded-lg hover:bg-[#001840] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed'
                             >
                                 {submittingRating ? 'Submitting...' : 'Submit Rating'}
                             </button>

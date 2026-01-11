@@ -101,7 +101,7 @@ const ReviewList = ({ reviews, averageRating, totalRatings, onEditReview }) => {
                             <div className='flex items-start justify-between mb-4'>
                                 <div className='flex items-center gap-3'>
                                     {/* User Avatar */}
-                                    <div className='w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg'>
+                                    <div className='w-12 h-12 bg-[#00205B] rounded-full flex items-center justify-center text-white font-bold text-lg'>
                                         {review.userName.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
@@ -117,7 +117,7 @@ const ReviewList = ({ reviews, averageRating, totalRatings, onEditReview }) => {
                                     {currentUserId && review.userId.toString() === currentUserId && (
                                         <button
                                             onClick={() => onEditReview(review)}
-                                            className='text-blue-600 hover:text-blue-800 text-sm font-medium ml-2'
+                                            className='text-[#00205B] hover:text-[#001840] text-sm font-medium ml-2'
                                         >
                                             Edit
                                         </button>

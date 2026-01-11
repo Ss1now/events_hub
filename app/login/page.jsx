@@ -50,7 +50,7 @@ export default function LoginPage() {
             <div className='max-w-md w-full space-y-8'>
                 <div>
                     <button
-                        onClick={() => router.push('/')}
+                        onClick={() => router.back()}
                         className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
                     >
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>

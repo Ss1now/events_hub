@@ -130,7 +130,7 @@ const EventUpdateNotification = () => {
                             <div className='flex gap-2'>
                                 <button
                                     onClick={handleViewEvent}
-                                    className='flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm'
+                                    className='flex-1 bg-[#00205B] text-white py-2 px-4 rounded-lg hover:bg-[#001840] transition-colors font-medium text-sm'
                                 >
                                     View Event
                                 </button>

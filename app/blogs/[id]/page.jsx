@@ -256,10 +256,10 @@ const Page = ({ params }) => {
                                 )}
                                 {!data.needReservation && (data.status === 'future' || data.status === 'live') && (
                                     <div className='flex items-center gap-2'>
-                                        <svg className='w-5 h-5 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <svg className='w-5 h-5 text-[#00205B]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
                                         </svg>
-                                        <span className='text-blue-600 font-medium'>{data.interestedUsers?.length || 0} interested</span>
+                                        <span className='text-[#00205B] font-medium'>{data.interestedUsers?.length || 0} interested</span>
                                     </div>
                                 )}
                             </div>
@@ -267,7 +267,7 @@ const Page = ({ params }) => {
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
                                 {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#HAPPENING NOW</span>}
-                                {data.status === 'future' && <span className='bg-blue-500 text-white text-xs px-3 py-1 rounded-full'>#UPCOMING</span>}
+                                {data.status === 'future' && <span className='bg-[#00205B] text-white text-xs px-3 py-1 rounded-full'>#UPCOMING</span>}
                                 <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
                                 {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full'>FULL</span>}
                                 {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>RSVP Closed</span>}
@@ -305,8 +305,8 @@ const Page = ({ params }) => {
                             className='text-center bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4 ml-3 md:ml-6 hover:bg-gray-100 transition-colors cursor-pointer group flex-shrink-0'
                             title='Add to Google Calendar'
                         >
-                            <div className='text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
-                            <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors'>{new Date(data.startDateTime).getDate()}</div>
+                            <div className='text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase group-hover:text-[#00205B] transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
+                            <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 group-hover:text-[#00205B] transition-colors'>{new Date(data.startDateTime).getDate()}</div>
                             <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 md:mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap'>Add Cal</div>
                         </button>
                     </div>
@@ -343,7 +343,7 @@ const Page = ({ params }) => {
                                         onClick={handleInterested}
                                         className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium transition-colors ${
                                             isInterested 
-                                                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                                ? 'bg-[#00205B] text-white hover:bg-[#001840]' 
                                                 : 'bg-black text-white hover:bg-gray-800'
                                         }`}
                                     >
@@ -389,7 +389,7 @@ const Page = ({ params }) => {
                                         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(data.location)}`;
                                         window.open(googleCalendarUrl, '_blank');
                                     }}
-                                    className='flex-1 bg-blue-600 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
+                                    className='flex-1 bg-[#00205B] text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-[#001840] transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
                                 >
                                     <svg className='w-4 h-4 sm:w-5 sm:h-5' viewBox='0 0 24 24' fill='currentColor'>
                                         <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
@@ -548,7 +548,7 @@ END:VCALENDAR`;
                                         }
                                         setShowReviewForm(true);
                                     }}
-                                    className='px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto'
+                                    className='px-6 py-3 bg-[#00205B] text-white rounded-lg font-semibold hover:bg-[#001840] transition-colors flex items-center gap-2 mx-auto'
                                 >
                                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />

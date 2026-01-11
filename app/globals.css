@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --rice-blue: #00205B;
+    --rice-blue-dark: #001840;
+    --rice-blue-light: #003d82;
+  }
+}

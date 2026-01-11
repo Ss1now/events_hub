@@ -119,7 +119,7 @@ export default function FeedbackListPage() {
         return (
             <div className='min-h-screen bg-gray-50 flex items-center justify-center'>
                 <div className='text-center'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto'></div>
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-[#00205B] mx-auto'></div>
                     <p className='mt-4 text-gray-600'>Loading feedback...</p>
                 </div>
             </div>
@@ -157,7 +157,7 @@ export default function FeedbackListPage() {
                         <p className='text-3xl font-bold text-gray-900'>{stats.total}</p>
                     </div>
                     <div className='bg-blue-50 rounded-lg p-4 border-2 border-blue-200'>
-                        <p className='text-sm text-blue-600'>New</p>
+                        <p className='text-sm text-[#00205B]'>New</p>
                         <p className='text-3xl font-bold text-blue-900'>{stats.new}</p>
                     </div>
                     <div className='bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200'>
@@ -188,7 +188,7 @@ export default function FeedbackListPage() {
                                 onClick={() => setFilter('new')}
                                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                     filter === 'new' 
-                                        ? 'bg-blue-600 text-white' 
+                                        ? 'bg-[#00205B] text-white' 
                                         : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                 }`}
                             >
@@ -273,7 +273,7 @@ export default function FeedbackListPage() {
                                         onClick={() => updateStatus(fb._id, 'new')}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                                             fb.status === 'new'
-                                                ? 'bg-blue-600 text-white'
+                                                ? 'bg-[#00205B] text-white'
                                                 : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
                                         }`}
                                     >

@@ -53,7 +53,7 @@ export default function EditEventPage({ params }) {
                 
                 if (now > endTime) {
                     toast.error('Cannot edit events that have already ended');
-                    router.push('/me');
+                    router.back();
                     return;
                 }
 
@@ -66,7 +66,7 @@ export default function EditEventPage({ params }) {
                     const userId = userResponse.data.user.id || userResponse.data.user._id;
                     if (eventData.authorId !== userId) {
                         toast.error('You are not authorized to edit this event');
-                        router.push('/me');
+                        router.back();
                         return;
                     }
                 }
@@ -110,7 +110,7 @@ export default function EditEventPage({ params }) {
             } catch (error) {
                 console.error(error);
                 toast.error('Error loading event data');
-                router.push('/me');
+                router.back();
             }
         };
 
@@ -170,7 +170,7 @@ export default function EditEventPage({ params }) {
             if (response.data.success) {
                 toast.success(response.data.msg);
                 setTimeout(() => {
-                    router.push('/me');
+                    router.back();
                 }, 1500);
             } else {
                 toast.error(response.data.msg || "Error occurred! Please try again.");
@@ -196,7 +196,7 @@ export default function EditEventPage({ params }) {
         <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-3xl mx-auto'>
                 <button
-                    onClick={() => router.push('/me')}
+                    onClick={() => router.back()}
                     className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
                 >
                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
@@ -350,7 +350,7 @@ export default function EditEventPage({ params }) {
                         <div className='flex gap-3'>
                             <button 
                                 type="button" 
-                                onClick={() => router.push('/me')}
+                                onClick={() => router.back()}
                                 className='flex-1 bg-gray-200 text-gray-700 font-medium py-3 rounded-md hover:bg-gray-300 transition-colors'
                             >
                                 Cancel

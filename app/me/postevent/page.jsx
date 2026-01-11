@@ -103,7 +103,7 @@ export default function PostEventPage() {
         <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-3xl mx-auto'>
                 <button
-                    onClick={() => router.push('/')}
+                    onClick={() => router.back()}
                     className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
                 >
                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
@@ -232,7 +232,7 @@ export default function PostEventPage() {
                 isOpen={showCreatedModal}
                 onClose={() => {
                     setShowCreatedModal(false);
-                    router.push('/');
+                    router.back();
                 }}
                 eventData={createdEvent}
             />

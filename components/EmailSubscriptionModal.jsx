@@ -84,7 +84,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className='bg-gradient-to-r from-purple-600 to-blue-600 p-6 rounded-t-2xl text-white relative'>
+                <div className='bg-gradient-to-r from-black to-[#00205B] p-6 rounded-t-2xl text-white relative'>
                     <button
                         onClick={onClose}
                         className='absolute top-4 right-4 text-white hover:text-gray-200 transition-colors'
@@ -95,7 +95,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                     </button>
                     <div>
                         <h2 className='text-2xl font-bold'>Email Notifications</h2>
-                        <p className='text-blue-100 text-sm mt-1'>Manage your email preferences</p>
+                        <p className='text-gray-200 text-sm mt-1'>Manage your email preferences</p>
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                             id='recommendations'
                             checked={subscriptions.recommendations}
                             onChange={() => handleToggle('recommendations')}
-                            className='mt-1 w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer'
+                            className='mt-1 w-5 h-5 text-[#00205B] rounded focus:ring-2 focus:ring-[#00205B] cursor-pointer'
                         />
                         <div className='flex-1'>
                             <label htmlFor='recommendations' className='block font-medium text-gray-900 cursor-pointer'>
@@ -127,7 +127,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                             id='reminders'
                             checked={subscriptions.reminders}
                             onChange={() => handleToggle('reminders')}
-                            className='mt-1 w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer'
+                            className='mt-1 w-5 h-5 text-[#00205B] rounded focus:ring-2 focus:ring-[#00205B] cursor-pointer'
                         />
                         <div className='flex-1'>
                             <label htmlFor='reminders' className='block font-medium text-gray-900 cursor-pointer'>
@@ -146,7 +146,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                             id='updates'
                             checked={subscriptions.updates}
                             onChange={() => handleToggle('updates')}
-                            className='mt-1 w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer'
+                            className='mt-1 w-5 h-5 text-[#00205B] rounded focus:ring-2 focus:ring-[#00205B] cursor-pointer'
                         />
                         <div className='flex-1'>
                             <label htmlFor='updates' className='block font-medium text-gray-900 cursor-pointer'>
@@ -165,7 +165,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                             id='patchNotes'
                             checked={subscriptions.patchNotes}
                             onChange={() => handleToggle('patchNotes')}
-                            className='mt-1 w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer'
+                            className='mt-1 w-5 h-5 text-[#00205B] rounded focus:ring-2 focus:ring-[#00205B] cursor-pointer'
                         />
                         <div className='flex-1'>
                             <label htmlFor='patchNotes' className='block font-medium text-gray-900 cursor-pointer'>
@@ -188,8 +188,8 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                                     onClick={() => handleFrequencyChange('daily')}
                                     className={`flex-1 py-2 px-4 rounded-lg border-2 transition-all ${
                                         subscriptions.frequency === 'daily'
-                                            ? 'border-purple-600 bg-purple-50 text-purple-700 font-medium'
-                                            : 'border-gray-300 hover:border-purple-400'
+                                            ? 'border-[#00205B] bg-blue-50 text-[#00205B] font-medium'
+                                            : 'border-gray-300 hover:border-[#00205B]'
                                     }`}
                                 >
                                     Daily
@@ -198,8 +198,8 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                                     onClick={() => handleFrequencyChange('weekly')}
                                     className={`flex-1 py-2 px-4 rounded-lg border-2 transition-all ${
                                         subscriptions.frequency === 'weekly'
-                                            ? 'border-purple-600 bg-purple-50 text-purple-700 font-medium'
-                                            : 'border-gray-300 hover:border-purple-400'
+                                            ? 'border-[#00205B] bg-blue-50 text-[#00205B] font-medium'
+                                            : 'border-gray-300 hover:border-[#00205B]'
                                     }`}
                                 >
                                     Weekly
@@ -220,7 +220,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                     <button
                         onClick={handleSave}
                         disabled={loading}
-                        className='flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all font-medium disabled:opacity-50'
+                        className='flex-1 px-4 py-2 bg-gradient-to-r from-black to-[#00205B] text-white rounded-lg hover:from-gray-800 hover:to-[#001840] transition-all font-medium disabled:opacity-50'
                     >
                         {loading ? 'Saving...' : 'Save Preferences'}
                     </button>

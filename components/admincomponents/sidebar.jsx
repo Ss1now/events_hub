@@ -18,8 +18,8 @@ const Sidebar = () => {
             
             <nav className='flex-1 px-4 py-6'>
                 <div className='space-y-1'>
-                    <Link href='/admin/bloglist' className='flex items-center gap-3 px-4 py-3 text-gray-700 bg-blue-50 border-l-4 border-blue-600 font-medium rounded-r-lg hover:bg-blue-100 transition-colors group'>
-                        <svg className='w-5 h-5 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <Link href='/admin/bloglist' className='flex items-center gap-3 px-4 py-3 text-gray-700 bg-blue-50 border-l-4 border-[#00205B] font-medium rounded-r-lg hover:bg-blue-100 transition-colors group'>
+                        <svg className='w-5 h-5 text-[#00205B]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' />
                         </svg>
                         <span className='text-sm'>Manage All Events</span>

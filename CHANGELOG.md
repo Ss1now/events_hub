@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.5] - 2026-01-11
+
+### Changed
+
+#### Visual Design - Rice Blue Color Scheme
+- **Adopted Rice University official branding colors**
+  - Primary blue: Rice Blue (#00205B) replacing generic blue-600
+  - Hover states: Dark Rice Blue (#001840) for interactive elements
+  - Maintained black as primary theme color for strong contrast
+  - Light blue backgrounds (blue-50, blue-100) preserved for subtle accents
+
+- **Updated Components**
+  - All event status badges (#UPCOMING tags) now use Rice blue
+  - "I'm Going" and interest buttons styled with Rice blue
+  - Primary action buttons (Calendar, Rate, Submit) updated to Rice blue
+  - Date calendar hover effects changed to Rice blue
+  - Review and rating submission buttons use Rice blue theme
+  - Modal action buttons updated across all modals
+  - Email subscription modal redesigned with black-to-Rice-blue gradient
+  - Admin panel accents updated where appropriate
+
+- **Email Subscription Modal**
+  - Header gradient: Black to Rice blue (#00205B)
+  - Checkboxes: Rice blue accent with matching focus rings
+  - Frequency selection buttons: Rice blue borders when active
+  - Save button: Black-to-Rice-blue gradient with darker hover states
+  - Subtitle color adjusted to light gray for better contrast
+
+- **Navigation Updates**
+  - Changed filter button text from "Now" to "Happening Now" for clarity
+  - All user action completions now use router.back() instead of hardcoded routes
+  - Improved navigation flow: cancel/back buttons return to previous page
+  - Better UX preserving user's navigation context
+
+#### CSS Architecture
+- **Added CSS custom properties for Rice blue colors**
+  - `--rice-blue: #00205B` (primary)
+  - `--rice-blue-dark: #001840` (hover states)
+  - `--rice-blue-light: #003d82` (future use)
+  - Defined in `app/globals.css` for consistent theming
+
+### Technical
+- Batch color replacements across all JSX files using sed commands
+- Systematic replacement of blue-600, blue-700, blue-500 variants
+- Preserved light blue backgrounds for visual hierarchy
+- Maintained accessibility with high contrast ratios
+- Rice blue works harmoniously with existing green (live) and gray (past) status colors
+
+---
+
 ## [0.5.4] - 2026-01-11
 
 ### Fixed

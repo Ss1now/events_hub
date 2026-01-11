@@ -17,7 +17,7 @@ const Footer = () => {
                     </div>
                     <button 
                         onClick={() => setShowFeedbackModal(true)}
-                        className='text-sm text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors'
+                        className='text-sm text-[#00205B] hover:text-[#001840] font-medium hover:underline transition-colors'
                     >
                         Feedback
                     </button>

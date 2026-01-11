@@ -201,7 +201,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted, editingReview }) =
                         )}
                         
                         {(images.length + existingImages.length) < 5 && (
-                            <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors'>
+                            <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#00205B] hover:bg-blue-50 transition-colors'>
                                 <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                                     <svg className='w-8 h-8 text-gray-400 mb-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
@@ -228,7 +228,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted, editingReview }) =
                     <button
                         type='submit'
                         disabled={submitting || rating === 0}
-                        className='flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2'
+                        className='flex-1 bg-[#00205B] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#001840] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2'
                     >
                         {submitting ? (
                             <>

@@ -172,7 +172,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
                         )}
 
                         {images.length < 5 && (
-                            <label className='flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors'>
+                            <label className='flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#00205B] hover:bg-blue-50 transition-colors'>
                                 <svg className='w-6 h-6 text-gray-400 mb-1' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 6v6m0 0v6m0-6h6m-6 0H6' />
                                 </svg>

@@ -145,7 +145,7 @@ END:VCALENDAR`;
                 <div className='space-y-3'>
                     <button
                         onClick={handleAddToGoogleCalendar}
-                        className='w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2'
+                        className='w-full bg-[#00205B] text-white py-3 rounded-lg font-medium hover:bg-[#001840] transition-colors flex items-center justify-center gap-2'
                     >
                         <svg className='w-5 h-5' viewBox='0 0 24 24' fill='currentColor'>
                             <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />

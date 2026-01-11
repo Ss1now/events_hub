@@ -116,7 +116,7 @@ const ShareModal = ({ isOpen, onClose, eventData }) => {
                 </svg>
             ),
             onClick: shareToLinkedIn,
-            color: 'bg-blue-700 hover:bg-blue-800 text-white'
+            color: 'bg-[#001840] hover:bg-[#000f2d] text-white'
         }
     ]
 

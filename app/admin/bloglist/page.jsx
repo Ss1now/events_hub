@@ -194,7 +194,7 @@ export default function Page() {
                             <p className='text-3xl font-bold text-gray-900 mt-1'>{stats.total}</p>
                         </div>
                         <div className='bg-blue-100 p-3 rounded-lg'>
-                            <svg className='w-6 h-6 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className='w-6 h-6 text-[#00205B]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
                             </svg>
                         </div>
@@ -300,7 +300,7 @@ export default function Page() {
                                         type='checkbox'
                                         checked={selectedBlogs.length === filteredBlogs.length && filteredBlogs.length > 0}
                                         onChange={toggleSelectAll}
-                                        className='w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500'
+                                        className='w-4 h-4 text-[#00205B] rounded focus:ring-2 focus:ring-blue-500'
                                     />
                                 </th>
                                 <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Host</th>

@@ -55,7 +55,7 @@ const BlogList = () => {
             {/* Filter Tabs */}
             <div className='flex justify-center gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8 px-4 overflow-x-auto'>
                 <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Upcoming</button>
-                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Now</button>
+                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Happening Now</button>
                 <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
             </div>
 
