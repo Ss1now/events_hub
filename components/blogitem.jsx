@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Image from 'next/image';
 import { assets, blog_data } from '@/assets/assets';
 import Link from 'next/link';
@@ -24,6 +24,35 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
     const [comment, setComment] = useState('');
     const [ratingImages, setRatingImages] = useState([]);
     const [submittingRating, setSubmittingRating] = useState(false);
+    
+    // Check if current user is interested in this event
+    useEffect(() => {
+        const checkIfInterested = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            try {
+                const response = await axios.get('/api/user', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.data.success) {
+                    const userId = response.data.user._id;
+                    // Check if user ID is in interestedUsers array
+                    const userIsInterested = interestedUsers.some(user => 
+                        (typeof user === 'string' ? user : user._id || user) === userId
+                    );
+                    setIsInterested(userIsInterested);
+                }
+            } catch (error) {
+                console.error('Error checking interested status:', error);
+            }
+        };
+        
+        checkIfInterested();
+    }, [id, interestedUsers]);
     
     // Format date and time from startDateTime and endDateTime
     const formatDateTime = (dateString) => {
