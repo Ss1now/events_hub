@@ -1,4 +1,10 @@
-# Vercel Cron Setup Guide
+# ⚠️ DEPRECATED: Vercel Cron Setup Guide
+
+**Note**: This guide is deprecated. Vercel Cron jobs are no longer free and charge for usage.
+
+**Please use GitHub Actions instead**: See `GITHUB_ACTIONS_SETUP.md` for the free alternative.
+
+---
 
 ## Overview
 

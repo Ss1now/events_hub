@@ -82,7 +82,7 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 - **Event Updates** - Instant email notifications when hosts edit events you're interested in
 - **Subscription Management** - Bell icon in header with beautiful preferences modal
 - **Professional Templates** - Rice Events branded HTML emails with event cards
-- **Powered by Resend** - Reliable email delivery with Vercel Cron automation
+- **Powered by Resend + GitHub Actions** - Reliable email delivery with free automation
 
 ### 🤝 Co-hosting System
 - **Auto-generated Usernames** - Unique usernames created from email on registration

@@ -68,8 +68,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`POST /api/email/send`** (action: 'send-recommendations') - Trigger recommendation emails
 - **`POST /api/email/send`** (action: 'send-reminder') - Send event reminder
 - **`POST /api/email/send`** (action: 'send-update') - Send event update notification
-- **`GET /api/cron/recommendations`** - Vercel Cron endpoint for weekly recommendations
-- **`GET /api/cron/reminders`** - Vercel Cron endpoint for hourly reminder checks
+- **`GET /api/cron/recommendations`** - Cron endpoint for weekly recommendations (called by GitHub Actions)
+- **`GET /api/cron/reminders`** - Cron endpoint for hourly reminder checks (called by GitHub Actions)
 
 #### UI Components
 - `components/EmailSubscriptionButton.jsx` - Bell icon with active indicator
@@ -78,6 +78,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Frequency selector (Daily/Weekly)
   - Privacy information box
   - Smooth animations and transitions
+
+#### GitHub Actions Workflows
+- `.github/workflows/weekly-recommendations.yml` - Monday 9am UTC cron job
+- `.github/workflows/hourly-reminders.yml` - Hourly reminder checks
+- Both workflows use GitHub Secrets (APP_URL, CRON_SECRET) for secure API calls
 
 #### Email Templates
 - **Professional HTML design** with Rice Events branding
@@ -119,16 +124,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Troubleshooting guide
   - Performance considerations
 
+- **GITHUB_ACTIONS_SETUP.md** - Step-by-step GitHub Actions setup
+  - Complete setup instructions for free automation
+  - GitHub Secrets configuration (APP_URL, CRON_SECRET)
+  - Workflow file explanations
+  - Manual testing guide
+  - Schedule customization examples
+  - Monitoring and troubleshooting
+  - Cost analysis (free tier details)
+  - Migration from Vercel Cron
+
 #### Automated Scheduling
-- **Vercel Cron Integration**
-  - `vercel.json` configuration for automated email jobs
-  - Weekly recommendations cron (Monday 9am UTC)
-  - Hourly reminders cron (checks every hour)
+- **GitHub Actions Integration** (Free Forever)
+  - GitHub Actions workflows for automated email jobs
+  - Weekly recommendations (Monday 9am UTC)
+  - Hourly reminders (every hour)
   - Secure cron authentication with CRON_SECRET
   - Automatic event detection for 24h and 1h reminders
   - Smart time window detection (23-25h for 24h reminders, 30-90min for 1h reminders)
   - Error logging and reporting for failed sends
-  - Production-ready with Vercel deployment
+  - Manual workflow triggers for testing
+  - Free tier: unlimited for public repos, 2,000 min/month for private
+  - Uses ~122 minutes/month (well within free tier)
+
+### Removed
+
+#### Vercel Cron Configuration
+- **Removed `vercel.json`** - Replaced by GitHub Actions for free automation
+- Migrated from Vercel Cron (paid) to GitHub Actions (free)
+- Cron API endpoints retained and called by GitHub Actions instead
+- See `GITHUB_ACTIONS_SETUP.md` for migration guide
 
 ### Changed
 
