@@ -131,7 +131,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
                     {/* Comment */}
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Tell us more (Optional)
+                            Tell us more
                         </label>
                         <textarea
                             value={comment}
@@ -145,7 +145,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
                     {/* Image Upload */}
                     <div>
                         <label className='block text-sm font-medium text-gray-700 mb-2'>
-                            Add Photos (Optional)
+                            Add Photos
                         </label>
                         
                         {imagePreviews.length > 0 && (

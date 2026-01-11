@@ -26,6 +26,7 @@ export async function GET(request) {
                 recommendations: false,
                 reminders: false,
                 updates: false,
+                patchNotes: false,
                 frequency: 'weekly'
             }
         });
@@ -50,7 +51,7 @@ export async function POST(request) {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { recommendations, reminders, updates, frequency } = await request.json();
+        const { recommendations, reminders, updates, patchNotes, frequency } = await request.json();
 
         const user = await userModel.findByIdAndUpdate(
             decoded.id,
@@ -60,6 +61,7 @@ export async function POST(request) {
                         recommendations: !!recommendations,
                         reminders: !!reminders,
                         updates: !!updates,
+                        patchNotes: !!patchNotes,
                         frequency: frequency || 'weekly'
                     }
                 }

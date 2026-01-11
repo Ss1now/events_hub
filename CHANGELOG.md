@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.1] - 2026-01-11
+
+### Added
+
+#### Patch Notes Subscription System
+- **New subscription option for platform updates**
+  - "Patch Notes & Updates" toggle in email subscription modal
+  - Users can opt in to receive major feature update announcements
+  - Admin panel to view all opted-in subscribers
+  - Subscriber list shows name, username, email, and subscription date
+  - Copy individual emails or bulk copy all subscriber emails
+  - Search/filter subscribers by name, username, or email
+  - Manual email workflow (admins send from personal email)
+
+#### Admin Panel
+- **Patch Notes Subscribers Page** (`/admin/patchnotes`)
+  - Complete subscriber management dashboard
+  - Real-time subscriber count display
+  - Individual "Email" buttons for quick mailto links
+  - "Copy All Emails" button for bulk communication
+  - Search functionality across all subscriber fields
+  - Professional table layout with user avatars
+  - Subscription date tracking
+
+#### API Endpoints
+- **`GET /api/admin/patchnotes-subscribers`** - Fetch all patch notes subscribers (admin only)
+  - Returns user name, email, username, creation date
+  - Admin authorization required
+  - Sorted by subscription date (newest first)
+
+#### UI Components
+- Updated `EmailSubscriptionModal.jsx` with patch notes checkbox
+- Added "Patch Notes Subscribers" link in admin sidebar
+- New admin page with modern dashboard design
+
+### Changed
+
+#### Database Schema
+- **User Model**
+  - Added `emailSubscriptions.patchNotes`: Boolean (default: false)
+
+#### Automated Scheduling Migration
+- **Migrated from Vercel Cron to GitHub Actions** (Free Forever)
+  - GitHub Actions workflows for automated email jobs
+  - Weekly recommendations (Monday 9am UTC)
+  - Hourly reminders (every hour)
+  - Secure cron authentication with CRON_SECRET
+  - Automatic event detection for 24h and 1h reminders
+  - Smart time window detection (23-25h for 24h reminders, 30-90min for 1h reminders)
+  - Error logging and reporting for failed sends
+  - Manual workflow triggers for testing
+  - Free tier: unlimited for public repos, 2,000 min/month for private
+  - Uses ~122 minutes/month (well within free tier)
+
+#### GitHub Actions Workflows
+- `.github/workflows/weekly-recommendations.yml` - Monday 9am UTC cron job
+- `.github/workflows/hourly-reminders.yml` - Hourly reminder checks
+- Both workflows use GitHub Secrets (APP_URL, CRON_SECRET) for secure API calls
+
+#### Documentation
+- **GITHUB_ACTIONS_SETUP.md** - Step-by-step GitHub Actions setup
+  - Complete setup instructions for free automation
+  - GitHub Secrets configuration (APP_URL, CRON_SECRET)
+  - Workflow file explanations
+  - Manual testing guide
+  - Schedule customization examples
+  - Monitoring and troubleshooting
+  - Cost analysis (free tier details)
+  - Migration from Vercel Cron
+
+- **VERCEL_CRON_SETUP.md** - Marked as deprecated
+  - Added deprecation notice at top of file
+  - Redirects users to GITHUB_ACTIONS_SETUP.md
+
+### Removed
+
+#### Vercel Cron Configuration
+- **Removed `vercel.json`** - Replaced by GitHub Actions for free automation
+- Migrated from Vercel Cron (paid) to GitHub Actions (free)
+- Cron API endpoints retained and called by GitHub Actions instead
+- See `GITHUB_ACTIONS_SETUP.md` for migration guide
+
+---
+
 ## [0.5.0] - 2026-01-11
 
 ### Added
@@ -79,11 +163,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Privacy information box
   - Smooth animations and transitions
 
-#### GitHub Actions Workflows
-- `.github/workflows/weekly-recommendations.yml` - Monday 9am UTC cron job
-- `.github/workflows/hourly-reminders.yml` - Hourly reminder checks
-- Both workflows use GitHub Secrets (APP_URL, CRON_SECRET) for secure API calls
-
 #### Email Templates
 - **Professional HTML design** with Rice Events branding
   - Purple gradient headers
@@ -124,28 +203,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Troubleshooting guide
   - Performance considerations
 
-- **GITHUB_ACTIONS_SETUP.md** - Step-by-step GitHub Actions setup
-  - Complete setup instructions for free automation
-  - GitHub Secrets configuration (APP_URL, CRON_SECRET)
-  - Workflow file explanations
-  - Manual testing guide
-  - Schedule customization examples
-  - Monitoring and troubleshooting
-  - Cost analysis (free tier details)
-  - Migration from Vercel Cron
-
 #### Automated Scheduling
-- **GitHub Actions Integration** (Free Forever)
-  - GitHub Actions workflows for automated email jobs
-  - Weekly recommendations (Monday 9am UTC)
-  - Hourly reminders (every hour)
+- **Vercel Cron Integration**
+  - `vercel.json` configuration for automated email jobs
+  - Weekly recommendations cron (Monday 9am UTC)
+  - Hourly reminders cron (checks every hour)
   - Secure cron authentication with CRON_SECRET
   - Automatic event detection for 24h and 1h reminders
   - Smart time window detection (23-25h for 24h reminders, 30-90min for 1h reminders)
   - Error logging and reporting for failed sends
-  - Manual workflow triggers for testing
-  - Free tier: unlimited for public repos, 2,000 min/month for private
-  - Uses ~122 minutes/month (well within free tier)
+  - Production-ready with Vercel deployment
+  - **Note**: Later migrated to GitHub Actions in v0.5.1
 
 ### Removed
 

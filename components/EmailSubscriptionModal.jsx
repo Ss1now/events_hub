@@ -10,6 +10,7 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
         recommendations: false,
         reminders: false,
         updates: false,
+        patchNotes: false,
         frequency: 'weekly'
     });
 
@@ -160,6 +161,25 @@ const EmailSubscriptionModal = ({ isOpen, onClose }) => {
                             </label>
                             <p className='text-sm text-gray-600 mt-1'>
                                 Receive alerts when hosts modify events you're interested in
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Patch Notes */}
+                    <div className='flex items-start gap-4'>
+                        <input
+                            type='checkbox'
+                            id='patchNotes'
+                            checked={subscriptions.patchNotes}
+                            onChange={() => handleToggle('patchNotes')}
+                            className='mt-1 w-5 h-5 text-purple-600 rounded focus:ring-2 focus:ring-purple-500 cursor-pointer'
+                        />
+                        <div className='flex-1'>
+                            <label htmlFor='patchNotes' className='block font-medium text-gray-900 cursor-pointer'>
+                                Patch Notes & Updates
+                            </label>
+                            <p className='text-sm text-gray-600 mt-1'>
+                                Get notified about major feature updates and platform improvements
                             </p>
                         </div>
                     </div>

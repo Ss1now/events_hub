@@ -4,11 +4,12 @@ This document explains how the email subscription system works and how to set up
 
 ## Overview
 
-The email subscription system allows users to receive three types of email notifications:
+The email subscription system allows users to receive four types of email notifications:
 
 1. **Event Recommendations** - Personalized event suggestions based on user interests
 2. **Event Reminders** - Notifications before events they're attending (24h and 1h before)
 3. **Event Updates** - Alerts when hosts modify events they're interested in
+4. **Patch Notes & Updates** - Major feature updates and platform improvements (manual by admin)
 
 ## User Interface
 
@@ -41,6 +42,13 @@ The subscription modal allows users to:
 - **Trigger**: When host saves event edits
 - **Condition**: User RSVP'd or showed interest in the event
 
+#### 4. Patch Notes & Updates
+- **Frequency**: Manual (when major features are released)
+- **Content**: Platform updates, new features, improvements
+- **Trigger**: Manual by admin from personal email
+- **Admin Panel**: View all opted-in subscribers at `/admin/patchnotes`
+- **Workflow**: Admin copies subscriber emails and sends announcement manually
+
 ## Database Schema
 
 ### User Model Updates
@@ -50,6 +58,7 @@ emailSubscriptions: {
   recommendations: Boolean,  // Default: false
   reminders: Boolean,        // Default: false
   updates: Boolean,          // Default: false
+  patchNotes: Boolean,       // Default: false
   frequency: String          // 'daily' or 'weekly', Default: 'weekly'
 }
 ```
@@ -325,6 +334,65 @@ curl -X POST http://localhost:3000/api/email/send \
 3. Enable "Event Updates" in email preferences
 4. Edit the event as the host
 5. Check email inbox
+
+## Admin Panel - Patch Notes Subscribers
+
+Admins can view all users who opted in to receive patch notes at `/admin/patchnotes`.
+
+### Features
+
+- **Subscriber List**: View all users subscribed to patch notes
+- **User Information**: Name, username, email, subscription date
+- **Search & Filter**: Search by name, username, or email
+- **Quick Actions**:
+  - Copy individual email addresses
+  - "Copy All Emails" button for bulk communication
+  - Direct mailto links for each subscriber
+- **Manual Workflow**: Admin sends update emails from personal email client
+
+### How to Send Patch Notes
+
+1. Navigate to `/admin/patchnotes`
+2. Click "Copy All Emails" to copy all subscriber emails
+3. Open your personal email client (Gmail, Outlook, etc.)
+4. Create a new email with patch notes content
+5. Paste subscriber emails in BCC field (for privacy)
+6. Send the announcement
+
+**Why Manual?**
+- Personal touch from admin
+- Flexibility in email content and formatting
+- No automated email limits
+- Direct from admin's verified email address
+- Easy to customize per release
+
+### API Endpoint
+
+**GET /api/admin/patchnotes-subscribers** (Admin only)
+
+Returns all users who subscribed to patch notes.
+
+**Headers:**
+```
+Authorization: Bearer <admin_token>
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 42,
+  "subscribers": [
+    {
+      "_id": "...",
+      "name": "John Doe",
+      "email": "john.doe@rice.edu",
+      "username": "johndoe",
+      "createdAt": "2026-01-11T..."
+    }
+  ]
+}
+```
 
 ## Privacy & Unsubscribe
 

@@ -33,12 +33,23 @@ const RatingPrompt = () => {
                 const attendedEvents = [...reservedEvents, ...interestedEvents];
                 
                 // Find past events that user attended but hasn't rated yet
-                const unratedPastEvent = attendedEvents.find(event => 
-                    event.status === 'past' && 
-                    !ratedEvents.includes(event._id) &&
-                    !dismissedPopups.includes(event._id) &&
-                    !shownRatingPopups.includes(event._id)
-                );
+                // Exclude events where the user is the author or a co-host
+                const unratedPastEvent = attendedEvents.find(event => {
+                    // Check if user is the event author
+                    const isAuthor = event.author === user._id || event.author?._id === user._id;
+                    
+                    // Check if user is a co-host
+                    const isCohost = event.cohosts?.some(cohost => 
+                        cohost.userId === user._id || cohost.userId?._id === user._id
+                    );
+                    
+                    return event.status === 'past' && 
+                        !ratedEvents.includes(event._id) &&
+                        !dismissedPopups.includes(event._id) &&
+                        !shownRatingPopups.includes(event._id) &&
+                        !isAuthor &&
+                        !isCohost;
+                });
 
                 if (unratedPastEvent) {
                     // Mark as shown immediately to prevent duplicate popups
