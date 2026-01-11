@@ -81,6 +81,10 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 
 ### 👤 User Features
 - **Authentication** - JWT-based secure login/registration
+- **Password Recovery** - Forgot password flow with email reset links
+  - Secure token-based reset (1-hour expiration)
+  - Email delivery via Resend with professional templates
+  - Token verification and validation
 - **User Profile** - Personal dashboard showing interested/reserved/participated events
 - **Username System** - Unique @usernames with editing capability
 - **My Events** - View and manage your created and co-hosted events
@@ -122,6 +126,8 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
 - **JWT (jsonwebtoken 9.0.3)** - Authentication tokens
 - **bcryptjs 3.0.3** - Password hashing
 - **Validator 13.15.26** - Input validation
+- **Cloudinary 2.8.0** - Cloud image storage and management
+- **Resend** - Email delivery service for password resets
 
 ### Development Tools
 - **ESLint 9** - Code linting
@@ -161,7 +167,18 @@ cp .env.example .env.local
 # Then edit .env.local with your actual credentials:
 # - Get MongoDB URI from https://cloud.mongodb.com/
 # - Generate JWT_SECRET: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# - Get Cloudinary credentials from https://cloudinary.com/
+# - Get Resend API key from https://resend.com/ (for password reset emails)
 ```
+
+**Required Variables:**
+- `MONGODB_URI` - MongoDB connection string
+- `JWT_SECRET` - Random secure string for JWT signing
+- `NEXT_PUBLIC_BASE_URL` - Your app URL (http://localhost:3000 for dev)
+
+**Optional Variables (for full functionality):**
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` - Image uploads
+- `RESEND_API_KEY` - Password reset emails (falls back to console logging)
 
 **Security Note:** Never commit `.env.local` to Git! It's already in `.gitignore`.
 
@@ -194,7 +211,11 @@ events_hub/
 │   │   ├── live-rating/          # Live event ratings
 │   │   │   └── route.js         # GET, POST /api/live-rating
 │   │   ├── rating/               # Post-event reviews
-│   │   │   └── route.js         # GET, POST /api/rating
+│   │   │   └── route.js         # GET, POST, PUT /api/rating
+│   │   ├── reset-password/       # Password recovery
+│   │   │   └── route.js         # GET, POST /api/reset-password
+│   │   ├── feedback/             # User feedback
+│   │   │   └── route.js         # GET, POST, PATCH, DELETE /api/feedback
 │   │   ├── cohost/               # Co-host management
 │   │   │   └── route.js         # GET, POST, PATCH, DELETE /api/cohost
 │   │   └── user/                 # User management
@@ -231,14 +252,15 @@ events_hub/
 │   ├── blogitem.jsx             # Event card component
 │   ├── bloglist.jsx             # Event list with filters
 │   ├── header.jsx               # Main navigation header
-│   ├── footer.jsx               # Page footer
+│   ├── footer.jsx               # Page footer with feedback link
 │   ├── SuccessModal.jsx         # Success confirmation modal
+│   ├── FeedbackModal.jsx        # User feedback submission modal
 │   ├── ShareModal.jsx           # Modern share modal (WhatsApp, Messages, etc.)
 │   ├── StarRating.jsx           # Reusable star rating component
 │   ├── LiveRatingButton.jsx     # Live rating display & modal
 │   ├── RatingPrompt.jsx         # Auto-prompt for post-event rating
 │   ├── RatingPopup.jsx          # Post-event rating modal
-│   ├── ReviewForm.jsx           # Review submission form
+│   ├── ReviewForm.jsx           # Review submission/editing form
 │   ├── ReviewList.jsx           # Display list of reviews
 │   ├── EventUpdateNotification.jsx # Event update notification popup
 │   ├── EventCreatedModal.jsx    # Post-creation success modal
@@ -247,12 +269,15 @@ events_hub/
 │
 ├── lib/                          # Backend utilities
 │   ├── config/
-│   │   └── db.js                # MongoDB connection handler
+│   │   ├── db.js                # MongoDB connection handler
+│   │   └── cloudinary.js        # Cloudinary configuration
 │   ├── models/                   # Mongoose schemas
 │   │   ├── blogmodel.js         # Event/Blog schema
-│   │   └── usermodel.js         # User schema
+│   │   ├── usermodel.js         # User schema
+│   │   └── feedbackmodel.js     # Feedback schema
 │   └── utils/
-│       └── adminAuth.js         # Admin verification utility
+│       ├── adminAuth.js         # Admin verification utility
+│       └── cloudinary.js        # Image upload/delete helpers
 │
 ├── context/                      # React Context providers
 │   └── AuthContext.js           # Authentication state management
@@ -269,6 +294,7 @@ events_hub/
 │       └── blogs/               # Uploaded event images
 │
 ├── .env.local                    # Environment variables (create this)
+├── .env.example                  # Environment variables template
 ├── .gitignore                    # Git ignore rules
 ├── package.json                  # Dependencies & scripts
 ├── next.config.mjs               # Next.js configuration
@@ -276,6 +302,8 @@ events_hub/
 ├── jsconfig.json                 # JavaScript configuration
 ├── CHANGELOG.md                  # Version history
 ├── ADMIN_SETUP.md                # Admin setup guide
+├── EMAIL_SETUP.md                # Email integration guide
+├── SECURITY.md                   # Security best practices
 └── README.md                     # This file
 ```
 
@@ -393,7 +421,11 @@ events_hub/
     eventId: ObjectId,
     notificationId: ObjectId,
     timestamp: Date
-  }]
+  }],
+  
+  // Password Recovery
+  resetPasswordToken: String (optional, SHA-256 hashed),
+  resetPasswordExpires: Date (optional, 1-hour expiration)
 }
 ```
 
@@ -556,15 +588,91 @@ events_hub/
 }
 ```
 
+### Password Recovery
+
+#### `POST /api/reset-password`
+**Request password reset** - Generates secure token and sends email
+
+**Request Body:**
+```json
+{
+  "action": "request-reset",
+  "email": "user@example.com"
 }
 ```
+
+**Response:**
+```json
+{
+  "success": true,
+  "msg": "Password reset link has been sent to your email."
+}
+```
+
+#### `POST /api/reset-password`
+**Reset password with token**
+
+**Request Body:**
+```json
+{
+  "action": "reset-password",
+  "token": "reset-token-from-url",
+  "newPassword": "newpassword123"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "msg": "Password has been reset successfully!"
+}
+```
+
+#### `GET /api/reset-password?token=<token>`
+**Verify reset token** - Check if token is valid and not expired
+
+**Response:**
+```json
+{
+  "success": true,
+  "msg": "Token is valid",
+  "email": "user@example.com"
+}
+```
+
+### Feedback
+
+#### `POST /api/feedback`
+**Submit feedback** - Public endpoint (auto-captures logged-in user info)
+
+**Request Body:**
+```json
+{
+  "feedback": "Great event platform!"
+}
+```
+
+#### `GET /api/feedback`
+**Get all feedback** - Admin only, returns feedback with stats
+
+#### `PATCH /api/feedback`
+**Update feedback status** - Admin only
+
+**Request Body:**
+```json
+{
+  "id": "feedback-id",
+  "status": "read" | "resolved"
+}
+```
+
+#### `DELETE /api/feedback?id=<id>`
+**Delete feedback** - Admin only
 
 ---
 
 ## 👥 User Workflows
-**Dismiss notification** - Mark notification as read and remove from queue
-
----
 
 ## 🔄 User Workflows
 

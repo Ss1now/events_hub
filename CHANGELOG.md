@@ -7,6 +7,105 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.2] - 2026-01-11
+
+### Added
+
+#### Password Recovery System
+- **Complete password reset functionality for users who forget their credentials**
+  - "Forgot your password?" link on login page
+  - Email-based password reset flow
+  - Secure token generation using crypto (SHA-256 hashing)
+  - Token expiration after 1 hour for security
+  - Password validation (minimum 6 characters)
+  - Password confirmation matching
+  
+- **Forgot Password Page** (`/forgot-password`)
+  - Clean, user-friendly interface
+  - Email input with validation
+  - Success confirmation screen
+  - Loading states and error handling
+  - Development mode shows reset URL in console
+  
+- **Reset Password Page** (`/reset-password`)
+  - Token verification on page load
+  - Invalid/expired token error screen
+  - New password input with confirmation
+  - Real-time password validation
+  - Success screen with auto-redirect to login
+  - Loading and verification states
+
+#### API Endpoints
+- **`POST /api/reset-password`** (action: 'request-reset')
+  - Generates secure reset token
+  - Stores hashed token in database with 1-hour expiration
+  - Returns success message (doesn't reveal if email exists for security)
+  - Development mode returns reset URL for testing
+  
+- **`POST /api/reset-password`** (action: 'reset-password')
+  - Validates reset token and expiration
+  - Updates user password with bcrypt hashing
+  - Clears reset token after successful reset
+  
+- **`GET /api/reset-password?token={token}`**
+  - Verifies token validity and expiration
+  - Returns user email if token is valid
+
+#### Database Schema
+- **User Model Updates**
+  - `resetPasswordToken`: String (optional) - stores hashed reset token
+  - `resetPasswordExpires`: Date (optional) - token expiration timestamp
+
+#### Email Integration
+- **Resend Email Service**
+  - Professional HTML email templates
+  - Purple-themed branding matching app design
+  - Responsive email layout for all devices
+  - Clear call-to-action button for password reset
+  - Security information and expiration notice
+  - Fallback to console logging for development
+
+#### Documentation
+- **EMAIL_SETUP.md** - Complete guide for email service integration
+  - Resend setup instructions
+  - Alternative Nodemailer configuration
+  - Environment variables documentation
+  - Testing procedures
+  - Security best practices
+  - Troubleshooting guide
+
+### Changed
+- **Login Page**
+  - Added "Forgot your password?" link above sign-in button
+  - Purple-themed link matching app design
+
+- **Environment Variables**
+  - Added `NEXT_PUBLIC_BASE_URL` for reset link generation
+  - Added `RESEND_API_KEY` for email service (optional)
+  - Updated `.env.example` with email configuration options
+
+### Technical
+- Crypto-based secure token generation (32-byte random token)
+- SHA-256 hashing for token storage
+- Token expiration validation (1 hour window)
+- Bcrypt password hashing for new passwords
+- Security best practice: doesn't reveal if email exists in database
+- Resend SDK integration with professional email templates
+- Comprehensive error handling and user feedback
+- Auto-redirect after successful password reset
+- Email delivery with error handling (doesn't break flow if email fails)
+
+### Security
+- Reset tokens are cryptographically secure (crypto.randomBytes)
+- Tokens stored as SHA-256 hashes in database
+- Token expiration prevents indefinite reset links
+- Password reset doesn't reveal valid email addresses
+- New passwords validated and hashed with bcrypt
+- Tokens cleared immediately after successful reset
+- Email failures don't expose user existence
+
+---
+
 ## [0.4.1] - 2026-01-11
 
 ### Changed
