@@ -28,6 +28,7 @@ const Page = ({ params }) => {
     const [hasRated, setHasRated] = useState(false);
     const [showReviewForm, setShowReviewForm] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
+    const [editingReview, setEditingReview] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -91,6 +92,12 @@ const Page = ({ params }) => {
         fetchReviews(id);
         setHasRated(true);
         setShowReviewForm(false);
+        setEditingReview(null);
+    };
+
+    const handleEditReview = (review) => {
+        setEditingReview(review);
+        setShowReviewForm(true);
     };
 
     const handleInterested = async () => {
@@ -208,12 +215,11 @@ const Page = ({ params }) => {
                 <div className='flex items-center gap-3 cursor-pointer hover:opacity-80'>
                     <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-12 h-12 object-contain'/>
                     <div>
-                        <h2 className='text-xl font-semibold'>Rice Party</h2>
-                        <p className='text-xs text-gray-500'>minimal + playful</p>
+                        <h2 className='text-xl font-semibold'>Rice Events</h2>
                     </div>
                 </div>
             </Link>
-            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Post a party</button>
+            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>Create an event</button>
             </div>
         </div>
         <div className='bg-gray-50 min-h-screen py-12'>
@@ -260,8 +266,8 @@ const Page = ({ params }) => {
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
-                                {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#LIVE</span>}
-                                {data.status === 'future' && <span className='bg-blue-500 text-white text-xs px-3 py-1 rounded-full'>#FUTURE</span>}
+                                {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#HAPPENING NOW</span>}
+                                {data.status === 'future' && <span className='bg-blue-500 text-white text-xs px-3 py-1 rounded-full'>#UPCOMING</span>}
                                 <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
                                 {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full'>FULL</span>}
                                 {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>RSVP Closed</span>}
@@ -551,15 +557,16 @@ END:VCALENDAR`;
                             </div>
                         )}
 
-                        {showReviewForm && !hasRated && (
+                        {showReviewForm && (
                             <ReviewForm 
                                 eventId={id}
                                 eventTitle={data.title}
                                 onReviewSubmitted={handleReviewSubmitted}
+                                editingReview={editingReview}
                             />
                         )}
 
-                        {hasRated && (
+                        {hasRated && !showReviewForm && (
                             <div className='bg-green-50 border border-green-200 rounded-lg p-4 text-center'>
                                 <p className='text-green-800 font-medium'>Thank you for your review!</p>
                             </div>
@@ -570,6 +577,7 @@ END:VCALENDAR`;
                             reviews={reviews}
                             averageRating={data.averageRating || 0}
                             totalRatings={data.totalRatings || 0}
+                            onEditReview={handleEditReview}
                         />
                     </div>
                 )}

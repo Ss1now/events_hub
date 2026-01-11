@@ -17,21 +17,23 @@
 
 ## Project Overview
 
-**Rice Events Hub** (also branded as "Rice Party") is a full-stack event management platform built with Next.js 16.1.1 and React 19. It enables users to discover, create, manage, and rate campus events at Rice University. The platform features real-time event status updates, reservation systems, live ratings, post-event reviews, and comprehensive notification systems.
+**Rice Events Hub** is a full-stack event management platform built with Next.js 16.1.1 and React 19. It enables users to discover, create, manage, and rate campus events at Rice University. The platform features real-time event status updates, reservation systems, live ratings, post-event reviews with editing capability, comprehensive notification systems, and user feedback collection.
 
 **Key Capabilities:**
-- Event creation with multi-image uploads
-- Real-time event status tracking (future → live → past)
+- Event creation with multi-image uploads and custom event types
+- Real-time event status tracking (upcoming → happening now → past)
 - Reservation management with capacity limits
 - Live ratings during events
-- Post-event reviews with photos
+- Post-event reviews with photos and editing capability
 - Event update notifications for participants
 - Co-hosting system with username-based invitations
 - Auto-generated unique usernames
 - Admin panel for event moderation
+- User feedback system with admin dashboard
 - Modern share functionality
 - Google Calendar integration
 - Residential college affiliations
+- Minimal, clean UI with no placeholder hints
 
 ---
 
@@ -238,7 +240,8 @@ events_hub/
     rating: Number (1-5, required),
     comment: String (default: ''),
     images: [String] (default: []),
-    date: Date (default: now)
+    date: Date (default: now),
+    updatedAt: Date (optional)             // Timestamp of last edit
   }],
   averageRating: Number (0-5, default: 0),
   totalRatings: Number (default: 0)
@@ -250,6 +253,7 @@ events_hub/
 - **Virtual Reserved Field:** Auto-calculated from reservedUsers.length (no manual input)
 - **Co-hosting System:** Multiple hosts with full editing permissions
 - **Dual Rating Systems:** Separate live and post-event ratings
+- **Editable Reviews:** Users can update their ratings, comments, and photos
 - **Notification Queue:** Tracks updates and which users have been notified
 - **Multi-Image Support:** 0-5 images per event
 - **Reservation Management:** Capacity limits with deadline enforcement
@@ -309,6 +313,30 @@ events_hub/
 - **Co-host Invitations:** Tracks pending/accepted/declined invites
 - **Dual Notification System:** Legacy pending + new event update notifications
 - **College Affiliation:** Rice University residential college system
+
+---
+
+### Feedback Model (`feedbackmodel.js`)
+
+**Collection:** `feedback`
+
+```javascript
+{
+  feedback: String (required, maxLength: 1000),
+  email: String (default: 'Anonymous'),
+  userId: ObjectId (ref: 'user', optional),    // Auto-captured if logged in
+  userName: String (optional),                  // Auto-captured if logged in
+  status: String (enum: ['new', 'read', 'resolved'], default: 'new'),
+  createdAt: Date (default: now)
+}
+```
+
+**Key Features:**
+- **Global Feedback Collection:** Accessible from any page via footer
+- **Anonymous Support:** Non-logged-in users can submit feedback
+- **Auto-capture:** Logged-in user info automatically attached
+- **Status Workflow:** new → read → resolved
+- **Admin Management:** Full CRUD operations for admins only
 
 ---
 
@@ -842,6 +870,127 @@ events_hub/
 1. Finds notifications by notification.id()
 2. Sets read: true for each
 3. Used by EventUpdateNotification component
+
+---
+
+### Feedback Management (`/api/feedback`)
+
+#### POST `/api/feedback`
+**Purpose:** Submit user feedback (public, no auth required)
+
+**Request Body:**
+```javascript
+{
+  feedback: string,            // Required, max 1000 chars
+  email: string,               // Optional, defaults to 'Anonymous'
+  userId: ObjectId,            // Auto-captured if logged in
+  userName: string             // Auto-captured if logged in
+}
+```
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
+
+**Features:**
+- Accessible from any page via footer link
+- Anonymous submissions supported
+- Auto-captures user info from JWT if authenticated
+- Character limit enforced: 1000 chars
+
+---
+
+#### GET `/api/feedback`
+**Purpose:** Fetch all feedback (admin only)
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Query Parameters:**
+- `status`: Filter by status (new/read/resolved)
+- `search`: Search in feedback text, email, userName
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  feedbacks: [{
+    _id,
+    feedback,
+    email,
+    userId,
+    userName,
+    status,
+    createdAt
+  }],
+  stats: {
+    total: number,
+    new: number,
+    read: number,
+    resolved: number
+  }
+}
+```
+
+**Access Control:**
+- Requires admin role
+- Returns 403 if non-admin attempts access
+
+---
+
+#### PATCH `/api/feedback`
+**Purpose:** Update feedback status (admin only)
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Request Body:**
+```javascript
+{
+  feedbackId: string,
+  status: 'new' | 'read' | 'resolved'
+}
+```
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
+
+---
+
+#### DELETE `/api/feedback?id={feedbackId}`
+**Purpose:** Delete feedback (admin only)
+
+**Headers:**
+```javascript
+{
+  'Authorization': 'Bearer {token}'
+}
+```
+
+**Response:**
+```javascript
+{
+  success: boolean,
+  msg: string
+}
+```
 
 ---
 
@@ -1641,7 +1790,53 @@ Won't show again on next poll
 
 ---
 
-### 12. Profile Management
+### 12. Submit Feedback
+
+```
+User (any visitor) → Any page
+  ↓
+Click "Feedback" link in footer
+  ↓
+FeedbackModal opens with blur backdrop
+  ↓
+Fill feedback form:
+  - Textarea (max 1000 chars)
+  - Character counter shown
+  - Auto-capture: email, userId, userName (if logged in)
+  - Anonymous submissions allowed (non-logged users)
+  ↓
+POST /api/feedback
+  ↓
+Server:
+  - Validate feedback length
+  - Store with status: 'new'
+  ↓
+Success toast notification
+  ↓
+Modal closes
+```
+
+**Admin Management:**
+```
+Admin → /admin → Feedback tab
+  ↓
+Dashboard shows:
+  - Stats cards (total, new, read, resolved)
+  - Color-coded status badges
+  - Search bar (feedback/email/user)
+  - Status filter dropdown
+  ↓
+Admin actions:
+  - Update status → PATCH /api/feedback
+  - Delete feedback → DELETE /api/feedback
+  - View user details (if not anonymous)
+  ↓
+Real-time filtering and search
+```
+
+---
+
+### 13. Profile Management
 
 ```
 User → Click "My Profile"
@@ -1794,6 +1989,21 @@ if (!isAuthor && !isAdmin) {
 </AdminLayout>
 ```
 
+**Admin Feedback Dashboard (`app/admin/feedback/page.jsx`):**
+```jsx
+<AdminLayout>
+  <Sidebar />
+  <StatsCards />          // Total, New, Read, Resolved
+  <FilterBar />           // Status filter + search
+  <FeedbackTable />       // All feedback entries
+    - Color-coded status badges
+    - User info (or "Anonymous")
+    - Timestamp
+    - Status update dropdown
+    - Delete button
+</AdminLayout>
+```
+
 ---
 
 ### Reusable Components
@@ -1862,6 +2072,34 @@ if (!isAuthor && !isAdmin) {
 - Displays pending co-host invitations
 - Accept/Decline actions
 - Shows inviter name and event title
+
+**FeedbackModal (`components/FeedbackModal.jsx`):**
+- Global feedback collection interface
+- Accessible from footer on any page
+- Blur backdrop overlay
+- Textarea with 1000 char limit
+- Character counter display
+- Auto-captures user info if logged in
+- Anonymous submission support
+- Toast notifications for success/error
+- Minimal design without placeholder hints
+
+**ReviewForm (`components/ReviewForm.jsx`):**
+- Dual mode: Create or Edit
+- Star rating selector
+- Comment textarea
+- Image upload (max 5)
+- Edit mode: Pre-fills existing data, shows existing images separately
+- Dynamic title and button text based on mode
+- Success notifications
+
+**ReviewList (`components/ReviewList.jsx`):**
+- Displays all event reviews
+- User ownership detection (userId comparison)
+- Edit button on user's own reviews
+- "(edited)" label if updatedAt exists
+- onEditReview callback to parent
+- Read-only star rating display
 
 ---
 

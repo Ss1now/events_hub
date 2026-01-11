@@ -1,11 +1,33 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import Image from 'next/image';
 
-const ReviewList = ({ reviews, averageRating, totalRatings }) => {
+const ReviewList = ({ reviews, averageRating, totalRatings, onEditReview }) => {
     const [selectedImage, setSelectedImage] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
+
+    useEffect(() => {
+        // Get current user ID
+        const fetchUserId = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/user', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        setCurrentUserId(data.user._id || data.user.id);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user:', error);
+                }
+            }
+        };
+        fetchUserId();
+    }, []);
 
     const getRatingDistribution = () => {
         const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
@@ -84,10 +106,23 @@ const ReviewList = ({ reviews, averageRating, totalRatings }) => {
                                     </div>
                                     <div>
                                         <h4 className='font-semibold text-gray-900'>{review.userName}</h4>
-                                        <p className='text-sm text-gray-500'>{formatDate(review.date)}</p>
+                                        <p className='text-sm text-gray-500'>
+                                            {formatDate(review.date)}
+                                            {review.updatedAt && <span className='ml-1'>(edited)</span>}
+                                        </p>
                                     </div>
                                 </div>
-                                <StarRating rating={review.rating} readonly size='sm' />
+                                <div className='flex items-center gap-2'>
+                                    <StarRating rating={review.rating} readonly size='sm' />
+                                    {currentUserId && review.userId.toString() === currentUserId && (
+                                        <button
+                                            onClick={() => onEditReview(review)}
+                                            className='text-blue-600 hover:text-blue-800 text-sm font-medium ml-2'
+                                        >
+                                            Edit
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Review Text */}

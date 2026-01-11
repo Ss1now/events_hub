@@ -48,7 +48,19 @@ A modern, full-stack event management platform built with Next.js 16, MongoDB, a
   - Text comments (up to 1000 characters)
   - Photo uploads (up to 5 images per review)
   - Automatic prompts for attendees
+  - **Edit reviews** - Modify your ratings, comments, and photos anytime
+  - Edit timestamps with "(edited)" label
   - Triple-layer duplicate prevention
+
+### 📝 User Feedback System
+- **Global Feedback Collection** - Submit feedback from any page via footer link
+- **Admin Dashboard** - Dedicated feedback management panel
+  - View all feedback with stats (Total, New, Read, Resolved)
+  - Filter by status and search functionality
+  - Update feedback status and delete submissions
+  - Color-coded status badges for easy tracking
+- **Anonymous Support** - Non-logged-in users can submit feedback
+- **Auto-capture** - Logged-in users' info automatically attached
 
 ### 🔔 Smart Notifications
 - **Event Updates** - Users receive notifications when events they're interested in/reserved get edited

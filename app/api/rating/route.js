@@ -155,3 +155,97 @@ export async function GET(request) {
     }
 }
 
+// PUT - Update/Edit a rating
+export async function PUT(request) {
+    try {
+        const authHeader = request.headers.get('authorization');
+        
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        }
+
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        await connectDB();
+
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return NextResponse.json({ success: false, msg: 'User not found' }, { status: 404 });
+        }
+
+        const formData = await request.formData();
+        const eventId = formData.get('eventId');
+        const rating = parseInt(formData.get('rating'));
+        const comment = formData.get('comment') || '';
+        const images = formData.getAll('images');
+        const keepExistingImages = formData.get('keepExistingImages') === 'true';
+
+        // Validate rating
+        if (!rating || rating < 1 || rating > 5) {
+            return NextResponse.json({ success: false, msg: 'Rating must be between 1 and 5' }, { status: 400 });
+        }
+
+        const event = await Blogmodel.findById(eventId);
+        if (!event) {
+            return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
+        }
+
+        // Find existing rating
+        const existingRatingIndex = event.ratings.findIndex(r => r.userId.toString() === userId);
+        if (existingRatingIndex === -1) {
+            return NextResponse.json({ success: false, msg: 'Rating not found' }, { status: 404 });
+        }
+
+        const existingRating = event.ratings[existingRatingIndex];
+
+        // Process images
+        let imageUrls = keepExistingImages ? existingRating.images : [];
+        if (images && images.length > 0 && images[0].size > 0) {
+            const timestamp = Date.now();
+            const dir = './public/images/reviews';
+            await mkdir(dir, { recursive: true });
+
+            for (let i = 0; i < images.length; i++) {
+                const image = images[i];
+                if (image && image.size > 0) {
+                    const imageByteData = await image.arrayBuffer();
+                    const buffer = Buffer.from(imageByteData);
+                    const filePath = `${dir}/${timestamp}_${i}_${image.name}`;
+                    await writeFile(filePath, buffer);
+                    imageUrls.push(`/images/reviews/${timestamp}_${i}_${image.name}`);
+                }
+            }
+        }
+
+        // Update rating
+        event.ratings[existingRatingIndex] = {
+            userId,
+            userName: user.name || user.email.split('@')[0],
+            rating,
+            comment,
+            images: imageUrls,
+            date: existingRating.date, // Keep original date
+            updatedAt: new Date()
+        };
+
+        // Recalculate average rating
+        event.totalRatings = event.ratings.length;
+        const sum = event.ratings.reduce((acc, r) => acc + r.rating, 0);
+        event.averageRating = sum / event.totalRatings;
+
+        await event.save();
+
+        return NextResponse.json({ 
+            success: true, 
+            msg: 'Rating updated successfully',
+            averageRating: event.averageRating,
+            totalRatings: event.totalRatings
+        });
+    } catch (error) {
+        console.error('Error updating rating:', error);
+        return NextResponse.json({ success: false, msg: 'Error updating rating' }, { status: 500 });
+    }
+}
+

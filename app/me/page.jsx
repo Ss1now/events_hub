@@ -374,7 +374,7 @@ END:VCALENDAR`;
                         <h2 className='text-2xl font-bold text-gray-900'>My Events</h2>
                         <Link href='/me/postevent'>
                             <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
-                                Post New Event
+                                Create New Event
                             </button>
                         </Link>
                     </div>
@@ -399,7 +399,7 @@ END:VCALENDAR`;
                                     : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            I&apos;m Going ({interestedEvents.length})
+                            Going ({interestedEvents.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('reserved')}
@@ -419,7 +419,7 @@ END:VCALENDAR`;
                                     : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            Participated ({participatedEvents.length})
+                            Past Events ({participatedEvents.length})
                         </button>
                     </div>
 
@@ -472,7 +472,7 @@ END:VCALENDAR`;
                                                             ${event.status === 'live' ? 'bg-green-100 text-green-800' : 
                                                               event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
                                                               'bg-gray-100 text-gray-800'}`}>
-                                                            {event.status}
+                                                            {event.status === 'live' ? 'Happening Now' : event.status === 'future' ? 'Upcoming' : 'Past'}
                                                         </span>
                                                     </td>
                                                     <td className='px-6 py-4 text-sm text-gray-500'>
@@ -553,7 +553,7 @@ END:VCALENDAR`;
                                                     event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
                                                     'bg-gray-100 text-gray-800'
                                                 }`}>
-                                                    {event.status}
+                                                    {event.status === 'live' ? 'Happening Now' : event.status === 'future' ? 'Upcoming' : 'Past'}
                                                 </span>
                                             </div>
                                             <div className='flex items-center gap-2 text-sm text-gray-600 mb-2'>
@@ -637,7 +637,7 @@ END:VCALENDAR`;
                                                     event.status === 'future' ? 'bg-blue-100 text-blue-800' : 
                                                     'bg-gray-100 text-gray-800'
                                                 }`}>
-                                                    {event.status}
+                                                    {event.status === 'live' ? 'Happening Now' : event.status === 'future' ? 'Upcoming' : 'Past'}
                                                 </span>
                                             </div>
                                             <div className='flex items-center gap-2 text-sm text-gray-600 mb-2'>
@@ -773,7 +773,7 @@ END:VCALENDAR`;
                             <p className='text-2xl font-bold text-blue-900'>{events.length}</p>
                         </div>
                         <div className='bg-green-50 rounded-lg p-4'>
-                            <p className='text-sm font-medium text-green-600'>Live Events</p>
+                            <p className='text-sm font-medium text-green-600'>Happening Now</p>
                             <p className='text-2xl font-bold text-green-900'>
                                 {events.filter(e => e.status === 'live').length}
                             </p>

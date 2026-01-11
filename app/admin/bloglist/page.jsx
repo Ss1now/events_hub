@@ -204,7 +204,7 @@ export default function Page() {
                 <div className='bg-white p-6 rounded-lg shadow-sm border border-gray-200'>
                     <div className='flex items-center justify-between'>
                         <div>
-                            <p className='text-sm text-gray-600'>Live Events</p>
+                            <p className='text-sm text-gray-600'>Happening Now</p>
                             <p className='text-3xl font-bold text-green-600 mt-1'>{stats.live}</p>
                         </div>
                         <div className='bg-green-100 p-3 rounded-lg'>
@@ -269,8 +269,8 @@ export default function Page() {
                             className='px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
                         >
                             <option value='all'>All Status</option>
-                            <option value='live'>Live</option>
-                            <option value='future'>Future</option>
+                            <option value='live'>Happening Now</option>
+                            <option value='future'>Upcoming</option>
                             <option value='past'>Past</option>
                         </select>
                         

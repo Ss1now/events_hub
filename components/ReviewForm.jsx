@@ -1,21 +1,33 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import StarRating from './StarRating';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 
-const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
+const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted, editingReview }) => {
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
     const [images, setImages] = useState([]);
     const [imagePreviews, setImagePreviews] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const [existingImages, setExistingImages] = useState([]);
+
+    useEffect(() => {
+        if (editingReview) {
+            setRating(editingReview.rating);
+            setComment(editingReview.comment || '');
+            if (editingReview.images && editingReview.images.length > 0) {
+                setExistingImages(editingReview.images);
+            }
+        }
+    }, [editingReview]);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        if (files.length + images.length > 5) {
+        const totalImages = images.length + existingImages.length;
+        if (files.length + totalImages > 5) {
             toast.error('Maximum 5 images allowed');
             return;
         }
@@ -32,6 +44,11 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
         const newPreviews = imagePreviews.filter((_, i) => i !== index);
         setImages(newImages);
         setImagePreviews(newPreviews);
+    };
+
+    const removeExistingImage = (index) => {
+        const newExistingImages = existingImages.filter((_, i) => i !== index);
+        setExistingImages(newExistingImages);
     };
 
     const handleSubmit = async (e) => {
@@ -55,12 +72,16 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
             formData.append('eventId', eventId);
             formData.append('rating', rating);
             formData.append('comment', comment);
+            formData.append('keepExistingImages', existingImages.length > 0 ? 'true' : 'false');
             
             images.forEach((image) => {
                 formData.append('images', image);
             });
 
-            const response = await axios.post('/api/rating', formData, {
+            const url = editingReview ? '/api/rating' : '/api/rating';
+            const method = editingReview ? 'put' : 'post';
+
+            const response = await axios[method](url, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -68,11 +89,12 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
             });
 
             if (response.data.success) {
-                toast.success('Review submitted successfully!');
+                toast.success(editingReview ? 'Review updated successfully!' : 'Review submitted successfully!');
                 setRating(0);
                 setComment('');
                 setImages([]);
                 setImagePreviews([]);
+                setExistingImages([]);
                 if (onReviewSubmitted) {
                     onReviewSubmitted();
                 }
@@ -89,7 +111,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
 
     return (
         <div className='bg-white rounded-lg border border-gray-200 p-6'>
-            <h3 className='text-xl font-bold text-gray-900 mb-4'>Write a Review</h3>
+            <h3 className='text-xl font-bold text-gray-900 mb-4'>{editingReview ? 'Edit Your Review' : 'Write a Review'}</h3>
             <p className='text-gray-600 mb-6'>Share your experience at {eventTitle}</p>
 
             <form onSubmit={handleSubmit} className='space-y-6'>
@@ -130,10 +152,35 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
                         Add Photos (Optional)
                     </label>
                     <div className='space-y-3'>
+                        {/* Existing Images */}
+                        {existingImages.length > 0 && (
+                            <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3'>
+                                {existingImages.map((imageUrl, index) => (
+                                    <div key={`existing-${index}`} className='relative group'>
+                                        <img
+                                            src={imageUrl}
+                                            alt={`Existing ${index + 1}`}
+                                            className='w-full h-24 object-cover rounded-lg border border-gray-200'
+                                        />
+                                        <button
+                                            type='button'
+                                            onClick={() => removeExistingImage(index)}
+                                            className='absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
+                                        >
+                                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        
+                        {/* New Image Previews */}
                         {imagePreviews.length > 0 && (
                             <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3'>
                                 {imagePreviews.map((preview, index) => (
-                                    <div key={index} className='relative group'>
+                                    <div key={`new-${index}`} className='relative group'>
                                         <img
                                             src={preview}
                                             alt={`Preview ${index + 1}`}
@@ -153,7 +200,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
                             </div>
                         )}
                         
-                        {images.length < 5 && (
+                        {(images.length + existingImages.length) < 5 && (
                             <label className='flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors'>
                                 <div className='flex flex-col items-center justify-center pt-5 pb-6'>
                                     <svg className='w-8 h-8 text-gray-400 mb-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -186,14 +233,14 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted }) => {
                         {submitting ? (
                             <>
                                 <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
-                                Submitting...
+                                {editingReview ? 'Updating...' : 'Submitting...'}
                             </>
                         ) : (
                             <>
                                 <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
                                 </svg>
-                                Submit Review
+                                {editingReview ? 'Update Review' : 'Submit Review'}
                             </>
                         )}
                     </button>

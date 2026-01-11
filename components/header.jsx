@@ -66,7 +66,7 @@ const Header = () => {
                                 onClick={handlePostEvent}
                                 className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'
                             >
-                                Post an event
+                                Create event
                             </button>
                         </>
                     ) : (
@@ -85,7 +85,7 @@ const Header = () => {
                                 onClick={handlePostEvent}
                                 className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'
                             >
-                                Post an event
+                                Create event
                             </button>
                         </>
                     )}
@@ -93,7 +93,7 @@ const Header = () => {
             </div>
             <div className='text-center my-12'>
                 <h1 className='text-4xl sm:text-5xl font-bold mb-3'>What's The Move?</h1>
-                <p className='mt-4 max-w-[800px] m-auto text-sm sm:text-base text-gray-600'>Rice Events Hub</p>
+                <p className='mt-4 max-w-[800px] m-auto text-sm sm:text-base text-gray-600'>Discover events</p>
             </div>
         </div>
     )

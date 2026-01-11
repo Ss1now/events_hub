@@ -11,8 +11,6 @@ import EventCreatedModal from '@/components/EventCreatedModal';
 export default function PostEventPage() {
     const router = useRouter();
     const [images,setImages] = useState([]);
-    const [eventTypeOption, setEventTypeOption] = useState('Socializing');
-    const [customEventType, setCustomEventType] = useState('');
     const [showCreatedModal, setShowCreatedModal] = useState(false);
     const [createdEvent, setCreatedEvent] = useState(null);
     const [data,setData] = useState({
@@ -20,7 +18,7 @@ export default function PostEventPage() {
         description:'',
         startDateTime:'',
         endDateTime:'',
-        eventType:eventTypeOption,
+        eventType:'',
         location:'',
         needReservation:false,
         capacity:0,
@@ -109,17 +107,17 @@ export default function PostEventPage() {
                 </button>
                 
                 <div className='bg-white rounded-lg shadow-md p-8'>
-                    <h1 className='text-3xl font-bold text-gray-900 mb-6'>Post a New Event</h1>
+                    <h1 className='text-3xl font-bold text-gray-900 mb-6'>Create a New Event</h1>
                     
                     <form onSubmit={onSubmitHandler} className='space-y-6'>
                         <div>
-                            <p className='text-xl font-medium mb-2'>Upload Images (Optional, Max 5)</p>
+                            <p className='text-xl font-medium mb-2'>Upload Images</p>
                             <div
                                 onClick={() => document.getElementById('images')?.click()}
-                                className='inline-block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors'
+                                className='inline-block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg overflow-hidden hover:border-gray-400 transition-colors flex items-center justify-center'
                                 style={{ width: 140, height: 70 }}
                             >
-                                <Image src={assets.upload} width={140} height={70} alt='upload images' />
+                                <span className='text-gray-400 text-sm'>Choose files</span>
                             </div>
                             <input 
                                 onChange={(e) => {
@@ -130,7 +128,7 @@ export default function PostEventPage() {
                                 id='images' 
                                 multiple 
                                 accept='image/*'
-                                hidden 
+                                hidden
                             />
                             {images.length > 0 && (
                                 <div className='mt-4 flex flex-wrap gap-2'>
@@ -158,13 +156,13 @@ export default function PostEventPage() {
 
                         <div>
                             <p className='text-xl font-medium mb-2'>Event Title</p>
-                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type="text" placeholder='Type here' required/>
+                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type="text" required/>
                         </div>
                         
                         {/* Description */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Description</p>
-                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' rows={4} placeholder='Describe your event' required></textarea>
+                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' rows={4} required></textarea>
                         </div>
 
                         {/* Start Date & Time */}
@@ -182,43 +180,20 @@ export default function PostEventPage() {
                         {/* Event Type */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Event Type</p>
-                            <select
+                            <input
                                 name='eventType'
                                 className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
-                                value={eventTypeOption}
-                                onChange={(e)=> { 
-                                    setEventTypeOption(e.target.value); 
-                                    if(e.target.value !== 'Other'){ 
-                                        setData(prev => ({ ...prev, eventType: e.target.value }));
-                                    } 
-                                }}
+                                type='text'
+                                value={data.eventType}
+                                onChange={onChangeHandler}
                                 required
-                            >
-                                <option value='Private Party'>Private Party</option>
-                                <option value='Socializing'>Socializing</option>
-                                <option value='Gathering'>Gathering</option>
-                                <option value='Entertainment'>Entertainment</option>
-                                <option value='Workshop'>Workshop</option>
-                                <option value='Game Night'>Game Night</option>
-                                <option value='Other'>Other (type manually)</option>
-                            </select>
-                            {eventTypeOption === 'Other' && (
-                                <input
-                                    name='eventType'
-                                    className='w-full mt-4 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
-                                    type='text'
-                                    placeholder='Type event type'
-                                    value={data.eventType}
-                                    onChange={onChangeHandler}
-                                    required
-                                />
-                            )}
+                            />
                         </div>
 
                         {/* Location */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Location</p>
-                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Jones College Rooftop' required/>
+                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' required/>
                         </div>
 
                         {/* Need RSVP */}
@@ -230,17 +205,17 @@ export default function PostEventPage() {
                         {/* Capacity */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Capacity</p>
-                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required/>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' required/>
                         </div>
 
                         {/* Host */}
                         <div>
                             <p className='text-xl font-medium mb-2'>Host</p>
-                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Howard Zhao' required/>
+                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' required/>
                         </div>
                         
                         <button type="submit" className='w-full bg-black text-white font-medium py-3 rounded-md hover:bg-gray-800 transition-colors'>
-                            Post Event
+                            Create Event
                         </button>
                     </form>
                 </div>

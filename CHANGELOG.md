@@ -1,9 +1,151 @@
 # Changelog
 
-All notable changes to Rice Party Events Hub will be documented in this file.
+All notable changes to Rice Events Hub will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.4.0] - 2026-01-11
+
+### Added
+
+#### Review Editing Feature
+- **Users can now edit their existing reviews**
+  - "Edit" button appears on user's own reviews
+  - Review form pre-fills with existing rating, comment, and images
+  - Can modify rating, update comment text, and change images
+  - Existing images shown separately from new uploads
+  - Can remove existing images and add new ones (max 5 total)
+  - Edit timestamps tracked with "(edited)" label on reviews
+  - PUT endpoint for updating reviews
+
+#### User Feedback System
+- **Global feedback collection mechanism**
+  - "Feedback" link in footer (accessible from any page)
+  - FeedbackModal component with clean, minimal design
+  - Textarea for user feedback (1000 character limit)
+  - Character counter for feedback input
+  - Auto-captures logged-in user information
+  - Anonymous feedback support for non-logged-in users
+  
+- **Admin Feedback Dashboard**
+  - Dedicated admin panel at `/admin/feedback`
+  - Statistics cards showing Total, New, Read, Resolved counts
+  - Filter by status (All, New, Read, Resolved)
+  - Search functionality for feedback content
+  - Status update buttons (Mark as Read, Mark as Resolved)
+  - Delete feedback capability
+  - Color-coded status badges (blue/yellow/green)
+  - Responsive grid layout
+  - Real-time feedback management
+
+#### API Endpoints
+- **`POST /api/feedback`** - Submit feedback (public access)
+- **`GET /api/feedback`** - Fetch all feedback with stats (admin only)
+- **`PATCH /api/feedback`** - Update feedback status (admin only)
+- **`DELETE /api/feedback`** - Delete feedback (admin only)
+- **`PUT /api/rating`** - Update existing review (authenticated users)
+
+#### Database Schema
+- **Feedback Model** (`lib/models/feedbackmodel.js`)
+  - `feedback`: String (required, max 1000 characters)
+  - `email`: String (default 'Anonymous')
+  - `userId`: ObjectId reference to User (optional)
+  - `userName`: String (auto-captured if logged in)
+  - `status`: Enum ['new', 'read', 'resolved'] (default 'new')
+  - `createdAt`: Date (auto-generated)
+
+#### UI Components
+- `components/FeedbackModal.jsx` - Feedback submission modal
+- `app/admin/feedback/page.jsx` - Admin feedback management dashboard
+
+### Changed
+
+#### UI/UX Refinements
+- **Branding Updates**
+  - Changed "Rice Party" to "Rice Events" across the application
+  - Removed "minimal + playful" tagline from all pages
+  - Updated logo text in headers and footers
+  - Consistent branding in event detail pages
+
+- **Button Text Updates**
+  - "Post an event" → "Create event" (all instances)
+  - "Post New Event" → "Create New Event"
+  - "Post a New Event" → "Create a New Event"
+  - "Post Event" → "Create Event" (submit button)
+
+- **Navigation & Tab Labels**
+  - "I'm Going" → "Going" (user profile tabs)
+  - "Participated" → "Past Events" (user profile tabs)
+
+- **Status Label Terminology**
+  - "Future" → "Upcoming" (filter buttons and status badges)
+  - "Ongoing" / "Live" → "Happening Now" (filter buttons and status badges)
+  - Database status values unchanged ('future', 'live', 'past')
+  - Consistent display labels across all components
+
+- **Form Simplification**
+  - Removed all placeholder text hints from forms
+  - "Upload Images (Optional, Max 5)" → "Upload Images"
+  - Removed placeholders from event creation form fields
+  - Removed placeholders from rating form fields
+  - Cleaner, more minimal form appearance
+
+- **Event Type Input**
+  - Changed from dropdown selection to free-text input
+  - Hosts can now enter custom event types
+  - More flexibility for event categorization
+
+- **Search Bar**
+  - "Search events by name, location, type..." → "Search events"
+  - Removed search hint paragraph "Try 'jones'..."
+  - Cleaner search interface
+
+#### Component Updates
+- `components/header.jsx` - Updated branding and button text
+- `components/footer.jsx` - Updated branding, added feedback link
+- `components/bloglist.jsx` - Updated filter labels and search UI
+- `components/blogitem.jsx` - Updated status badge labels
+- `app/blogs/[id]/page.jsx` - Updated branding and button text
+- `app/me/page.jsx` - Updated tab labels
+- `app/me/postevent/page.jsx` - Simplified form, removed placeholders
+- `app/admin/bloglist/page.jsx` - Updated filter labels
+- `components/FeedbackModal.jsx` - Minimalist design without hints
+- `components/ReviewForm.jsx` - Enhanced to support editing mode
+- `components/ReviewList.jsx` - Added edit button and user identification
+- `components/admincomponents/sidebar.jsx` - Added "User Feedback" link
+
+#### Review System Enhancement
+- **ReviewForm now supports dual mode**
+  - Create mode: Empty form for new reviews
+  - Edit mode: Pre-filled form with existing data
+  - Dynamic form title ("Write a Review" vs "Edit Your Review")
+  - Dynamic button text ("Submit Review" vs "Update Review")
+  - Handles both new image uploads and existing image management
+
+- **ReviewList improvements**
+  - Fetches current user ID to identify ownership
+  - Edit button only visible on user's own reviews
+  - Shows "(edited)" timestamp for modified reviews
+  - Passes review data to parent for editing
+
+### Fixed
+- **Review editing modal not opening**
+  - Fixed conditional rendering logic in blog detail page
+  - Review form now shows when `showReviewForm` is true regardless of `hasRated`
+  - Proper state management for editing flow
+
+### Technical
+- Text input sanitization for event types
+- Multi-file image upload with existing image preservation
+- Review update timestamp tracking (`updatedAt` field)
+- Global feedback collection with admin authorization
+- Feedback status workflow (new → read → resolved)
+- Character counting for feedback input
+- Toast notifications for all user actions
+- Responsive admin dashboard layout
 
 ---
 

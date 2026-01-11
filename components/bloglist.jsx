@@ -44,19 +44,18 @@ const BlogList = () => {
                     </svg>
                     <input 
                         type='text' 
-                        placeholder='Search events by name, location, type...' 
+                        placeholder='Search events' 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className='w-full pl-12 pr-4 py-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
                     />
                 </div>
-                <p className='text-sm text-gray-400 mt-2 text-right'>Try "jones", "silent disco", "rooftop", "karaoke"...</p>
             </div>
 
             {/* Filter Tabs */}
             <div className='flex justify-center gap-4 mb-8'>
-                <button onClick={()=>setMenu('future')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Future</button>
-                <button onClick={()=>setMenu('live')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Ongoing</button>
+                <button onClick={()=>setMenu('future')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Upcoming</button>
+                <button onClick={()=>setMenu('live')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Happening Now</button>
                 <button onClick={()=>setMenu('past')} className={`px-6 py-2 rounded-full font-medium transition-colors ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
             </div>
 

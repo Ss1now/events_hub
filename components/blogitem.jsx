@@ -51,13 +51,13 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
     const getStatusBadge = () => {
         switch(status) {
             case 'live':
-                return { bg: 'bg-green-500', text: '#LIVE' };
+                return { bg: 'bg-green-500', text: '#HAPPENING NOW' };
             case 'future':
-                return { bg: 'bg-blue-500', text: '#FUTURE' };
+                return { bg: 'bg-blue-500', text: '#UPCOMING' };
             case 'past':
                 return { bg: 'bg-gray-500', text: '#PAST' };
             default:
-                return { bg: 'bg-black', text: '#LIVE' };
+                return { bg: 'bg-black', text: '#HAPPENING NOW' };
         }
     };
     
@@ -428,7 +428,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </div>
 
                         <div className='mb-4'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>Comment (Optional)</label>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>Comment</label>
                             <textarea
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
@@ -439,7 +439,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </div>
 
                         <div className='mb-4'>
-                            <label className='block text-sm font-medium text-gray-700 mb-2'>Photos (Optional, Max 5)</label>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>Photos</label>
                             <input
                                 type='file'
                                 accept='image/*'
