@@ -275,9 +275,17 @@ export async function PUT(request) {
                 console.log(`Notified ${affectedUsers.length} users about event update`);
                 
                 // Send email notifications to subscribed users (async, don't block response)
-                sendUpdateEmails(event._id.toString(), changes).catch(err => {
-                    console.error('[Email Trigger] Error sending update emails:', err);
-                });
+                console.log('[Email Trigger] About to call sendUpdateEmails');
+                console.log('[Email Trigger] Event ID:', event._id.toString());
+                console.log('[Email Trigger] Changes:', changes);
+                
+                sendUpdateEmails(event._id.toString(), changes)
+                    .then(result => {
+                        console.log('[Email Trigger] Email sending result:', result);
+                    })
+                    .catch(err => {
+                        console.error('[Email Trigger] Error sending update emails:', err);
+                    });
             }
         }
 
