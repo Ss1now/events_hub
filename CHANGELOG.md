@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.4] - 2026-01-11
+
+### Fixed
+
+#### Email Update Notifications
+- **Fixed event update emails not being sent**
+  - Improved server-to-server fetch call reliability
+  - Added comprehensive logging for email send operations
+  - Enhanced error handling and debugging output
+  - Fixed API URL construction for internal requests
+  - Update emails now properly sent to subscribed users when hosts edit events
+
+### Changed
+
+#### Email System Debugging
+- **Enhanced logging for email operations**
+  - Added detailed console logs for send-update action
+  - Logs number of users found with updates enabled
+  - Logs individual user emails and subscription status
+  - Better error tracking and debugging information
+
+---
+
 ## [0.5.3] - 2026-01-11
 
 ### Changed

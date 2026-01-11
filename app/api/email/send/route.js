@@ -333,11 +333,16 @@ export async function POST(request) {
 
         } else if (action === 'send-update') {
             // Send update notification for a specific event
+            console.log(`[Email] Processing send-update for event: ${eventId}`);
+            
             const event = await blogModel.findById(eventId);
             if (!event) {
+                console.log(`[Email] Event not found: ${eventId}`);
                 return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
             }
 
+            console.log(`[Email] Event found: ${event.title}`);
+            
             // Find users who RSVP'd or showed interest and have updates enabled
             const users = await userModel.find({
                 $or: [
@@ -345,7 +350,12 @@ export async function POST(request) {
                     { interestedEvents: eventId }
                 ],
                 'emailSubscriptions.updates': true
-            }).select('email name');
+            }).select('email name emailSubscriptions');
+
+            console.log(`[Email] Found ${users.length} users with updates enabled`);
+            users.forEach(u => {
+                console.log(`  - ${u.email}, updates: ${u.emailSubscriptions?.updates}`);
+            });
 
             let emailsSent = 0;
 
