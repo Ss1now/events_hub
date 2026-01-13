@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
         e.preventDefault()
         
         if (!email) {
-            toast.error('Please enter your email address')
+            toast.error('Please enter your email')
             return
         }
 
@@ -44,7 +44,7 @@ export default function ForgotPasswordPage() {
             }
         } catch (error) {
             console.error(error)
-            toast.error('An error occurred. Please try again.')
+            toast.error('Could not send reset email')
         } finally {
             setLoading(false)
         }

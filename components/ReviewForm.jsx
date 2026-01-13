@@ -89,7 +89,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted, editingReview }) =
             });
 
             if (response.data.success) {
-                toast.success(editingReview ? 'Review updated successfully!' : 'Review submitted successfully!');
+                toast.success(editingReview ? 'Review updated' : 'Review submitted');
                 setRating(0);
                 setComment('');
                 setImages([]);
@@ -103,7 +103,7 @@ const ReviewForm = ({ eventId, eventTitle, onReviewSubmitted, editingReview }) =
             }
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.msg || 'Error submitting review');
+            toast.error(error.response?.data?.msg || 'Could not submit review');
         } finally {
             setSubmitting(false);
         }

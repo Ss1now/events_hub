@@ -132,7 +132,7 @@ const Page = ({ params }) => {
                 }
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error marking as interested');
+            toast.error(error.response?.data?.msg || 'Could not mark as interested');
         }
     };
 
@@ -162,7 +162,7 @@ const Page = ({ params }) => {
                 setShowSuccessModal(true);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error reserving event');
+            toast.error(error.response?.data?.msg || 'Could not reserve');
         }
     };
 
@@ -188,7 +188,7 @@ const Page = ({ params }) => {
                 toast.success(response.data.msg);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error cancelling RSVP');
+            toast.error(error.response?.data?.msg || 'Could not cancel RSVP');
         }
     };
 

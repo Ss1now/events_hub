@@ -14,8 +14,8 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         e.preventDefault();
         
         if (!feedback.trim()) {
-            toast.error('Please enter your feedback');
-            return;
+            toast.error('Please enter feedback')
+            return
         }
 
         setIsSubmitting(true);
@@ -30,7 +30,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
             }, { headers });
 
             if (response.data.success) {
-                toast.success('✨ Thank you for your feedback!', {
+                toast.success('Thanks for your feedback', {
                     position: 'top-center',
                     autoClose: 3000,
                 });
@@ -39,7 +39,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
                 onClose();
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Failed to submit feedback');
+            toast.error(error.response?.data?.msg || 'Could not submit feedback');
         } finally {
             setIsSubmitting(false);
         }

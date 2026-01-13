@@ -1,898 +1,227 @@
-# 🎉 Rice Events - Events Hub
+# Rice Events
 
-A modern, full-stack event management platform built with Next.js 16, MongoDB, and React. Users can create, discover, and manage campus events with real-time ratings, RSVPs, and notifications.
+A modern event management platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.1.1-black)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19.2.3-blue)](https://reactjs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-9.1.2-green)](https://www.mongodb.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.0-38B2AC)](https://tailwindcss.com/)
-[![Version](https://img.shields.io/badge/version-0.5.5-purple)](https://github.com/Ss1now/events_hub)
+Version 0.5.7
 
----
+## Table of Contents
 
-## 📋 Table of Contents
+- [What is Rice Events?](#what-is-rice-events)
+- [Getting Started](#getting-started)
+- [Features Overview](#features-overview)
+- [Email Notifications](#email-notifications)
+- [Password Recovery](#password-recovery)
+- [Sharing Events](#sharing-events)
+- [Feedback](#feedback)
+- [Privacy and Security](#privacy-and-security)
 
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Getting Started](#-getting-started)
-- [Project Structure](#-project-structure)
-- [Database Schema](#-database-schema)
-- [API Documentation](#-api-documentation)
-- [User Workflows](#-user-workflows)
-- [Admin Features](#-admin-features)
-- [Component Architecture](#-component-architecture)
-- [Development Guide](#-development-guide)
-- [Security](#-security)
-- [Deployment](#-deployment)
+## What is Rice Events?
 
----
+Rice Events is a web application that helps Rice students discover and organize campus events. Whether you're looking for social gatherings, study groups, or college-wide parties, Rice Events makes it easy to find what's happening and manage your own events.
 
-## ✨ Features
+## Getting Started
 
-### 🎫 Event Management
-- **Create Events** - Rich event creation with multiple images (up to 5), detailed info, and custom fields
-- **Dynamic Status** - Automatic status calculation (Future → Live → Past) based on real-time
-- **RSVPs** - Event capacity management with RSVP deadlines
-- **Interest Tracking** - Users can mark interest in events without formal RSVPs
-- **Live Editing** - Hosts can edit ongoing events with automatic user notifications
-- **Search & Filter** - Smart search by title, location, theme, type, host with status filtering
+### For Users
 
-### ⭐ Dual Rating System
-- **Live Ratings** - Real-time ratings during ongoing events to help users decide attendance
-  - Amber/gold themed display on event cards
-  - Access control based on RSVP requirements
-  - Instant average calculation
-  - Update ratings anytime during event
+**Visit the Website**
+Navigate to the Rice Events homepage and browse upcoming events without logging in.
 
-- **Post-Event Reviews** - Comprehensive reviews after events end
-  - 1-5 star ratings with visual feedback
-  - Text comments (up to 1000 characters)
-  - Photo uploads (up to 5 images per review)
-  - Automatic prompts for attendees
-  - **Edit reviews** - Modify your ratings, comments, and photos anytime
-  - Edit timestamps with "(edited)" label
-  - Triple-layer duplicate prevention
+**Create an Account**
+1. Click "Register" in the top navigation
+2. Enter your name, email, and password
+3. Select your residential college
+4. Agree to email notifications (required to create account)
+5. Click "Create Account"
 
-### 📝 User Feedback System
-- **Global Feedback Collection** - Submit feedback from any page via footer link
-- **Admin Dashboard** - Dedicated feedback management panel
-  - View all feedback with stats (Total, New, Read, Resolved)
-  - Filter by status and search functionality
-  - Update feedback status and delete submissions
-  - Color-coded status badges for easy tracking
-- **Anonymous Support** - Non-logged-in users can submit feedback
-- **Auto-capture** - Logged-in users' info automatically attached
+**Start Exploring**
+- Browse events by status: Upcoming, Happening Now, Past
+- Search for events by name, location, or type
+- Click on events to view full details
 
-### 🔔 Smart Notifications
-- **Event Updates** - Users receive notifications when events they're interested in/reserved get edited
-- **Co-host Invitations** - Real-time notifications for co-host invitations
-- **Notification Queue** - MongoDB-based queueing system with 30s polling
-- **Duplicate Prevention** - Multi-layer protection (database + localStorage)
-- **Action Options** - View event details or dismiss notifications
-- **Slide-in Animations** - Smooth Framer Motion animations from top-right
+### Creating Your First Event
 
-### 📧 Email Subscription System
-- **Event Recommendations** - Intelligent multi-tier algorithm sends personalized event suggestions
-  - Tier 1: Matches based on your past event categories and locations
-  - Tier 2: Popular highly-rated events as fallback
-  - Tier 3: Any upcoming events if needed
-  - Works even during early launch with few events or for new users
-  - Weekly or daily frequency options
-- **Event Reminders** - Automated reminders before events you RSVP'd to (24h + 1h before)
-- **Event Updates** - Instant email notifications when hosts edit events you're interested in
-- **Subscription Management** - Bell icon in header with beautiful preferences modal
-- **Professional Templates** - Rice Events branded HTML emails with event cards
-- **Powered by Resend + GitHub Actions** - Reliable email delivery with free automation
+**Step 1: Log In**
+Click "Login" and enter your credentials.
 
-### 🤝 Co-hosting System
-- **Auto-generated Usernames** - Unique usernames created from email on registration
-- **Username Management** - Edit usernames in profile with validation (3-20 chars)
-- **Search & Invite** - Search users by username or email with autocomplete
-- **Co-host Permissions** - Co-hosts gain full event editing permissions
-- **Invitation Flow** - Accept/decline invitations with real-time notifications
-- **Visual Display** - "Hosted by [Name] • Co-hosts: @username1, @username2"
-- **Event Creation Flow** - Invite co-hosts immediately after creating events
+**Step 2: Create Event**
+1. Click "Create event" in the header
+2. Fill in event details:
+   - Event name and description
+   - Type (party, study session, meeting, or custom)
+   - Location on campus
+   - Start and end times
+   - Upload photos (optional, up to 5 images)
+3. Choose if RSVP is required
+4. Set capacity and RSVP deadline if needed
+5. Click "Create Event"
 
-### 👤 User Features
-- **Authentication** - JWT-based secure login/registration
-- **Password Recovery** - Forgot password flow with email reset links
-  - Secure token-based reset (1-hour expiration)
-  - Email delivery via Resend with professional templates
-  - Token verification and validation
-- **Email Subscriptions** - Comprehensive notification system with user preferences
-  - **Event Recommendations** - Personalized weekly/daily event suggestions based on interests
-  - **Event Reminders** - Automated notifications 24h and 1h before RSVP'd events
-  - **Event Updates** - Instant alerts when hosts modify events you're interested in
-  - Bell icon in header with subscription management modal
-  - Granular control over each notification type
-  - Beautiful HTML email templates with Rice Events branding
-- **User Profile** - Personal dashboard showing interested/reserved/participated events
-- **Username System** - Unique @usernames with editing capability
-- **My Events** - View and manage your created and co-hosted events
-- **Event History** - Track past, current, and future event participation
-- **Clickable Event Rows** - Navigate to event details from management table
-- **Rating History** - Keep track of events you've rated
+**Step 3: Manage Your Event**
+- View your events in your profile
+- Edit details anytime (even during live events)
+- Invite co-hosts to help manage
+- See who's attending
 
-### 🛡️ Admin Panel
-- **Role-Based Access** - Admin-only protected routes
-- **Dashboard** - Real-time statistics (Total, Live, Upcoming, Past events)
-- **Event Management** - Search, filter, bulk select/delete events
-- **User Management** - View and manage all users
-- **Moderation** - Delete any event regardless of ownership
+## Features Overview
 
-### 🎨 UI/UX
-- **Responsive Design** - Mobile-first approach with Tailwind CSS 4
-- **Frosted Glass Modals** - Modern backdrop-blur effects
-- **Smooth Animations** - Professional transitions and hover effects
-- **Google Calendar Integration** - One-click calendar export
-- **Image Galleries** - Grid layouts for multiple event photos
-- **Status Badges** - Color-coded visual indicators
+### Event Discovery
 
----
+Browse and search for events happening on campus.
 
-## 🛠️ Tech Stack
+**Search and Filter**
+- Search by event name, location, or type
+- Filter by status: Upcoming, Happening Now, or Past
+- View event details including time, location, and host information
 
-### Frontend
-- **Next.js 16.1.1** - React framework with App Router
-- **React 19.2.3** - UI library
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Framer Motion 11.18.0** - Animation library for modals and notifications
-- **Axios 1.13.2** - HTTP client for API requests
-- **React Toastify 11.0.5** - Toast notifications
+**Event Information**
+- See who's hosting and co-hosting
+- Check available spots and RSVP status
+- View event photos and descriptions
+- Add events to your calendar
 
-### Backend
-- **Next.js API Routes** - Serverless API endpoints
-- **MongoDB** - NoSQL database
-- **Mongoose 9.1.2** - MongoDB ODM
-- **JWT (jsonwebtoken 9.0.3)** - Authentication tokens
-- **bcryptjs 3.0.3** - Password hashing
-- **Validator 13.15.26** - Input validation
-- **Cloudinary 2.8.0** - Cloud image storage and management
-- **Resend** - Email delivery service for password resets
+### Event Participation
 
-### Development Tools
-- **ESLint 9** - Code linting
-- **PostCSS** - CSS processing
-- **Babel React Compiler** - React optimization
+**RSVP System**
+- Reserve your spot for events with limited capacity
+- Cancel RSVPs before the deadline
+- See remaining available spots
 
----
+**Interest Tracking**
+- Mark events you're interested in
+- Get notified when hosts make changes
+- Browse interested events in your profile
 
-## 🚀 Getting Started
+**Rate Events**
+- Rate live events while they're happening (helps others decide if they should go)
+- Leave detailed reviews after events end
+- Upload photos with your reviews
+- Edit your reviews later if needed
 
-### Prerequisites
-- Node.js 18+ and npm
-- MongoDB Atlas account or local MongoDB installation
-- Git
+### Event Creation and Management
 
-### Installation
+**Hosting Events**
+- Create events with custom details
+- Upload multiple event photos
+- Set capacity limits
+- Choose whether RSVP is required
+- Set RSVP deadlines
 
-1. **Clone the repository**
-```bash
-git clone https://github.com/Ss1now/events_hub.git
-cd events_hub
-```
+**Co-hosting**
+- Invite friends as co-hosts using their username
+- Co-hosts can edit event details
+- Share event management responsibilities
+- Invite co-hosts immediately after creating an event
 
-2. **Install dependencies**
-```bash
-npm install
-```
+**Event Management**
+- Edit events anytime, even while they're happening
+- Participants automatically receive notifications of changes
+- Delete events if plans change
+- Track RSVPs and interested users
 
-3. **Set up environment variables**
+### Notifications
 
-Create a `.env.local` file in the root directory:
+**Email Notifications**
 
-```env
-# Copy .env.example to .env.local and fill in your values
-cp .env.example .env.local
+All users receive email notifications for:
+- Event reminders at 24 hours and 1 hour before events you RSVP'd to
+- Event updates when hosts change details of events you're attending or interested in
+- Platform updates about new features
 
-# Then edit .env.local with your actual credentials:
-# - Get MongoDB URI from https://cloud.mongodb.com/
-# - Generate JWT_SECRET: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-# - Get Cloudinary credentials from https://cloudinary.com/
-# - Get Resend API key from https://resend.com/ (for password reset emails)
-```
+**In-App Notifications**
+- Co-host invitations from event hosts
+- Event update alerts
+- Accept or dismiss notifications directly
 
-**Required Variables:**
-- `MONGODB_URI` - MongoDB connection string
-- `JWT_SECRET` - Random secure string for JWT signing
-- `NEXT_PUBLIC_BASE_URL` - Your app URL (http://localhost:3000 for dev)
+### Your Profile
 
-**Optional Variables (for full functionality):**
-- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` - Image uploads
-- `RESEND_API_KEY` - Password reset emails (falls back to console logging)
+**Personal Information**
+- Update your name and email
+- Change your residential college
+- Edit your username
+- Change your password
 
-**Security Note:** Never commit `.env.local` to Git! It's already in `.gitignore`.
+**Your Events Dashboard**
+- View events you're hosting or co-hosting
+- See upcoming events you're attending
+- Check events you've marked as interested
+- Review past events you attended
 
-4. **Run the development server**
-```bash
-npm run dev
-```
+**Calendar Integration**
+- Add events to Google Calendar with one click
+- Download events as .ics files
+- Import to any calendar application
 
-5. **Open your browser**
-Navigate to [http://localhost:3000](http://localhost:3000)
+## Email Notifications
 
-### First-Time Setup
+During registration, you must consent to email notifications. This is required to create an account.
 
-1. **Create your user account** via the registration page
-2. **Set up an admin user** - Follow [ADMIN_SETUP.md](./ADMIN_SETUP.md) instructions
-3. **Create your first event** from `/me/postevent`
+Email notifications keep you informed about:
 
----
+1. **Event Reminders**
+   - Sent 24 hours before events you RSVP'd to
+   - Sent 1 hour before event start time
+   - Includes event details and location
 
-## 📁 Project Structure
+2. **Event Updates**
+   - Sent when hosts modify events you're attending
+   - Sent when hosts modify events you're interested in
+   - Highlights what changed
 
-```
-events_hub/
-├── app/                          # Next.js App Router
-│   ├── api/                      # API Routes
-│   │   ├── auth/                 # Authentication endpoints
-│   │   │   └── route.js         # POST /api/auth - Login/Register
-│   │   ├── blog/                 # Event CRUD
-│   │   │   └── route.js         # GET, POST, PUT, PATCH, DELETE /api/blog
-│   │   ├── live-rating/          # Live event ratings
-│   │   │   └── route.js         # GET, POST /api/live-rating
-│   │   ├── rating/               # Post-event reviews
-│   │   │   └── route.js         # GET, POST, PUT /api/rating
-│   │   ├── reset-password/       # Password recovery
-│   │   │   └── route.js         # GET, POST /api/reset-password
-│   │   ├── feedback/             # User feedback
-│   │   │   └── route.js         # GET, POST, PATCH, DELETE /api/feedback
-│   │   ├── cohost/               # Co-host management
-│   │   │   └── route.js         # GET, POST, PATCH, DELETE /api/cohost
-│   │   └── user/                 # User management
-│   │       ├── route.js         # GET, PUT /api/user
-│   │       └── notifications/    # Notification system
-│   │           └── route.js     # GET, PATCH /api/user/notifications
-│   ├── admin/                    # Admin panel pages
-│   │   ├── layout.jsx           # Admin layout with sidebar
-│   │   ├── page.jsx             # Admin dashboard (redirects to bloglist)
-│   │   └── bloglist/
-│   │       └── page.jsx         # Event management table
-│   ├── blogs/                    # Event detail pages
-│   │   └── [id]/
-│   │       └── page.jsx         # Dynamic event detail page
-│   ├── login/
-│   │   └── page.jsx             # Login page
-│   ├── register/
-│   │   └── page.jsx             # Registration page
-│   ├── me/                       # User profile section
-│   │   ├── page.jsx             # User dashboard
-│   │   ├── postevent/
-│   │   │   └── page.jsx         # Create new event
-│   │   └── editevent/
-│   │       └── [id]/
-│   │           └── page.jsx     # Edit existing event
-│   ├── layout.js                 # Root layout with providers
-│   ├── page.js                   # Home page (redirects to events)
-│   └── globals.css               # Global styles
-│
-├── components/                   # React components
-│   ├── admincomponents/          # Admin-specific components
-│   │   ├── sidebar.jsx          # Admin sidebar navigation
-│   │   └── blogtableitem.jsx   # Event table row component
-│   ├── blogitem.jsx             # Event card component
-│   ├── bloglist.jsx             # Event list with filters
-│   ├── header.jsx               # Main navigation header
-│   ├── footer.jsx               # Page footer with feedback link
-│   ├── SuccessModal.jsx         # Success confirmation modal
-│   ├── FeedbackModal.jsx        # User feedback submission modal
-│   ├── ShareModal.jsx           # Modern share modal (WhatsApp, Messages, etc.)
-│   ├── StarRating.jsx           # Reusable star rating component
-│   ├── LiveRatingButton.jsx     # Live rating display & modal
-│   ├── RatingPrompt.jsx         # Auto-prompt for post-event rating
-│   ├── RatingPopup.jsx          # Post-event rating modal
-│   ├── ReviewForm.jsx           # Review submission/editing form
-│   ├── ReviewList.jsx           # Display list of reviews
-│   ├── EventUpdateNotification.jsx # Event update notification popup
-│   ├── EventCreatedModal.jsx    # Post-creation success modal
-│   ├── CohostInviteModal.jsx    # Co-host invitation interface
-│   └── CohostInvitationNotification.jsx # Co-host invitation notifications
-│
-├── lib/                          # Backend utilities
-│   ├── config/
-│   │   ├── db.js                # MongoDB connection handler
-│   │   └── cloudinary.js        # Cloudinary configuration
-│   ├── models/                   # Mongoose schemas
-│   │   ├── blogmodel.js         # Event/Blog schema
-│   │   ├── usermodel.js         # User schema
-│   │   └── feedbackmodel.js     # Feedback schema
-│   └── utils/
-│       ├── adminAuth.js         # Admin verification utility
-│       └── cloudinary.js        # Image upload/delete helpers
-│
-├── context/                      # React Context providers
-│   └── AuthContext.js           # Authentication state management
-│
-├── assets/                       # Static assets
-│   ├── assets.js                # Asset exports
-│   ├── logo.png                 # App logo
-│   ├── profile.png              # Default profile image
-│   ├── upload.png               # Upload icon
-│   └── ...
-│
-├── public/                       # Public files
-│   └── images/
-│       └── blogs/               # Uploaded event images
-│
-├── .env.local                    # Environment variables (create this)
-├── .env.example                  # Environment variables template
-├── .gitignore                    # Git ignore rules
-├── package.json                  # Dependencies & scripts
-├── next.config.mjs               # Next.js configuration
-├── tailwind.config.js            # Tailwind CSS config
-├── jsconfig.json                 # JavaScript configuration
-├── CHANGELOG.md                  # Version history
-├── ADMIN_SETUP.md                # Admin setup guide
-├── EMAIL_SETUP.md                # Email integration guide
-├── SECURITY.md                   # Security best practices
-└── README.md                     # This file
-```
+3. **Platform Updates**
+   - Announcements about new features
+   - Important platform news and improvements
+
+## Password Recovery
+
+Forgot your password? Here's how to reset it:
+
+1. Click "Forgot your password?" on the login page
+2. Enter your email address
+3. Check your email for a reset link
+4. Click the link and create a new password
+5. The reset link expires after 1 hour for security
+
+## Sharing Events
+
+Share events with friends using multiple methods:
+
+- Copy link to clipboard
+- Share via WhatsApp
+- Share via Messages (SMS)
+- Share via Email
+- Share to LinkedIn
+- Share to Instagram (copies link for you to paste)
+
+## Feedback
+
+Have suggestions or found an issue? Submit feedback anytime.
+
+1. Click "Feedback" in the footer (available on any page)
+2. Write your message (up to 1000 characters)
+3. Click submit
+
+Your feedback helps improve Rice Events for everyone.
+
+## Privacy and Security
+
+Your privacy and security are important:
+
+- Your email address is never shared with other users
+- Passwords are securely encrypted
+- You can delete your events anytime
+- Event participation is visible only to event hosts
+- Email consent is required during registration
+
+## Support
+
+For questions or technical issues:
+- Use the feedback form in the footer
+- Contact your event administrator
+- Check the changelog for recent updates
 
 ---
 
-## 🗄️ Database Schema
+**For Developers:** Technical documentation is available in `DEVELOPER_GUIDE.md`
 
-### Event Model (`blogmodel.js`)
+**For Administrators:** Admin panel setup instructions are in `docs/setup/ADMIN_SETUP.md`
 
-```javascript
-{
-  // Basic Info
-  title: String (required),
-  description: String (required),
-  images: [String] (0-5 images),
-  date: Date (creation date),
-  
-  // Event Timing
-  startDateTime: Date (required),
-  endDateTime: Date (required),
-  status: String (enum: 'future', 'live', 'past'),
-  
-  // Event Details
-  eventType: String (required),
-  location: String (required),
-  
-  // RSVP System
-  needReservation: Boolean,
-  reserved: Number (virtual - calculated from reservedUsers.length),
-  capacity: Number,
-  reservationDeadline: Date,
-  
-  // User Relationships
-  interestedUsers: [ObjectId] (refs to users),
-  reservedUsers: [ObjectId] (refs to users),
-  
-  // Host Info
-  host: String (required),
-  authorId: ObjectId (ref to user),
-  cohosts: [{
-    userId: ObjectId (ref to user),
-    name: String,
-    username: String
-  }],
-  
-  // Update Tracking
-  lastUpdated: Date,
-  updateNotifications: [{
-    message: String,
-    timestamp: Date,
-    notifiedUsers: [ObjectId]
-  }],
-  
-  // Live Ratings
-  liveRatings: [{
-    userId: ObjectId,
-    rating: Number (1-5),
-    timestamp: Date
-  }],
-  averageLiveRating: Number (0-5),
-  totalLiveRatings: Number,
-  
-  // Post-Event Ratings
-  ratings: [{
-    userId: ObjectId,
-    userName: String,
-    rating: Number (1-5),
-    comment: String,
-    images: [String] (0-5 images),
-    date: Date
-  }],
-  averageRating: Number (0-5),
-  totalRatings: Number
-}
-```
-
-### User Model (`usermodel.js`)
-
-```javascript
-{
-  // Basic Info
-  name: String,
-  email: String (required, unique),
-  password: String (required, hashed),
-  username: String (unique, sparse - auto-generated from email),
-  residentialCollege: String,
-  
-  // Authorization
-  isAdmin: Boolean (default: false),
-  
-  // Event Relationships
-  interestedEvents: [ObjectId] (refs to events),
-  reservedEvents: [ObjectId] (refs to events),
-  ratedEvents: [ObjectId] (refs to events),
-  
-  // Co-hosting
-  cohostInvitations: [{
-    eventId: ObjectId,
-    invitedBy: ObjectId,
-    invitedByName: String,
-    eventTitle: String,
-    timestamp: Date,
-    status: String (enum: 'pending', 'accepted', 'declined')
-  }],
-  
-  // Notifications
-  eventUpdateNotifications: [{
-    eventId: ObjectId,
-    eventTitle: String,
-    changes: String,
-    timestamp: Date,
-    read: Boolean
-  }],
-  pendingNotifications: [{
-    eventId: ObjectId,
-    notificationId: ObjectId,
-    timestamp: Date
-  }],
-  
-  // Password Recovery
-  resetPasswordToken: String (optional, SHA-256 hashed),
-  resetPasswordExpires: Date (optional, 1-hour expiration)
-}
-```
-
----
-
-## 🔌 API Documentation
-
-### Authentication
-
-#### `POST /api/auth`
-**Register/Login endpoint**
-
-**Request Body:**
-```json
-{
-  "action": "register" | "login",
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "John Doe" (register only),
-  "residentialCollege": "Baker" (register only, optional)
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "msg": "User created" | "Login successful",
-  "token": "jwt-token-here",
-  "user": {
-    "_id": "user-id",
-    "name": "John Doe",
-    "email": "user@example.com",
-    "isAdmin": false
-  }
-}
-```
-
-### Events
-
-#### `GET /api/blog`
-**Fetch events** - Returns single event by ID or all events with calculated status
-
-#### `POST /api/blog`
-**Create new event** - Requires auth, accepts FormData with event fields and up to 5 images
-
-#### `PUT /api/blog`
-**Edit event** - Can edit future/live events, creates notifications for live event edits
-
-#### `PATCH /api/blog`
-**Interested/Reserve actions** - Toggle interest or reserve spot at event
-
-#### `DELETE /api/blog?id=<event-id>`
-**Delete event** - Users can delete own events, admins can delete any
-
-### Ratings
-
-#### `POST /api/live-rating`
-**Submit live rating** - Rate ongoing events (1-5 stars), respects RSVP requirements
-
-#### `GET /api/live-rating?eventId=<id>`
-**Get live rating status** - Check if user rated and view event's live rating stats
-
-#### `POST /api/rating`
-**Submit post-event review** - Full review with rating, comment, and up to 5 images
-
-### Co-hosting
-
-#### `GET /api/cohost?search=<query>&eventId=<id>`
-**Search users** - Search by username or email, filters out existing co-hosts
-
-**Response:**
-```json
-{
-  "success": true,
-  "users": [{
-    "_id": "user-id",
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "username": "janedoe"
-  }]
-}
-```
-
-#### `POST /api/cohost`
-**Send co-host invitation**
-
-**Request Body:**
-```json
-{
-  "eventId": "event-id",
-  "userId": "user-id"
-}
-```
-
-#### `PATCH /api/cohost`
-**Accept/Decline invitation**
-
-**Request Body:**
-```json
-{
-  "invitationId": "invitation-id",
-  "action": "accept" | "decline"
-}
-```
-
-#### `DELETE /api/cohost?eventId=<id>&userId=<id>`
-**Remove co-host** - Only event author can remove co-hosts
-
-#### `GET /api/rating?eventId=<id>`
-**Get event reviews** - Fetch all reviews for an event with average rating
-
-### User & Notifications
-
-#### `GET /api/user`
-**Get user profile** - Returns user data with interested/reserved/cohosted events populated
-
-**Response:**
-```json
-{
-  "success": true,
-  "user": {
-    "id": "user-id",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "username": "johndoe",
-    "residentialCollege": "Martel",
-    "isAdmin": false,
-    "ratedEvents": [],
-    "cohostInvitations": [],
-    "eventUpdateNotifications": []
-  },
-  "events": [],
-  "cohostedEvents": [],
-  "interestedEvents": [],
-  "reservedEvents": []
-}
-```
-
-#### `PUT /api/user`
-**Update user profile** - Edit name, username, residential college
-
-**Request Body:**
-```json
-{
-  "name": "John Doe",
-  "username": "johndoe2",
-  "residentialCollege": "Martel College"
-}
-```
-
-#### `PATCH /api/user/notifications`
-**Mark notification as read**
-
-**Request Body:**
-```json
-{
-  "notificationId": "notification-id",
-  "type": "eventUpdate"
-}
-```
-
-### Password Recovery
-
-#### `POST /api/reset-password`
-**Request password reset** - Generates secure token and sends email
-
-**Request Body:**
-```json
-{
-  "action": "request-reset",
-  "email": "user@example.com"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "msg": "Password reset link has been sent to your email."
-}
-```
-
-#### `POST /api/reset-password`
-**Reset password with token**
-
-**Request Body:**
-```json
-{
-  "action": "reset-password",
-  "token": "reset-token-from-url",
-  "newPassword": "newpassword123"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "msg": "Password has been reset successfully!"
-}
-```
-
-#### `GET /api/reset-password?token=<token>`
-**Verify reset token** - Check if token is valid and not expired
-
-**Response:**
-```json
-{
-  "success": true,
-  "msg": "Token is valid",
-  "email": "user@example.com"
-}
-```
-
-### Feedback
-
-#### `POST /api/feedback`
-**Submit feedback** - Public endpoint (auto-captures logged-in user info)
-
-**Request Body:**
-```json
-{
-  "feedback": "Great event platform!"
-}
-```
-
-#### `GET /api/feedback`
-**Get all feedback** - Admin only, returns feedback with stats
-
-#### `PATCH /api/feedback`
-**Update feedback status** - Admin only
-
-**Request Body:**
-```json
-{
-  "id": "feedback-id",
-  "status": "read" | "resolved"
-}
-```
-
-#### `DELETE /api/feedback?id=<id>`
-**Delete feedback** - Admin only
-
----
-
-## 👥 User Workflows
-
-## 🔄 User Workflows
-
-### Creating an Event
-1. Navigate to `/me/postevent` (requires login)
-2. Fill form with event details
-3. Upload 0-5 images (optional)
-4. Set RSVP requirements if needed
-5. Submit → Event created successfully
-6. See EventCreatedModal with option to invite co-hosts
-7. (Optional) Invite co-hosts by searching usernames/emails
-
-### Co-hosting Workflow
-1. **Host invites co-host:**
-   - Click "Invite" button on event (only future events)
-   - Search by username or email
-   - Click invite on desired user
-   
-2. **User receives invitation:**
-   - Real-time notification appears (30s polling)
-   - Shows event details and inviter name
-   - Can Accept, Decline, or View Event
-   
-3. **Co-host gains permissions:**
-   - Full editing access to the event
-   - Can invite additional co-hosts
-   - Username displayed with purple styling
-
-### Rating System
-
-**Live Ratings:**
-- Only available during live events
-- Anyone can rate unreserved events
-- Only reserved users can rate reserved events
-- Can update rating anytime during event
-
-**Post-Event Reviews:**
-- Automatic prompt appears for attended events
-- Triple duplicate prevention (database + session + dismissal localStorage)
-- Full review with stars, comment, and photos
-
-### Notification Flow
-1. Host/co-host edits a future or live event
-2. System identifies interested/reserved users
-3. Notifications created in database queue
-4. Users see slide-in popup on next page load (30s polling)
-5. Can view event or dismiss
-6. Read status tracked in database
-
----
-
-## 🛡️ Admin Features
-
-### Setup
-See [ADMIN_SETUP.md](./ADMIN_SETUP.md) for detailed admin setup instructions.
-
-**Quick Setup:**
-```javascript
-// In MongoDB
-db.user.updateOne(
-  { email: "admin@example.com" },
-  { $set: { isAdmin: true } }
-)
-```
-
-### Admin Panel (`/admin/bloglist`)
-- **Statistics Dashboard** - Real-time event counts by status
-- **Search & Filter** - Find events by any field, filter by status
-- **Bulk Operations** - Select multiple events, bulk delete
-- **Full Control** - Delete any event regardless of ownership
-- **Responsive Design** - Works on all devices
-
----
-
-## 🧩 Component Architecture
-
-### Key Components
-
-**BlogItem** - Reusable event card with conditional buttons based on status  
-**LiveRatingButton** - Amber/gold themed live rating display and modal  
-**RatingPrompt** - Auto-prompts users to rate attended past events  
-**EventUpdateNotification** - Global notification popup mounted in root layout  
-**StarRating** - Reusable 1-5 star rating with customizable sizes  
-**SuccessModal** - Confirmation modal with frosted glass effect  
-
----
-
-## 🔧 Development Guide
-
-### Environment Variables
-```env
-# See .env.example for complete template
-# Generate JWT_SECRET with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-
-MONGODB_URI=your-mongodb-connection-string
-JWT_SECRET=your-generated-secret-key
-NEXT_PUBLIC_API_URL=http://localhost:3000
-```
-
-**⚠️ Security:** Never commit actual credentials. Use `.env.local` for secrets.
-
-### Common Tasks
-
-**Clear localStorage:**
-```javascript
-localStorage.clear(); // In browser console
-```
-
-**Test as admin:**
-```javascript
-// Update in MongoDB
-db.user.updateOne(
-  { email: "your@email.com" },
-  { $set: { isAdmin: true } }
-)
-```
-
-**Recommended Database Indexes:**
-```javascript
-db.blog.createIndex({ status: 1, startDateTime: -1 })
-db.blog.createIndex({ authorId: 1 })
-db.user.createIndex({ email: 1 }, { unique: true })
-```
-
----
-
-## 🔒 Security
-
-### Environment Variables
-
-**CRITICAL:** Never commit `.env.local` or any file containing real credentials to version control.
-
-```bash
-# Copy template and fill with your credentials
-cp .env.example .env.local
-```
-
-### Required Variables
-- `MONGODB_URI` - MongoDB Atlas connection string with username/password
-- `JWT_SECRET` - Cryptographically secure random string (generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`)
-
-### Security Best Practices
-- ✅ `.env.local` is protected by `.gitignore`
-- ✅ No hardcoded credentials in source code
-- ✅ MongoDB connection validated at runtime
-- ✅ JWT tokens expire after 7 days
-- ✅ Passwords hashed with bcryptjs
-
-### For Complete Security Guide
-See [SECURITY.md](./SECURITY.md) for:
-- Credential management and rotation procedures
-- MongoDB Atlas security configuration
-- API security guidelines
-- What to do if credentials are exposed
-- Security checklist for deployment
-
----
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Push to GitHub
-2. Import project on [vercel.com](https://vercel.com)
-3. Add environment variables:
-   - `MONGODB_URI`
-   - `JWT_SECRET`
-4. Deploy and enjoy!
-
-### MongoDB Atlas
-1. Create free cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
-2. Add database user
-3. Whitelist IPs (0.0.0.0/0 for all)
-4. Copy connection string to `MONGODB_URI`
-
-### Post-Deployment Checklist
-- [ ] Test user registration/login
-- [ ] Create and edit test event
-- [ ] Test RSVPs and ratings
-- [ ] Set up admin user
-- [ ] Verify all features work on mobile
-
----
-
-## 📝 Additional Documentation
-
-- [CHANGELOG.md](./CHANGELOG.md) - Complete version history
-- [SECURITY.md](./SECURITY.md) - Security best practices and guidelines
-- [ADMIN_SETUP.md](./ADMIN_SETUP.md) - Admin user setup guide
-- [Next.js Docs](https://nextjs.org/docs) - Framework documentation
-- [MongoDB Docs](https://docs.mongodb.com/) - Database documentation
-
----
-
-## 👥 Contact
-
-**Project Maintainer:** Ss1now  
-**Repository:** [github.com/Ss1now/events_hub](https://github.com/Ss1now/events_hub)
-
----
-
-**Built with ❤️ for Rice University**
+**Version History:** Detailed release notes are in `CHANGELOG.md`

@@ -90,7 +90,7 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
             });
 
             if (response.data.success) {
-                toast.success(hasRated ? 'Rating updated!' : 'Rating submitted!');
+                toast.success(hasRated ? 'Rating updated' : 'Rating submitted');
                 setHasRated(true);
                 setUserRating(rating);
                 setCurrentAverage(response.data.averageLiveRating);
@@ -100,7 +100,7 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
                 setTimeout(() => window.location.reload(), 500);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error submitting rating');
+            toast.error(error.response?.data?.msg || 'Could not submit rating');
         } finally {
             setSubmitting(false);
         }
@@ -192,7 +192,7 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
                             </div>
                             {rating > 0 && (
                                 <p className='text-gray-600 font-medium text-lg'>
-                                    {rating === 5 ? '🔥 This event is LIT!' : rating === 4 ? '👍 Pretty good!' : rating === 3 ? '😊 It\'s alright' : rating === 2 ? '😐 Could be better' : '👎 Not great'}
+                                    {rating === 5 ? 'This event is great' : rating === 4 ? 'Pretty good' : rating === 3 ? 'It\'s alright' : rating === 2 ? 'Could be better' : 'Not great'}
                                 </p>
                             )}
                         </div>

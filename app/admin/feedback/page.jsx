@@ -75,7 +75,7 @@ export default function FeedbackListPage() {
                 fetchFeedbacks()
             }
         } catch (error) {
-            toast.error('Failed to update status')
+            toast.error('Could not update status')
         }
     }
 
@@ -93,7 +93,7 @@ export default function FeedbackListPage() {
                 fetchFeedbacks()
             }
         } catch (error) {
-            toast.error('Failed to delete feedback')
+            toast.error('Could not delete feedback')
         }
     }
 
@@ -133,7 +133,7 @@ export default function FeedbackListPage() {
                 <div className='max-w-7xl mx-auto px-6 py-4'>
                     <div className='flex justify-between items-center'>
                         <div>
-                            <h1 className='text-2xl font-bold text-gray-900'>💬 User Feedback</h1>
+                            <h1 className='text-2xl font-bold text-gray-900'>User Feedback</h1>
                             <p className='text-sm text-gray-600 mt-1'>Manage and respond to user feedback</p>
                         </div>
                         <button

@@ -61,7 +61,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
             });
 
             if (response.data.success) {
-                toast.success('Thank you for your review!');
+                toast.success('Thanks for your review');
                 if (onSubmitted) {
                     onSubmitted();
                 }
@@ -71,7 +71,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
             }
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.msg || 'Error submitting review');
+            toast.error(error.response?.data?.msg || 'Could not submit review');
         } finally {
             setSubmitting(false);
         }
@@ -123,7 +123,7 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
                         </div>
                         {rating > 0 && (
                             <p className='text-gray-600 font-medium'>
-                                {rating === 5 ? 'Excellent! 🎉' : rating === 4 ? 'Great! 😊' : rating === 3 ? 'Good! 👍' : rating === 2 ? 'Okay 😐' : 'Not great 😕'}
+                                {rating === 5 ? 'Excellent' : rating === 4 ? 'Great' : rating === 3 ? 'Good' : rating === 2 ? 'Okay' : 'Not great'}
                             </p>
                         )}
                     </div>

@@ -69,7 +69,7 @@ const CohostInvitationNotification = () => {
                 toast.error(response.data.msg);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error processing invitation');
+            toast.error(error.response?.data?.msg || 'Could not process invitation');
         } finally {
             setProcessing(false);
         }

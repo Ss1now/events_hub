@@ -109,7 +109,7 @@ export default function EditEventPage({ params }) {
                 setLoading(false);
             } catch (error) {
                 console.error(error);
-                toast.error('Error loading event data');
+                toast.error('Could not load event');
                 router.back();
             }
         };
@@ -173,11 +173,11 @@ export default function EditEventPage({ params }) {
                     router.back();
                 }, 1500);
             } else {
-                toast.error(response.data.msg || "Error occurred! Please try again.");
+                toast.error(response.data.msg || 'Could not update event');
             }
         } catch (error) {
             console.error(error);
-            toast.error(error.response?.data?.msg || "Error updating event");
+            toast.error(error.response?.data?.msg || 'Update failed');
         }
     }
 

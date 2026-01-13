@@ -57,7 +57,7 @@ function ResetPasswordForm() {
         }
 
         if (newPassword.length < 6) {
-            toast.error('Password must be at least 6 characters long')
+            toast.error('Password must be at least 6 characters')
             return
         }
 
@@ -88,7 +88,7 @@ function ResetPasswordForm() {
             }
         } catch (error) {
             console.error(error)
-            toast.error('An error occurred. Please try again.')
+            toast.error('Could not reset password')
         } finally {
             setLoading(false)
         }

@@ -101,7 +101,7 @@ export default function Page() {
                 toast.error(response.data.msg);
             }
         } catch (error) {
-            toast.error('Error deleting post');
+            toast.error('Could not delete');
             console.error(error);
         }
     }
@@ -130,7 +130,7 @@ export default function Page() {
             setSelectedBlogs([]);
             fetchBlogs();
         } catch (error) {
-            toast.error('Error deleting some events');
+            toast.error('Could not delete some events');
             console.error(error);
         }
     }

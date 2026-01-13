@@ -26,7 +26,7 @@ const ShareModal = ({ isOpen, onClose, eventData }) => {
     const shareToInstagram = () => {
         // Instagram doesn't support direct web sharing, so we'll copy the link and notify user
         copyToClipboard()
-        toast.info('Link copied! Open Instagram app to share')
+        toast.info('Link copied - open Instagram to share')
     }
 
     const shareToMessages = () => {

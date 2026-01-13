@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.7] - 2026-01-12
+
+### Changed
+
+#### Email Notification System Simplification
+- **Replaced email subscription preferences with mandatory consent during registration**
+  - Removed email subscription modal and bell icon button from header
+  - New users must consent to email notifications to create an account
+  - Checkbox on registration page: "I consent to receive email notifications"
+  - All email notification types automatically enabled when consent is given:
+    - Event Reminders (24h and 1h before events)
+    - Event Updates (when hosts modify events)
+    - Patch Notes & Updates (platform announcements)
+  - Cleaner, simpler user experience
+  - No need for users to manage email preferences after registration
+
+### Removed
+
+#### Email Subscription Management UI
+- **Deleted email subscription preference management system**
+  - Removed `components/EmailSubscriptionButton.jsx` (bell icon in header)
+  - Removed `components/EmailSubscriptionModal.jsx` (preferences modal)
+  - Removed `/api/email-subscription` API route
+  - Users can no longer modify email notification preferences post-registration
+  - Email subscriptions now set once during account creation
+
+### Technical
+- Updated `auth/users.js` registerUser function to accept `emailConsent` parameter
+- Email subscriptions set to true for all notification types when user consents
+- Registration form validates consent checkbox before allowing account creation
+- Database schema unchanged - `emailSubscriptions` fields remain for compatibility
+- Updated `app/api/auth/route.js` to pass emailConsent to registration handler
+- Added validation: prevents registration without email consent
+
+---
+
+## [0.5.6] - 2026-01-12
+
+### Removed
+
+#### Event Recommendations Feature (Saved for Future Release)
+- **Temporarily removed event recommendation email system**
+  - Removed "Event Recommendations" checkbox from email subscription modal
+  - Removed recommendation frequency selector (Daily/Weekly)
+  - Removed `recommendations` and `frequency` fields from email subscription API
+  - Deleted `/api/cron/recommendations` endpoint
+  - Deleted `.github/workflows/weekly-recommendations.yml` GitHub Actions workflow
+  - Feature will be reimplemented in future release with enhanced algorithm
+
+### Changed
+
+#### Email Subscription System
+- **Simplified to three core notification types**
+  - Event Reminders (24h and 1h before events)
+  - Event Updates (when hosts modify events)
+  - Patch Notes & Updates (platform announcements)
+  - Cleaner modal interface with fewer options
+
+### Technical
+- Removed recommendation-related code from:
+  - `components/EmailSubscriptionModal.jsx`
+  - `app/api/email-subscription/route.js`
+  - Cron job infrastructure
+  - GitHub Actions automation
+- Database schema unchanged (emailSubscriptions fields remain for backward compatibility)
+
+---
+
 ## [0.5.5] - 2026-01-11
 
 ### Changed

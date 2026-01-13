@@ -53,7 +53,7 @@ export default function Page() {
         if (response.data.success) {
             toast.success(response.data.msg)
         } else {
-            toast.error("Error occurred! Please try again.")
+            toast.error('Could not create event')
         }
     }
 

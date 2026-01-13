@@ -22,8 +22,8 @@ export default function LoginPage() {
             })
 
             if (response.data.success) {
-                localStorage.setItem('token', response.data.token)
-                toast.success('🎉 Welcome back! Login successful!', {
+                localStorage.setItem('token', response.data.token);
+                toast.success('Login successful', {
                     position: 'top-center',
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -41,7 +41,7 @@ export default function LoginPage() {
             }
         } catch (error) {
             console.error(error)
-            toast.error('An error occurred during login')
+            toast.error('Login failed')
         }
     }
 

@@ -132,7 +132,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 }
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error marking as interested');
+            toast.error(error.response?.data?.msg || 'Could not mark as interested');
         }
     };
 
@@ -171,7 +171,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 setShowSuccessModal(true);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error reserving event');
+            toast.error(error.response?.data?.msg || 'Could not reserve');
         }
     };
 
@@ -226,7 +226,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
             });
 
             if (response.data.success) {
-                toast.success('Rating submitted successfully!');
+                toast.success('Rating submitted');
                 setShowRatingModal(false);
                 setRating(0);
                 setComment('');
@@ -235,7 +235,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 setTimeout(() => window.location.reload(), 1000);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Error submitting rating');
+            toast.error(error.response?.data?.msg || 'Could not submit rating');
         } finally {
             setSubmittingRating(false);
         }

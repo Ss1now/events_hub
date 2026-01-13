@@ -11,10 +11,16 @@ export default function RegisterPage() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [residentialCollege, setResidentialCollege] = useState('')
+    const [emailConsent, setEmailConsent] = useState(false)
     const router = useRouter()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        
+        if (!emailConsent) {
+            toast.error('Please agree to email notifications to continue')
+            return
+        }
         
         try {
             const response = await axios.post('/api/auth', {
@@ -22,12 +28,13 @@ export default function RegisterPage() {
                 name,
                 email,
                 password,
-                residentialCollege
+                residentialCollege,
+                emailConsent
             })
 
             if (response.data.success) {
                 localStorage.setItem('token', response.data.token)
-                toast.success('🎉 Account created successfully! Welcome!', {
+                toast.success('Account created', {
                     position: 'top-center',
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -45,7 +52,7 @@ export default function RegisterPage() {
             }
         } catch (error) {
             console.error(error)
-            toast.error('An error occurred during registration')
+            toast.error('Registration failed')
         }
     }
 
@@ -141,6 +148,19 @@ export default function RegisterPage() {
                                 <option value='Others'>Others</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div className='flex items-start space-x-2'>
+                        <input
+                            id='email-consent'
+                            type='checkbox'
+                            checked={emailConsent}
+                            onChange={(e) => setEmailConsent(e.target.checked)}
+                            className='mt-0.5 h-4 w-4 text-[#00205B] focus:ring-[#00205B] border-gray-300 rounded cursor-pointer'
+                        />
+                        <label htmlFor='email-consent' className='text-xs text-gray-600 cursor-pointer'>
+                            I consent to receive email notifications including event reminders, event updates, and platform announcements.
+                        </label>
                     </div>
 
                     <div>

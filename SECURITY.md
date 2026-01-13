@@ -1,10 +1,10 @@
 # Security Policy
 
-## 🔒 Security Best Practices
+Security best practices and guidelines for Rice Events.
 
-### Environment Variables
+## Environment Variables
 
-**CRITICAL:** Never commit sensitive credentials to version control.
+CRITICAL: Never commit sensitive credentials to version control.
 
 #### Protected Files
 - `.env.local` - Contains your actual production/development secrets (NEVER commit)
@@ -44,12 +44,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 - Enable database authentication
 - Use least-privilege user accounts
 
-#### 3. **Connection String Security**
+#### 3. Connection String Security
 ```javascript
-// ❌ NEVER DO THIS
+// NEVER DO THIS
 const MONGODB_URI = "mongodb+srv://user:pass@cluster.mongodb.net/db";
 
-// ✅ ALWAYS DO THIS
+// ALWAYS DO THIS
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   throw new Error("MONGODB_URI is not defined in environment variables");
@@ -122,7 +122,7 @@ if (!user?.isAdmin) {
 }
 ```
 
-## 🚨 If Credentials Are Exposed
+## If Credentials Are Exposed
 
 ### Immediate Actions
 
@@ -158,7 +158,7 @@ if (!user?.isAdmin) {
    - Enable IP access list
    - Review security settings
 
-## 📊 Security Checklist
+## Security Checklist
 
 ### Before Deployment
 - [ ] All `.env*` files except `.env.example` are in `.gitignore`
@@ -180,17 +180,17 @@ if (!user?.isAdmin) {
 - [ ] Test backup and restore procedures
 - [ ] Monitor for security vulnerabilities
 
-## 🔗 Additional Resources
+## Additional Resources
 
-- [MongoDB Security Checklist](https://www.mongodb.com/docs/manual/administration/security-checklist/)
-- [Next.js Security Headers](https://nextjs.org/docs/app/building-your-application/configuring/security-headers)
-- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
-- [JWT Best Practices](https://tools.ietf.org/html/rfc8725)
+- MongoDB Security Checklist: https://www.mongodb.com/docs/manual/administration/security-checklist/
+- Next.js Security Headers: https://nextjs.org/docs/app/building-your-application/configuring/security-headers
+- OWASP Top 10: https://owasp.org/www-project-top-ten/
+- JWT Best Practices: https://tools.ietf.org/html/rfc8725
 
-## 📧 Reporting Security Issues
+## Reporting Security Issues
 
 If you discover a security vulnerability, please email the project maintainers directly. Do not open public issues for security vulnerabilities.
 
 ---
 
-**Remember:** Security is not a one-time setup. Regularly review and update your security practices.
+Security is an ongoing process. Regularly review and update your security practices.

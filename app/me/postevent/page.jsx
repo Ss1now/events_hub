@@ -87,11 +87,11 @@ export default function PostEventPage() {
                 setCreatedEvent(response.data.blog);
                 setShowCreatedModal(true);
             } else {
-                toast.error("Error occurred! Please try again.");
+                toast.error('Could not create event');
             }
         } catch (error) {
             console.error(error);
-            toast.error("Error posting event");
+            toast.error('Event creation failed');
         }
     }
 

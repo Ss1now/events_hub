@@ -55,7 +55,7 @@ const CohostInviteModal = ({ isOpen, onClose, eventId, eventTitle, onCohostAdded
                 toast.error(response.data.msg);
             }
         } catch (error) {
-            toast.error(error.response?.data?.msg || 'Failed to send invitation');
+            toast.error(error.response?.data?.msg || 'Could not send invitation');
         } finally {
             setInviting(null);
         }

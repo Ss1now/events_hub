@@ -80,7 +80,7 @@ END:VCALENDAR`;
             const token = localStorage.getItem('token')
             
             if (!token) {
-                toast.error('Please login to view this page')
+                toast.error('Please login')
                 router.push('/login')
                 return
             }
@@ -122,12 +122,12 @@ END:VCALENDAR`;
                     setEditName(response.data.user.name || '')
                     setEditUsername(response.data.user.username || '')
                 } else {
-                    toast.error('Failed to load profile')
+                    toast.error('Could not load profile')
                     router.push('/login')
                 }
             } catch (error) {
                 console.error(error)
-                toast.error('Please login again')
+                toast.error('Please login')
                 localStorage.removeItem('token')
                 router.push('/login')
             } finally {
@@ -159,13 +159,13 @@ END:VCALENDAR`;
             if (response.data.success) {
                 setUser(response.data.user)
                 setIsEditingPersonalInfo(false)
-                toast.success('Personal information updated successfully')
+                toast.success('Profile updated')
             } else {
-                toast.error(response.data.msg || 'Failed to update personal information')
+                toast.error(response.data.msg || 'Update failed')
             }
         } catch (error) {
             console.error('Error updating personal info:', error)
-            toast.error(error.response?.data?.msg || 'Error updating personal information')
+            toast.error(error.response?.data?.msg || 'Could not update profile')
         }
     }
 
@@ -183,14 +183,14 @@ END:VCALENDAR`;
             })
 
             if (response.data.success) {
-                toast.success('Event deleted successfully')
+                toast.success('Event deleted')
                 setEvents(events.filter(event => event._id !== eventId))
             } else {
-                toast.error('Failed to delete event')
+                toast.error('Could not delete event')
             }
         } catch (error) {
             console.error(error)
-            toast.error('Error deleting event')
+            toast.error('Delete failed')
         }
     }
 
@@ -206,14 +206,14 @@ END:VCALENDAR`;
             )
 
             if (response.data.success) {
-                toast.success('RSVP cancelled successfully')
+                toast.success('RSVP cancelled')
                 setReservedEvents(reservedEvents.filter(event => event._id !== eventId))
             } else {
-                toast.error('Failed to cancel RSVP')
+                toast.error('Could not cancel RSVP')
             }
         } catch (error) {
             console.error(error)
-            toast.error('Error cancelling RSVP')
+            toast.error('Cancellation failed')
         }
     }
 
@@ -227,14 +227,14 @@ END:VCALENDAR`;
             )
 
             if (response.data.success) {
-                toast.success('Removed from interested events')
+                toast.success('Removed from interested')
                 setInterestedEvents(interestedEvents.filter(event => event._id !== eventId))
             } else {
-                toast.error('Failed to remove from interested')
+                toast.error('Could not remove')
             }
         } catch (error) {
             console.error(error)
-            toast.error('Error removing from interested')
+            toast.error('Removal failed')
         }
     }
 
@@ -730,8 +730,8 @@ END:VCALENDAR`;
                                                 <h3 className='font-bold text-lg mb-2 text-gray-700'>{event.title}</h3>
                                                 <p className='text-sm text-gray-600 mb-2'>{event.description.slice(0, 100)}...</p>
                                                 <div className='text-sm text-gray-500 mb-4'>
-                                                    <p>📅 {new Date(event.startDateTime).toLocaleDateString()}</p>
-                                                    <p>📍 {event.location}</p>
+                                                    <p>{new Date(event.startDateTime).toLocaleDateString()}</p>
+                                                    <p>{event.location}</p>
                                                 </div>
                                                 <div className='flex flex-col gap-2'>
                                                     <Link href={`/blogs/${event._id}`}>
