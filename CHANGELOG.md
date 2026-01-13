@@ -7,6 +7,138 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.8] - 2026-01-12
+
+### Security
+
+#### Documentation Security Fix
+- **Removed exposed MongoDB credentials from documentation files**
+  - Removed example connection strings with credentials from QUICK_START.md
+  - Removed example credentials from DEVELOPER_GUIDE.md
+  - Replaced with generic placeholder text
+  - All documentation now uses safe examples without real credentials
+  - Resolved GitHub Secret Scanning alerts
+  - **See `SECURITY_ADVISORY_2026-01-12.md` for complete incident report**
+
+#### Enhanced Security Documentation
+- Updated SECURITY.md with comprehensive credential management guidelines
+- Added pre-commit security checklist
+- Added documentation safety rules (never include real credentials in examples)
+- Added emergency response procedures for credential exposure
+- Added security incident history section
+- Improved .env.example with detailed safety comments
+- **Created SECURITY_ADVISORY_2026-01-12.md** - Full incident report
+- **Created docs/SECURITY_CHECKLIST.md** - Quick reference for developers
+- **Created docs/pre-commit.sh** - Automated pre-commit security hook
+  - Blocks commits of .env files
+  - Detects MongoDB credentials in diffs
+  - Warns about potential secrets
+  - Can be installed to .git/hooks/pre-commit
+
+**Action Required for All Users:**
+- If you cloned this repository before v0.5.8, rotate your MongoDB credentials immediately
+- Review your .env.local file and ensure it's in .gitignore
+- Never commit .env files to version control
+- Update to v0.5.8 to get secure documentation templates
+- **Install the pre-commit hook:** `cp docs/pre-commit.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`
+
+### Added
+
+#### Comprehensive Documentation Reorganization
+- **Created professional, production-ready documentation structure**
+  - New user-friendly README.md focused on end users (non-technical)
+  - Complete DEVELOPER_GUIDE.md with full technical documentation
+  - Organized docs/ folder with setup guides, technical references, and feature docs
+  - Created QUICK_START.md for 10-minute onboarding
+  - Created PROJECT_STRUCTURE.md explaining file organization
+  - All documentation written in natural, professional language
+  - Removed all emojis and AI-generated patterns
+  - Over 3,000 lines of comprehensive documentation
+
+#### New Documentation Files
+- `DEVELOPER_GUIDE.md` - Complete technical manual (70+ pages)
+  - Architecture overview
+  - Full database schema with code examples
+  - Complete API reference with request/response samples
+  - Algorithm explanations (status calculation, rating averages, username generation)
+  - Styling guidelines and patterns
+  - State management documentation
+  - Security implementation details
+  - Testing and deployment guides
+
+- `docs/QUICK_START.md` - Rapid onboarding guide
+  - Get running in under 10 minutes
+  - Step-by-step MongoDB setup
+  - Environment configuration
+  - Troubleshooting common issues
+
+- `docs/PROJECT_STRUCTURE.md` - File organization guide
+  - Complete directory structure explanation
+  - File naming conventions
+  - Where to add new code
+  - Import path aliases
+
+- `docs/setup/ADMIN_SETUP.md` - Clean admin setup guide
+  - Three methods for creating admin users
+  - Verification steps
+  - Security best practices
+
+- `docs/setup/EMAIL_SETUP.md` - Email configuration guide
+  - Resend service setup
+  - Email template documentation
+  - Development vs production configuration
+
+- `docs/README.md` - Documentation index
+  - Navigation for all documentation
+  - Reading order for new developers
+  - Documentation standards and templates
+
+- `docs/DOCUMENTATION_OVERVIEW.md` - What to show others
+  - Documentation summary
+  - How to present the project
+  - Statistics and highlights
+
+- `docs/REORGANIZATION_SUMMARY.md` - What changed
+  - Documentation improvements
+  - File organization
+  - Migration guide
+
+### Changed
+
+#### Documentation Improvements
+- **README.md completely rewritten**
+  - Now focused on end users and product overview
+  - Non-technical language throughout
+  - Simple getting started instructions
+  - Feature descriptions without technical details
+  - Removed all development/deployment sections
+  - Professional, approachable tone
+
+- **SECURITY.md cleaned up**
+  - Removed all emojis
+  - More natural, human-written language
+  - Professional tone maintained
+  - Clearer structure and organization
+
+- **Documentation organization**
+  - Old documentation files archived in docs/ with .old.md extension
+  - Nothing deleted, only reorganized
+  - Clear separation between user and developer documentation
+  - Consistent formatting and style across all files
+
+### Technical
+
+#### Documentation Standards Established
+- No emojis in any documentation
+- Natural, professional language
+- Code examples included where helpful
+- Troubleshooting sections in all guides
+- Clear navigation and cross-references
+- Templates for future documentation
+- Version numbers kept current
+
+---
+
 ## [0.5.7] - 2026-01-12
 
 ### Changed

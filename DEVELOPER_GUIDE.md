@@ -2,7 +2,7 @@
 
 Complete technical documentation for developers working on Rice Events.
 
-Version 0.5.7
+Version 0.5.8
 
 ## Table of Contents
 
@@ -1832,7 +1832,7 @@ curl -X GET http://localhost:3000/api/user \
 Production .env.local:
 ```env
 # Database
-MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/rice-events
+MONGODB_URI=your-mongodb-connection-string-here
 
 # Authentication
 JWT_SECRET=<32-char-random-string>
@@ -1922,4 +1922,4 @@ For questions or issues:
 ---
 
 Last Updated: January 12, 2026
-Version: 0.5.7
+Version: 0.5.8

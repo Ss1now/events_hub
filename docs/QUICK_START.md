@@ -32,8 +32,8 @@ npm install
 2. **Create Database User**
    - Database Access → Add New Database User
    - Choose password authentication
-   - Username: `ricevents`
-   - Password: Generate strong password
+   - Username: Choose your own (e.g., `myapp-user`)
+   - Password: Generate strong password (use MongoDB's generator)
    - User Privileges: Read and Write to any database
 
 3. **Allow Network Access**
@@ -60,8 +60,8 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 Edit `.env.local`:
 
 ```env
-# Add your MongoDB connection string
-MONGODB_URI=mongodb+srv://ricevents:YOUR_PASSWORD@cluster.mongodb.net/rice-events?retryWrites=true&w=majority
+# Add your MongoDB connection string (get from MongoDB Atlas)
+MONGODB_URI=your-mongodb-connection-string-here
 
 # Add the generated JWT secret
 JWT_SECRET=your-generated-secret-here

@@ -2,7 +2,7 @@
 
 A modern event management platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
 
-Version 0.5.7
+Version 0.5.8
 
 ## Table of Contents
 

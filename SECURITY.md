@@ -14,14 +14,58 @@ CRITICAL: Never commit sensitive credentials to version control.
 #### Safe Files
 - `.env.example` - Template with placeholder values (safe to commit)
 
+#### Verification Before Commits
+
+Always check before committing:
+```bash
+# Verify .env files are in .gitignore
+cat .gitignore | grep ".env"
+# Should show: .env*
+
+# Check what you're about to commit
+git status
+git diff --staged
+
+# NEVER stage these files
+git add .env.local    # WRONG
+git add .env          # WRONG
+```
+
 ### Required Environment Variables
 
 ```env
-# MongoDB Connection
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database-name
+# MongoDB Connection - Use your actual connection string
+MONGODB_URI=your-mongodb-connection-string-here
 
-# JWT Secret (generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+# JWT Secret - Generate with command below
 JWT_SECRET=your-secure-random-string-here
+```
+
+#### Documentation Safety Rules
+
+When writing documentation or examples:
+1. NEVER include real credentials in examples
+2. NEVER copy actual connection strings to documentation
+3. ALWAYS use placeholders like `your-mongodb-connection-string-here`
+4. ALWAYS use generic examples like `username:password` not real usernames
+5. Review all documentation for credentials before committing
+
+Examples of SAFE documentation:
+```env
+# SAFE - Generic placeholder
+MONGODB_URI=your-mongodb-connection-string-here
+
+# SAFE - Obviously fake example
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+```
+
+Examples of UNSAFE documentation:
+```env
+# UNSAFE - Real cluster name visible
+MONGODB_URI=mongodb+srv://user:pass@REAL-CLUSTER-NAME.mongodb.net/db
+
+# UNSAFE - Project-specific username pattern
+MONGODB_URI=mongodb+srv://PROJECT-USER:YOUR_PASSWORD@cluster.mongodb.net/database
 ```
 
 #### Generating Secure JWT_SECRET
@@ -160,6 +204,14 @@ if (!user?.isAdmin) {
 
 ## Security Checklist
 
+### Before Every Commit
+- [ ] Run `git status` and review staged files
+- [ ] Verify `.env.local` is NOT staged
+- [ ] Check documentation for real credentials
+- [ ] Review `git diff --staged` for sensitive data
+- [ ] Confirm examples use placeholders only
+- [ ] Search for patterns: `mongodb+srv://` with real credentials
+
 ### Before Deployment
 - [ ] All `.env*` files except `.env.example` are in `.gitignore`
 - [ ] No hardcoded credentials in source code
@@ -179,6 +231,7 @@ if (!user?.isAdmin) {
 - [ ] Review user permissions quarterly
 - [ ] Test backup and restore procedures
 - [ ] Monitor for security vulnerabilities
+- [ ] Review all documentation for exposed credentials
 
 ## Additional Resources
 
@@ -190,6 +243,37 @@ if (!user?.isAdmin) {
 ## Reporting Security Issues
 
 If you discover a security vulnerability, please email the project maintainers directly. Do not open public issues for security vulnerabilities.
+
+## Security Advisories
+
+### Past Security Incidents
+
+#### January 12, 2026 - MongoDB Credentials in Documentation (Resolved in v0.5.8)
+
+**Issue:** GitHub Secret Scanning detected MongoDB connection strings with credential patterns in documentation files.
+
+**Affected Files:** 
+- `docs/QUICK_START.md`
+- `DEVELOPER_GUIDE.md`
+
+**Resolution:**
+- All credential examples removed from documentation
+- Replaced with generic placeholders
+- Updated to v0.5.8
+- See `SECURITY_ADVISORY_2026-01-12.md` for full details
+
+**Lessons Learned:**
+1. Always use obviously fake placeholders in documentation
+2. Never include real connection string patterns
+3. Review all documentation before commits
+4. Respond immediately to security scanning alerts
+5. Rotate credentials as a precaution
+
+**Action Items for Users:**
+- If you cloned before v0.5.8, rotate your credentials
+- Update to v0.5.8 or later
+- Review your own .env.local file
+- Never commit .env files to version control
 
 ---
 

@@ -8,7 +8,9 @@ Complete documentation for developers, administrators, and users.
 - **Developer Guide:** ../DEVELOPER_GUIDE.md
 - **Quick Start:** QUICK_START.md (Get running in 10 minutes)
 - **Change History:** ../CHANGELOG.md
-- **Security:** ../SECURITY.md
+- **Security Policy:** ../SECURITY.md
+- **Security Checklist:** SECURITY_CHECKLIST.md ⚠️ **READ BEFORE COMMITTING**
+- **Security Advisory:** ../SECURITY_ADVISORY_2026-01-12.md
 - **Project Structure:** PROJECT_STRUCTURE.md
 
 ## Documentation Structure
@@ -44,18 +46,24 @@ Archived documentation (for reference):
 
 **Recommended reading order:**
 
-1. [Quick Start Guide](QUICK_START.md) (10 minutes)
+1. **[Security Checklist](SECURITY_CHECKLIST.md) ⚠️ CRITICAL** (5 minutes)
+   - Read before making ANY commits
+   - Learn what NOT to commit
+   - Understand credential safety
+   - Pre-commit verification steps
+
+2. [Quick Start Guide](QUICK_START.md) (10 minutes)
    - Get the app running locally
    - Create your first account
    - Verify everything works
 
-2. [Developer Guide](../DEVELOPER_GUIDE.md) (1-2 hours)
+3. [Developer Guide](../DEVELOPER_GUIDE.md) (1-2 hours)
    - Architecture Overview
    - Technology Stack
    - Database Schema
    - API Reference
 
-3. [Project Structure](PROJECT_STRUCTURE.md) (15 minutes)
+4. [Project Structure](PROJECT_STRUCTURE.md) (15 minutes)
    - Understand file organization
    - Learn naming conventions
    - Know where to add new code
@@ -108,7 +116,7 @@ All documentation follows these principles:
 
 ## Project Information
 
-- **Version:** 0.5.7
+- **Version:** 0.5.8
 - **Last Updated:** January 12, 2026
 - **Repository:** github.com/Ss1now/events_hub
 - **Tech Stack:** Next.js 16, React 19, MongoDB, Tailwind CSS 4
