@@ -57,62 +57,6 @@ function getRecommendationEmailHTML(userName, events, baseURL) {
     `;
 }
 
-// Helper function to generate reminder email HTML
-function getReminderEmailHTML(userName, event, timeUntil, baseURL) {
-    return `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #7c3aed; margin: 0;">Rice Events</h1>
-            </div>
-            <div style="background-color: white; border-radius: 8px; padding: 30px;">
-                <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 4px; margin-bottom: 20px;">
-                    <h2 style="color: #92400e; margin: 0 0 8px 0; font-size: 20px;">⏰ Event Reminder</h2>
-                    <p style="color: #92400e; margin: 0; font-size: 14px;">Starting in ${timeUntil}</p>
-                </div>
-                <p style="color: #374151; font-size: 16px; line-height: 1.6;">Hi ${userName},</p>
-                <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-                    Just a friendly reminder about your upcoming event:
-                </p>
-                <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
-                    <h3 style="color: #7c3aed; margin: 0 0 16px 0; font-size: 22px;">${event.title}</h3>
-                    <p style="color: #374151; font-size: 16px; margin: 10px 0;">
-                        <strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                    <p style="color: #374151; font-size: 16px; margin: 10px 0;">
-                        <strong>🕐 Time:</strong> ${event.time}
-                    </p>
-                    <p style="color: #374151; font-size: 16px; margin: 10px 0;">
-                        <strong>📍 Location:</strong> ${event.location}
-                    </p>
-                    ${event.description ? `
-                        <p style="color: #6b7280; font-size: 14px; margin: 16px 0; line-height: 1.6;">
-                            ${event.description}
-                        </p>
-                    ` : ''}
-                </div>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="${baseURL}/blogs/${event._id}" 
-                       style="display: inline-block; background-color: #7c3aed; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-                        View Event Details
-                    </a>
-                </div>
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
-                    <p style="color: #9ca3af; font-size: 12px; line-height: 1.6;">
-                        You're receiving this reminder because you RSVP'd to this event.
-                        <br>
-                        <a href="${baseURL}/me" style="color: #7c3aed; text-decoration: none;">Manage preferences</a>
-                    </p>
-                </div>
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="color: #9ca3af; font-size: 12px;">
-                    © 2026 Rice Events. All rights reserved.
-                </p>
-            </div>
-        </div>
-    `;
-}
-
 // Helper function to generate update email HTML
 function getUpdateEmailHTML(userName, event, changes, baseURL) {
     return `
@@ -279,56 +223,6 @@ export async function POST(request) {
             return NextResponse.json({
                 success: true,
                 msg: `Sent ${emailsSent} recommendation emails`
-            });
-
-        } else if (action === 'send-reminder') {
-            // Send reminder for a specific event
-            const event = await blogModel.findById(eventId);
-            if (!event) {
-                return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
-            }
-
-            // Find users who RSVP'd and have reminders enabled
-            const users = await userModel.find({
-                reservedEvents: eventId,
-                'emailSubscriptions.reminders': true
-            }).select('email name');
-
-            let emailsSent = 0;
-            const eventDate = new Date(event.date);
-            const now = new Date();
-            const hoursDiff = Math.floor((eventDate - now) / (1000 * 60 * 60));
-            const timeUntil = hoursDiff <= 1 ? '1 hour' : '24 hours';
-
-            for (const user of users) {
-                try {
-                    const htmlContent = getReminderEmailHTML(
-                        user.name || 'there',
-                        event,
-                        timeUntil,
-                        baseURL
-                    );
-
-                    if (resend) {
-                        await resend.emails.send({
-                            from: 'Rice Events <onboarding@resend.dev>',
-                            to: user.email,
-                            subject: `⏰ Reminder: ${event.title} starts in ${timeUntil}`,
-                            html: htmlContent
-                        });
-                        emailsSent++;
-                    } else {
-                        console.log(`[DEV] Would send reminder email to: ${user.email}`);
-                    }
-
-                } catch (emailError) {
-                    console.error(`Error sending reminder to ${user.email}:`, emailError);
-                }
-            }
-
-            return NextResponse.json({
-                success: true,
-                msg: `Sent ${emailsSent} reminder emails`
             });
 
         } else if (action === 'send-update') {

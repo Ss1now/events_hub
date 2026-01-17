@@ -70,7 +70,6 @@ const registerUser = async (name = '', email, password, residentialCollege = '',
             username:username,
             residentialCollege:residentialCollege,
             emailSubscriptions: {
-                reminders: emailConsent,
                 updates: emailConsent,
                 patchNotes: emailConsent
             }
