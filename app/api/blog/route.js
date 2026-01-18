@@ -135,7 +135,9 @@ export async function POST(request){
             reservedUsers: [],
             host: `${formData.get('host')}`,
             authorId: userId,
-            cohosts: []
+            cohosts: [],
+            eventCategory: formData.get('eventCategory') || 'user',
+            organizer: formData.get('organizer') || null
         }
 
         const createdBlog = await Blogmodel.create(blogData);

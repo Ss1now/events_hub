@@ -86,6 +86,8 @@ const BlogList = () => {
                                 reservationDeadline={item.reservationDeadline}
                                 averageLiveRating={item.averageLiveRating}
                                 totalLiveRatings={item.totalLiveRatings}
+                                eventCategory={item.eventCategory}
+                                organizer={item.organizer}
                             />
                         })
                     ) : (

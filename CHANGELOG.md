@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.9] - 2026-01-17
+
+### Added
+
+#### Official Events System
+- **Event Categorization System**
+  - Added `eventCategory` field to event model with three types:
+    - `'user'` - Regular user-posted events (default)
+    - `'residential_college'` - Official residential college events
+    - `'university'` - University-wide official events
+  - Added `organizer` field to store official organizer name (e.g., "Baker College", "Wiess College")
+  
+- **Admin Official Event Posting Interface**
+  - Created `/admin/postevent` page for manually posting official events
+  - Special UI with highlighted category and organizer fields
+  - Dropdown to select between Residential College and University-Wide events
+  - All standard event features (images, RSVP, capacity, etc.)
+  
+- **Visual Event Badges**
+  - Residential College events display blue badge with college icon and organizer name
+  - University events display purple badge with university icon and organizer name
+  - Badges appear prominently on event cards to distinguish official events from user events
+  
+- **Enhanced Admin Navigation**
+  - Added "Post Official Event" button in admin sidebar
+  - Distinguished from "Create Personal Event" option
+  - Special highlighting and badge icon for official event posting
+
+### Changed
+- Updated event model schema to include categorization fields
+- Updated event creation API to handle `eventCategory` and `organizer` parameters
+- Updated BlogItem component to display official event badges
+- Updated BlogList component to pass new event properties
+- Enhanced admin sidebar with better organization and visual separation
+
+### Technical Details
+- Modified `lib/models/blogmodel.js` to add event categorization
+- Created `app/admin/postevent/page.jsx` for official event posting
+- Updated `app/api/blog/route.js` to process new fields
+- Enhanced `components/blogitem.jsx` with conditional badge rendering
+- Updated `components/bloglist.jsx` to pass new props
+- Improved `components/admincomponents/sidebar.jsx` navigation
+
+---
+
 ## [0.5.8] - 2026-01-12
 
 ### Security
