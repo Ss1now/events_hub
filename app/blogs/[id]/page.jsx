@@ -215,7 +215,7 @@ const Page = ({ params }) => {
                 <div className='flex items-center gap-2 cursor-pointer hover:opacity-80'>
                     <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-10 h-10 md:w-12 md:h-12 object-contain'/>
                     <div>
-                        <h2 className='text-lg md:text-xl font-semibold'>Rice Events</h2>
+                        <h2 className='text-lg md:text-xl font-semibold'>Rice Parties</h2>
                     </div>
                 </div>
             </Link>

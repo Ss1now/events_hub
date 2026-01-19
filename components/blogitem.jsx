@@ -247,22 +247,22 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
     
     return (
         <>
-        <div className='bg-white rounded-xl md:rounded-2xl shadow-sm hover:shadow-md transition-shadow p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row gap-4 sm:gap-5 md:gap-6 items-start border border-gray-100'>
+        <div className='bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl md:rounded-2xl shadow-lg hover:shadow-[0_0_30px_rgba(176,38,255,0.4)] transition-all p-4 sm:p-5 md:p-6 flex flex-col sm:flex-row gap-4 sm:gap-5 md:gap-6 items-start border border-purple-500/20 backdrop-blur-sm'>
             {/* Left side - Event info */}
             <div className='flex-1 w-full'>
                 {/* Event Title */}
                 <Link href={`/blogs/${id}`}>
-                    <h3 className='text-lg sm:text-xl font-semibold text-gray-900 mb-2 hover:text-gray-700 cursor-pointer'>{title}</h3>
+                    <h3 className='text-lg sm:text-xl font-semibold text-white mb-2 hover:text-orange-400 cursor-pointer transition-colors'>{title}</h3>
                 </Link>
                 
                 {/* Event Description */}
-                <p className='text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-none'>{description}</p>
+                <p className='text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-none'>{description}</p>
                 
                 {/* Tags/Categories */}
                 <div className='flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4'>
                     {/* Official Event Badge */}
                     {eventCategory === 'residential_college' && (
-                        <span className='bg-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                        <span className='bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(236,72,153,0.5)]'>
                             <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
                                 <path d='M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z'/>
                             </svg>
@@ -270,15 +270,15 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </span>
                     )}
                     {eventCategory === 'university' && (
-                        <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                        <span className='bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(255,107,53,0.5)]'>
                             <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
                                 <path d='M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z'/>
                             </svg>
                             {organizer || 'Rice University'}
                         </span>
                     )}
-                    <span className={`${statusBadge.bg} text-white text-xs px-3 py-1 rounded-full font-medium`}>{statusBadge.text}</span>
-                    <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full hover:bg-gray-200 cursor-pointer transition-colors'>{eventType}</span>
+                    <span className={`${statusBadge.bg} text-white text-xs px-3 py-1 rounded-full font-medium shadow-[0_0_10px_rgba(255,107,53,0.3)]`}>{statusBadge.text}</span>
+                    <span className='bg-gray-700/50 text-gray-200 text-xs px-3 py-1 rounded-full hover:bg-gray-600/50 cursor-pointer transition-colors border border-purple-500/20'>{eventType}</span>
                     {isCapacityReached && (
                         <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium'>FULL</span>
                     )}
@@ -301,7 +301,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 )}
                 
                 {/* Location & Capacity */}
-                <div className='flex gap-6 text-sm text-gray-600 mb-3 flex-wrap'>
+                <div className='flex gap-6 text-sm text-gray-300 mb-3 flex-wrap'>
                     <div className='flex items-center gap-1'>
                         <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
@@ -338,7 +338,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 </div>
                 
                 {/* Time */}
-                <div className='flex gap-6 text-sm text-gray-600'>
+                <div className='flex gap-6 text-sm text-gray-300'>
                     <div className='flex items-center gap-1'>
                         <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
@@ -348,14 +348,14 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 </div>
 
                 {/* Hosted by */}
-                <div className='text-xs text-gray-500 mt-3'>
-                    Hosted by <span className='font-medium text-gray-700'>{host}</span>
+                <div className='text-xs text-gray-400 mt-3'>
+                    Hosted by <span className='font-medium text-orange-400'>{host}</span>
                     {cohosts && cohosts.length > 0 && (
                         <>
-                            <span className='mx-1.5 text-gray-400'>•</span>
-                            <span className='text-gray-600'>
+                            <span className='mx-1.5 text-gray-500'>•</span>
+                            <span className='text-gray-400'>
                                 Co-hosts: {cohosts.map((cohost, index) => (
-                                    <span key={cohost.userId} className='font-medium text-purple-700'>
+                                    <span key={cohost.userId} className='font-medium text-purple-400'>
                                         @{cohost.username}{index < cohosts.length - 1 ? ', ' : ''}
                                     </span>
                                 ))}
@@ -369,12 +369,12 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
             <div className='flex sm:flex-col items-center sm:items-end gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-start'>
                 <button 
                     onClick={handleAddToGoogleCalendar}
-                    className='text-center bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 min-w-[60px] sm:min-w-[80px] hover:bg-gray-100 transition-colors cursor-pointer group'
+                    className='text-center bg-gray-800/50 rounded-lg sm:rounded-xl p-2 sm:p-3 min-w-[60px] sm:min-w-[80px] hover:bg-gray-700/50 hover:shadow-[0_0_15px_rgba(176,38,255,0.4)] transition-all cursor-pointer group border border-purple-500/20'
                     title='Add to Google Calendar'
                 >
-                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-orange-500 transition-colors'>{eventDate?.month || 'Jan'}</div>
-                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors'>{eventDate?.day || '1'}</div>
-                    <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add Cal</div>
+                    <div className='text-[10px] sm:text-xs text-gray-400 uppercase group-hover:text-orange-400 transition-colors'>{eventDate?.month || 'Jan'}</div>
+                    <div className='text-2xl sm:text-3xl font-bold text-white group-hover:text-orange-400 transition-colors'>{eventDate?.day || '1'}</div>
+                    <div className='text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add Cal</div>
                 </button>
                 <div className='flex gap-1.5 sm:gap-2'>
                     {(status === 'future' || status === 'live') && (
@@ -412,7 +412,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                 e.stopPropagation();
                                 setShowRatingModal(true);
                             }}
-                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-purple-500 text-white hover:bg-purple-600 transition-colors flex items-center gap-1'
+                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-[0_0_15px_rgba(236,72,153,0.5)] hover:shadow-[0_0_25px_rgba(236,72,153,0.7)] transition-all flex items-center gap-1'
                         >
                             <svg className='w-3 h-3 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />
@@ -421,7 +421,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </button>
                     )}
                     <Link href={`/blogs/${id}`}>
-                        <button className='bg-white border border-gray-300 text-gray-700 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-50 transition-colors whitespace-nowrap'>View</button>
+                        <button className='bg-gray-800/50 border-2 border-purple-500/30 text-gray-200 px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-700/50 hover:border-purple-500/50 transition-all whitespace-nowrap'>View</button>
                     </Link>
                 </div>
             </div>

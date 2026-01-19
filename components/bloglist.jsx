@@ -35,11 +35,11 @@ const BlogList = () => {
         });
 
     return (
-        <div className='bg-gray-50 min-h-screen py-4 md:py-8'>
+        <div className='bg-transparent min-h-screen py-4 md:py-8'>
             {/* Search Bar */}
             <div className='max-w-4xl mx-auto px-4 sm:px-5 mb-4 md:mb-8'>
                 <div className='relative'>
-                    <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-purple-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
                     <input 
@@ -47,16 +47,16 @@ const BlogList = () => {
                         placeholder='Search events' 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-300'
+                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-2 border-purple-500/30 bg-gray-900/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent shadow-[0_0_15px_rgba(176,38,255,0.3)]'
                     />
                 </div>
             </div>
 
             {/* Filter Tabs */}
             <div className='flex justify-center gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8 px-4 overflow-x-auto'>
-                <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Upcoming</button>
-                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Happening Now</button>
-                <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-colors text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-200 text-black':'text-gray-600 hover:bg-gray-100'}`}>Past</button>
+                <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-[0_0_20px_rgba(255,0,128,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Upcoming</button>
+                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-[0_0_20px_rgba(255,0,128,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Happening Now</button>
+                <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-700 text-white shadow-[0_0_15px_rgba(100,100,100,0.5)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Past</button>
             </div>
 
             {/* Event Cards */}
@@ -92,7 +92,7 @@ const BlogList = () => {
                         })
                     ) : (
                         <div className='text-center py-12'>
-                            <p className='text-gray-500 text-lg'>No events found matching your search.</p>
+                            <p className='text-gray-400 text-lg'>No events found matching your search.</p>
                         </div>
                     )}
                 </div>

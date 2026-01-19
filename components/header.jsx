@@ -42,29 +42,30 @@ const Header = () => {
     };
 
     return (
-        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-white'>
+        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 shadow-lg border-b border-purple-500/20'>
             <div className='flex justify-between items-center mb-6 md:mb-8'>
                 <Link href='/' className='flex items-center gap-2 cursor-pointer'>
-                    <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain'/>
+                    <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'/>
+                </Link>
                 </Link>
                 <div className='flex items-center gap-1.5 sm:gap-2 md:gap-3'>
                     {isLoggedIn ? (
                         <>
                             <button 
                                 onClick={() => router.push('/me')}
-                                className='bg-white text-orange-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-orange-500 hover:bg-orange-50 transition-colors text-xs sm:text-sm'
+                                className='bg-transparent text-orange-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-orange-400 hover:bg-orange-400/10 hover:shadow-[0_0_15px_rgba(255,107,53,0.5)] transition-all text-xs sm:text-sm'
                             >
                                 Profile
                             </button>
                             <button 
                                 onClick={handleLogout}
-                                className='bg-white text-purple-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-500 hover:bg-purple-50 transition-colors text-xs sm:text-sm'
+                                className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-400 hover:bg-purple-400/10 hover:shadow-[0_0_15px_rgba(176,38,255,0.5)] transition-all text-xs sm:text-sm'
                             >
                                 Logout
                             </button>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors text-xs sm:text-sm whitespace-nowrap'
+                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_20px_rgba(255,0,128,0.6)] hover:shadow-[0_0_30px_rgba(255,0,128,0.8)] transition-all text-xs sm:text-sm whitespace-nowrap'
                             >
                                 Create
                             </button>
@@ -72,18 +73,18 @@ const Header = () => {
                     ) : (
                         <>
                             <Link href='/login'>
-                                <button className='bg-white text-purple-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-500 hover:bg-purple-50 transition-colors text-xs sm:text-sm'>
+                                <button className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-400 hover:bg-purple-400/10 hover:shadow-[0_0_15px_rgba(176,38,255,0.5)] transition-all text-xs sm:text-sm'>
                                     Login
                                 </button>
                             </Link>
                             <Link href='/register'>
-                                <button className='hidden sm:block bg-purple-500 text-white font-medium py-2 px-4 md:px-6 rounded-md hover:bg-purple-600 transition-colors text-sm'>
+                                <button className='hidden sm:block bg-purple-600 text-white font-bold py-2 px-4 md:px-6 rounded-md hover:bg-purple-700 shadow-[0_0_15px_rgba(139,92,246,0.5)] hover:shadow-[0_0_25px_rgba(139,92,246,0.7)] transition-all text-sm'>
                                     Register
                                 </button>
                             </Link>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors text-xs sm:text-sm whitespace-nowrap'
+                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_20px_rgba(255,0,128,0.6)] hover:shadow-[0_0_30px_rgba(255,0,128,0.8)] transition-all text-xs sm:text-sm whitespace-nowrap'
                             >
                                 Create
                             </button>
@@ -92,8 +93,8 @@ const Header = () => {
                 </div>
             </div>
             <div className='text-center my-6 md:my-12'>
-                <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3'>What's The Move?</h1>
-                <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-600 px-4'>Discover events</p>
+                <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 drop-shadow-[0_0_30px_rgba(255,0,128,0.5)]'>What's The Move?</h1>
+                <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-300 px-4'>Discover events</p>
             </div>
         </div>
     )

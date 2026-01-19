@@ -2,12 +2,18 @@
 
 @layer base {
   :root {
-    /* Party Vibe Colors */
-    --primary: #FF6B35;        /* Vibrant Orange */
-    --primary-dark: #E55527;   /* Darker Orange */
-    --primary-light: #FF8C61;  /* Light Orange */
-    --secondary: #8B5CF6;      /* Purple */
-    --accent: #10B981;         /* Green */
-    --party-pink: #EC4899;     /* Hot Pink */
+    /* Nightclub Miami Vibes */
+    --neon-orange: #FF6B35;
+    --neon-pink: #FF0080;
+    --neon-purple: #B026FF;
+    --neon-cyan: #00F5FF;
+    --dark-bg: #0A0A0F;
+    --dark-card: #1A1A24;
+    --dark-hover: #252530;
+  }
+  
+  body {
+    background: linear-gradient(135deg, #0A0A0F 0%, #1A1A24 100%);
+    background-attachment: fixed;
   }
 }
