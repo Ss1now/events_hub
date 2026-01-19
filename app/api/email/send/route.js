@@ -132,9 +132,11 @@ export async function POST(request) {
                 'emailSubscriptions.recommendations': true
             }).select('email name emailSubscriptions interestedEvents reservedEvents');
 
-            let emailsSent = 0;
+            console.log(`[Email] Found ${users.length} users with recommendations enabled`);
+            console.log(`[Email] Preparing to send emails in parallel...`);
 
-            for (const user of users) {
+            // Send all recommendation emails in parallel
+            const emailPromises = users.map(async (user) => {
                 try {
                     const now = new Date();
                     const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
@@ -194,7 +196,7 @@ export async function POST(request) {
                     // Only skip if absolutely no events available
                     if (recommendedEvents.length === 0) {
                         console.log(`No events to recommend for ${user.email} - skipping`);
-                        continue;
+                        return { success: true, skipped: true, email: user.email };
                     }
 
                     const htmlContent = getRecommendationEmailHTML(
@@ -210,18 +212,34 @@ export async function POST(request) {
                             subject: '✨ Events You Might Like - Rice Parties',
                             html: htmlContent
                         });
-                        emailsSent++;
+                        console.log(`[Email] ✓ Sent recommendation to: ${user.email}`);
+                        return { success: true, email: user.email };
                     } else {
                         console.log(`[DEV] Would send recommendation email to: ${user.email}`);
+                        return { success: true, email: user.email };
                     }
 
                 } catch (emailError) {
                     console.error(`Error sending recommendation to ${user.email}:`, emailError);
+                    return { success: false, email: user.email, error: emailError.message };
                 }
-            }
+            });
+
+            // Wait for all emails to complete
+            const results = await Promise.all(emailPromises);
+            const emailsSent = results.filter(r => r.success && !r.skipped).length;
+            const emailsSkipped = results.filter(r => r.skipped).length;
+            const emailsFailed = results.filter(r => !r.success).length;
+
+            console.log(`[Email] Sent ${emailsSent} recommendation emails`);
+            if (emailsSkipped > 0) console.log(`[Email] Skipped ${emailsSkipped} users (no events to recommend)`);
+            if (emailsFailed > 0) console.log(`[Email] Failed ${emailsFailed} emails`);
 
             return NextResponse.json({
                 success: true,
+                emailsSent,
+                emailsSkipped,
+                emailsFailed,
                 msg: `Sent ${emailsSent} recommendation emails`
             });
 
@@ -241,29 +259,11 @@ export async function POST(request) {
             const allAffectedUsers = await userModel.find({
                 $or: [
                     { reservedEvents: eventId },
-                    { interestedEvents: eventId }
-                ]
-            }).select('email name emailSubscriptions');
-            
-            console.log(`[Email] Total affected users (RSVP'd or interested): ${allAffectedUsers.length}`);
-            allAffectedUsers.forEach(u => {
-                console.log(`  - ${u.email}, updates opt-in: ${u.emailSubscriptions?.updates || false}`);
-            });
-            
-            // Find users who RSVP'd or showed interest and have updates enabled
-            const users = await userModel.find({
-                $or: [
-                    { reservedEvents: eventId },
-                    { interestedEvents: eventId }
-                ],
-                'emailSubscriptions.updates': true
-            }).select('email name emailSubscriptions');
-
             console.log(`[Email] Users with updates ENABLED: ${users.length}`);
+            console.log(`[Email] Preparing to send ${users.length} update emails in parallel...`);
 
-            let emailsSent = 0;
-
-            for (const user of users) {
+            // Send all update emails in parallel for much faster delivery
+            const emailPromises = users.map(async (user) => {
                 try {
                     const htmlContent = getUpdateEmailHTML(
                         user.name || 'there',
@@ -275,6 +275,37 @@ export async function POST(request) {
                     if (resend) {
                         await resend.emails.send({
                             from: 'Rice Parties <noreply@riceparties.com>',
+                            to: user.email,
+                            subject: `📢 Event Updated: ${event.title}`,
+                            html: htmlContent
+                        });
+                        console.log(`[Email] ✓ Sent update to: ${user.email}`);
+                        return { success: true, email: user.email };
+                    } else {
+                        console.log(`[DEV] Would send update email to: ${user.email}`);
+                        return { success: true, email: user.email };
+                    }
+
+                } catch (emailError) {
+                    console.error(`Error sending update to ${user.email}:`, emailError);
+                    return { success: false, email: user.email, error: emailError.message };
+                }
+            });
+
+            // Wait for all emails to complete
+            const results = await Promise.all(emailPromises);
+            const emailsSent = results.filter(r => r.success).length;
+            const emailsFailed = results.filter(r => !r.success).length;
+
+            console.log(`[Email] Sent ${emailsSent} update emails`);
+            if (emailsFailed > 0) console.log(`[Email] Failed ${emailsFailed} emails`);
+
+            return NextResponse.json({
+                success: true,
+                emailsSent,
+                emailsFailed,
+                msg: `Sent ${emailsSent} update emails${emailsFailed > 0 ? `, ${emailsFailed} failed` : ''}`
+            });             from: 'Rice Parties <noreply@riceparties.com>',
                             to: user.email,
                             subject: `📢 Event Updated: ${event.title}`,
                             html: htmlContent
