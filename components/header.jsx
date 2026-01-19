@@ -47,7 +47,6 @@ const Header = () => {
                 <Link href='/' className='flex items-center gap-2 cursor-pointer'>
                     <Image src={assets.logo} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'/>
                 </Link>
-                </Link>
                 <div className='flex items-center gap-1.5 sm:gap-2 md:gap-3'>
                     {isLoggedIn ? (
                         <>
