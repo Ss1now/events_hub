@@ -18,9 +18,6 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Rice Parties",
   description: "Discover and organize campus events at Rice University",
-  icons: {
-    icon: '/favicon.ico',
-  },
 };
 
 export default function RootLayout({ children }) {
