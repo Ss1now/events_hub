@@ -1,4 +1,4 @@
-# Rice Events
+# Rice Parties
 
 A modern event management platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
 
@@ -6,7 +6,7 @@ Version 0.5.8
 
 ## Table of Contents
 
-- [What is Rice Events?](#what-is-rice-events)
+- [What is Rice Parties?](#what-is-rice-parties)
 - [Getting Started](#getting-started)
 - [Features Overview](#features-overview)
 - [Email Notifications](#email-notifications)
@@ -15,16 +15,16 @@ Version 0.5.8
 - [Feedback](#feedback)
 - [Privacy and Security](#privacy-and-security)
 
-## What is Rice Events?
+## What is Rice Parties?
 
-Rice Events is a web application that helps Rice students discover and organize campus events. Whether you're looking for social gatherings, study groups, or college-wide parties, Rice Events makes it easy to find what's happening and manage your own events.
+Rice Parties is a web application that helps Rice students discover and organize campus events. Whether you're looking for social gatherings, study groups, or college-wide parties, Rice Parties makes it easy to find what's happening and manage your own events.
 
 ## Getting Started
 
 ### For Users
 
 **Visit the Website**
-Navigate to the Rice Events homepage and browse upcoming events without logging in.
+Navigate to the Rice Parties homepage and browse upcoming events without logging in.
 
 **Create an Account**
 1. Click "Register" in the top navigation
@@ -199,7 +199,7 @@ Have suggestions or found an issue? Submit feedback anytime.
 2. Write your message (up to 1000 characters)
 3. Click submit
 
-Your feedback helps improve Rice Events for everyone.
+Your feedback helps improve Rice Parties for everyone.
 
 ## Privacy and Security
 

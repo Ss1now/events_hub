@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get Rice Events running on your local machine in under 10 minutes.
+Get Rice Parties running on your local machine in under 10 minutes.
 
 ## Prerequisites Checklist
 

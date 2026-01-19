@@ -1,6 +1,6 @@
 # Security Policy
 
-Security best practices and guidelines for Rice Events.
+Security best practices and guidelines for Rice Parties.
 
 ## Environment Variables
 

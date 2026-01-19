@@ -1,6 +1,6 @@
-# Rice Events - Developer Guide
+# Rice Parties - Developer Guide
 
-Complete technical documentation for developers working on Rice Events.
+Complete technical documentation for developers working on Rice Parties.
 
 Version 0.5.8
 
@@ -21,7 +21,7 @@ Version 0.5.8
 
 ## Architecture Overview
 
-Rice Events is built as a full-stack Next.js application using the App Router pattern. The architecture follows a serverless model where API routes handle backend logic and React Server Components manage the frontend.
+Rice Parties is built as a full-stack Next.js application using the App Router pattern. The architecture follows a serverless model where API routes handle backend logic and React Server Components manage the frontend.
 
 ### Core Architecture Patterns
 

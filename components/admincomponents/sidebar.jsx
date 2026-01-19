@@ -10,7 +10,7 @@ const Sidebar = () => {
                 <div className='flex items-center gap-3'>
                     <Image src={assets.logo} width={40} height={40} alt='Logo' className='w-10 h-10'/>
                     <div>
-                        <h2 className='text-lg font-bold text-gray-900'>Rice Party</h2>
+                        <h2 className='text-lg font-bold text-gray-900'>Rice Parties</h2>
                         <p className='text-xs text-gray-500'>Admin Dashboard</p>
                     </div>
                 </div>

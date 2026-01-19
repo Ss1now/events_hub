@@ -13,7 +13,7 @@ const Footer = () => {
                 <div className='max-w-6xl mx-auto px-5 flex justify-between items-center flex-col sm:flex-row gap-4'>
                     <div className='flex items-center gap-3'>
                         <Image src={assets.logo} width={40} height={40} alt='Rice Party Logo' className='w-10 h-10 object-contain'/>
-                        <h3 className='font-semibold text-sm'>Rice Events</h3>
+                        <h3 className='font-semibold text-sm'>Rice Parties</h3>
                     </div>
                     <button 
                         onClick={() => setShowFeedbackModal(true)}
