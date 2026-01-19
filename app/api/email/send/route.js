@@ -31,7 +31,7 @@ function getRecommendationEmailHTML(userName, events, baseURL) {
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #7c3aed; margin: 0;">Rice Events</h1>
+                <h1 style="color: #7c3aed; margin: 0;">Rice Parties</h1>
             </div>
             <div style="background-color: white; border-radius: 8px; padding: 30px;">
                 <h2 style="color: #7c3aed; margin-top: 0;">Events You Might Like</h2>
@@ -50,7 +50,7 @@ function getRecommendationEmailHTML(userName, events, baseURL) {
             </div>
             <div style="text-align: center; margin-top: 20px;">
                 <p style="color: #9ca3af; font-size: 12px;">
-                    © 2026 Rice Events. All rights reserved.
+                    © 2026 Rice Parties. All rights reserved.
                 </p>
             </div>
         </div>
@@ -62,7 +62,7 @@ function getUpdateEmailHTML(userName, event, changes, baseURL) {
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #7c3aed; margin: 0;">Rice Events</h1>
+                <h1 style="color: #7c3aed; margin: 0;">Rice Parties</h1>
             </div>
             <div style="background-color: white; border-radius: 8px; padding: 30px;">
                 <div style="background-color: #dbeafe; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 4px; margin-bottom: 20px;">
@@ -111,7 +111,7 @@ function getUpdateEmailHTML(userName, event, changes, baseURL) {
             </div>
             <div style="text-align: center; margin-top: 20px;">
                 <p style="color: #9ca3af; font-size: 12px;">
-                    © 2026 Rice Events. All rights reserved.
+                    © 2026 Rice Parties. All rights reserved.
                 </p>
             </div>
         </div>
@@ -205,9 +205,9 @@ export async function POST(request) {
 
                     if (resend) {
                         await resend.emails.send({
-                            from: 'Rice Events <onboarding@resend.dev>',
+                            from: 'Rice Parties <noreply@riceparties.com>',
                             to: user.email,
-                            subject: '✨ Events You Might Like - Rice Events',
+                            subject: '✨ Events You Might Like - Rice Parties',
                             html: htmlContent
                         });
                         emailsSent++;
@@ -274,7 +274,7 @@ export async function POST(request) {
 
                     if (resend) {
                         await resend.emails.send({
-                            from: 'Rice Events <onboarding@resend.dev>',
+                            from: 'Rice Parties <noreply@riceparties.com>',
                             to: user.email,
                             subject: `📢 Event Updated: ${event.title}`,
                             html: htmlContent

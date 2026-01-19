@@ -42,19 +42,19 @@ export async function POST(request) {
             if (resend) {
                 try {
                     await resend.emails.send({
-                        from: 'Rice Events <onboarding@resend.dev>', // Use your verified domain in production
+                        from: 'Rice Parties <noreply@riceparties.com>',
                         to: email,
-                        subject: 'Reset Your Password - Rice Events',
+                        subject: 'Reset Your Password - Rice Parties',
                         html: `
                             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                                 <div style="text-align: center; margin-bottom: 30px;">
-                                    <h1 style="color: #7c3aed; margin: 0;">Rice Events</h1>
+                                    <h1 style="color: #7c3aed; margin: 0;">Rice Parties</h1>
                                 </div>
                                 <div style="background-color: #f9fafb; border-radius: 8px; padding: 30px;">
                                     <h2 style="color: #7c3aed; margin-top: 0;">Password Reset Request</h2>
                                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">Hi there,</p>
                                     <p style="color: #374151; font-size: 16px; line-height: 1.6;">
-                                        You requested to reset your password for Rice Events. Click the button below to reset it:
+                                        You requested to reset your password for Rice Parties. Click the button below to reset it:
                                     </p>
                                     <div style="text-align: center; margin: 30px 0;">
                                         <a href="${resetURL}" 
@@ -77,7 +77,7 @@ export async function POST(request) {
                                 </div>
                                 <div style="text-align: center; margin-top: 20px;">
                                     <p style="color: #9ca3af; font-size: 12px;">
-                                        © 2026 Rice Events. All rights reserved.
+                                        © 2026 Rice Parties. All rights reserved.
                                     </p>
                                 </div>
                             </div>
