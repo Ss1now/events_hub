@@ -52,19 +52,19 @@ const Header = () => {
                         <>
                             <button 
                                 onClick={() => router.push('/me')}
-                                className='bg-white text-black font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-xs sm:text-sm'
+                                className='bg-white text-orange-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-orange-500 hover:bg-orange-50 transition-colors text-xs sm:text-sm'
                             >
                                 Profile
                             </button>
                             <button 
                                 onClick={handleLogout}
-                                className='bg-black text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm'
+                                className='bg-white text-purple-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-500 hover:bg-purple-50 transition-colors text-xs sm:text-sm'
                             >
                                 Logout
                             </button>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-black text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm whitespace-nowrap'
+                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors text-xs sm:text-sm whitespace-nowrap'
                             >
                                 Create
                             </button>
@@ -72,18 +72,18 @@ const Header = () => {
                     ) : (
                         <>
                             <Link href='/login'>
-                                <button className='bg-white text-black font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-black hover:bg-gray-100 transition-colors text-xs sm:text-sm'>
+                                <button className='bg-white text-purple-500 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-500 hover:bg-purple-50 transition-colors text-xs sm:text-sm'>
                                     Login
                                 </button>
                             </Link>
                             <Link href='/register'>
-                                <button className='hidden sm:block bg-black text-white font-medium py-2 px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-sm'>
+                                <button className='hidden sm:block bg-purple-500 text-white font-medium py-2 px-4 md:px-6 rounded-md hover:bg-purple-600 transition-colors text-sm'>
                                     Register
                                 </button>
                             </Link>
                             <button 
                                 onClick={handlePostEvent}
-                                className='bg-black text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs sm:text-sm whitespace-nowrap'
+                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors text-xs sm:text-sm whitespace-nowrap'
                             >
                                 Create
                             </button>

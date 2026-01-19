@@ -82,11 +82,11 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
             case 'live':
                 return { bg: 'bg-green-500', text: '#HAPPENING NOW' };
             case 'future':
-                return { bg: 'bg-[#00205B]', text: '#UPCOMING' };
+                return { bg: 'bg-orange-500', text: '#UPCOMING' };
             case 'past':
                 return { bg: 'bg-gray-500', text: '#PAST' };
             default:
-                return { bg: 'bg-black', text: '#HAPPENING NOW' };
+                return { bg: 'bg-pink-500', text: '#HAPPENING NOW' };
         }
     };
     
@@ -262,7 +262,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 <div className='flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4'>
                     {/* Official Event Badge */}
                     {eventCategory === 'residential_college' && (
-                        <span className='bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                        <span className='bg-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
                             <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
                                 <path d='M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z'/>
                             </svg>
@@ -270,7 +270,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </span>
                     )}
                     {eventCategory === 'university' && (
-                        <span className='bg-purple-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                        <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
                             <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
                                 <path d='M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z'/>
                             </svg>
@@ -329,10 +329,10 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     )}
                     {!needReservation && (status === 'future' || status === 'live') && (
                         <div className='flex items-center gap-1.5 text-xs sm:text-sm'>
-                            <svg className='w-4 h-4 text-[#00205B]' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <svg className='w-4 h-4 text-orange-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' />
                             </svg>
-                            <span className='text-[#00205B] font-medium'>{interestedCount} interested</span>
+                            <span className='text-orange-500 font-medium'>{interestedCount} interested</span>
                         </div>
                     )}
                 </div>
@@ -372,8 +372,8 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     className='text-center bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 min-w-[60px] sm:min-w-[80px] hover:bg-gray-100 transition-colors cursor-pointer group'
                     title='Add to Google Calendar'
                 >
-                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-[#00205B] transition-colors'>{eventDate?.month || 'Jan'}</div>
-                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-[#00205B] transition-colors'>{eventDate?.day || '1'}</div>
+                    <div className='text-[10px] sm:text-xs text-gray-500 uppercase group-hover:text-orange-500 transition-colors'>{eventDate?.month || 'Jan'}</div>
+                    <div className='text-2xl sm:text-3xl font-bold text-gray-900 group-hover:text-orange-500 transition-colors'>{eventDate?.day || '1'}</div>
                     <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 sm:mt-1 opacity-0 group-hover:opacity-100 transition-opacity'>Add Cal</div>
                 </button>
                 <div className='flex gap-1.5 sm:gap-2'>
@@ -396,8 +396,8 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                     onClick={handleInterested}
                                     className={`px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                                         isInterested 
-                                            ? 'bg-[#00205B] text-white hover:bg-[#001840]' 
-                                            : 'bg-black text-white hover:bg-gray-800'
+                                            ? 'bg-orange-500 text-white hover:bg-orange-600' 
+                                            : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600'
                                     }`}
                                 >
                                     {isInterested ? 'Going!' : "I'm going"}
@@ -412,7 +412,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                 e.stopPropagation();
                                 setShowRatingModal(true);
                             }}
-                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-[#00205B] text-white hover:bg-[#001840] transition-colors flex items-center gap-1'
+                            className='px-3 sm:px-6 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-purple-500 text-white hover:bg-purple-600 transition-colors flex items-center gap-1'
                         >
                             <svg className='w-3 h-3 sm:w-4 sm:h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z' />

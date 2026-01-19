@@ -2,8 +2,12 @@
 
 @layer base {
   :root {
-    --rice-blue: #00205B;
-    --rice-blue-dark: #001840;
-    --rice-blue-light: #003d82;
+    /* Party Vibe Colors */
+    --primary: #FF6B35;        /* Vibrant Orange */
+    --primary-dark: #E55527;   /* Darker Orange */
+    --primary-light: #FF8C61;  /* Light Orange */
+    --secondary: #8B5CF6;      /* Purple */
+    --accent: #10B981;         /* Green */
+    --party-pink: #EC4899;     /* Hot Pink */
   }
 }
