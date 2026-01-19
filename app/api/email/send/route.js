@@ -259,6 +259,24 @@ export async function POST(request) {
             const allAffectedUsers = await userModel.find({
                 $or: [
                     { reservedEvents: eventId },
+                    { interestedEvents: eventId }
+                ]
+            }).select('email name emailSubscriptions');
+            
+            console.log(`[Email] Total affected users (RSVP'd or interested): ${allAffectedUsers.length}`);
+            allAffectedUsers.forEach(u => {
+                console.log(`  - ${u.email}, updates opt-in: ${u.emailSubscriptions?.updates || false}`);
+            });
+            
+            // Find users who RSVP'd or showed interest and have updates enabled
+            const users = await userModel.find({
+                $or: [
+                    { reservedEvents: eventId },
+                    { interestedEvents: eventId }
+                ],
+                'emailSubscriptions.updates': true
+            }).select('email name emailSubscriptions');
+
             console.log(`[Email] Users with updates ENABLED: ${users.length}`);
             console.log(`[Email] Preparing to send ${users.length} update emails in parallel...`);
 
@@ -305,24 +323,6 @@ export async function POST(request) {
                 emailsSent,
                 emailsFailed,
                 msg: `Sent ${emailsSent} update emails${emailsFailed > 0 ? `, ${emailsFailed} failed` : ''}`
-            });             from: 'Rice Parties <noreply@riceparties.com>',
-                            to: user.email,
-                            subject: `📢 Event Updated: ${event.title}`,
-                            html: htmlContent
-                        });
-                        emailsSent++;
-                    } else {
-                        console.log(`[DEV] Would send update email to: ${user.email}`);
-                    }
-
-                } catch (emailError) {
-                    console.error(`Error sending update to ${user.email}:`, emailError);
-                }
-            }
-
-            return NextResponse.json({
-                success: true,
-                msg: `Sent ${emailsSent} update emails`
             });
         }
 
