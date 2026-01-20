@@ -7,6 +7,114 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2026-01-19 - Public Release 🎉
+
+### Major Release - Complete UI Overhaul
+
+This version marks the official public release of Rice Parties with a complete visual transformation to a vibrant Miami nightclub aesthetic, domain migration, and enhanced user experience.
+
+### Added
+
+#### Visual Design Transformation
+- **Dark Nightclub Miami Theme**
+  - Complete UI redesign with dark gradient backgrounds (gray-900 to gray-800)
+  - Neon color palette: Orange (#FF6B35), Pink (#FF0080), Purple (#B026FF), Cyan (#00F5FF)
+  - Glow effects and shadows on all interactive elements
+  - Purple borders and neon accents throughout the application
+  
+- **Enhanced Component Styling**
+  - Header: Dark purple-tinted gradient with neon button effects
+  - Event cards: Dark backgrounds with glowing purple borders
+  - Search bar: Dark theme with purple glow on focus
+  - Filter tabs: Gradient fills with neon shadows
+  - Buttons: Orange-to-pink and purple-to-pink gradients with glow effects
+  - Footer: Matching dark gradient theme
+  
+- **Event Detail Page Redesign**
+  - Dark gradient card backgrounds
+  - Neon gradient action buttons (RSVP, Share, Calendar)
+  - Purple-tinted notification boxes
+  - White text optimized for dark backgrounds
+  - Enhanced calendar badge with hover glow
+  - Vibrant status badges with neon effects
+
+- **Create Event Page Redesign**
+  - Dark gradient form container with purple border glow
+  - Gradient title text (orange → pink → purple)
+  - All input fields: dark backgrounds with purple borders
+  - Pink focus rings on form inputs
+  - Neon gradient submit button
+  - Enhanced image upload area
+
+#### Branding and Domain
+- **Domain Migration**
+  - Migrated from ricevents.com to riceparties.com
+  - Updated all email sender addresses to noreply@riceparties.com
+  - Complete rebrand from "Rice Events" to "Rice Parties" across entire application
+  
+- **Logo Implementation**
+  - White logo variant for main page header (better contrast on dark background)
+  - Original blue logo retained for other pages
+  - Logo glow effects on dark backgrounds
+  
+#### Social Media Integration
+- **Open Graph Meta Tags**
+  - Dynamic OG image generation with Next.js
+  - Neon gradient preview card (1200x630px)
+  - "Rice Parties" in gradient text with Miami nightclub aesthetic
+  - Optimized for sharing on all social platforms (Twitter, Facebook, Instagram, Discord, iMessage, Fizz, etc.)
+  - Twitter Card support
+  
+#### User Experience Improvements
+- **Email Delivery Optimization**
+  - Refactored email sending from sequential to parallel processing using Promise.all()
+  - Reduced email delivery time from 10+ minutes to seconds for large batches
+  - Improved user experience for event updates and recommendations
+  
+- **Search Enhancement**
+  - Sharper, crisper search icon (fixed size, increased stroke width)
+  - Better visibility on dark backgrounds
+  
+- **Text Contrast Improvements**
+  - Changed "interested" count text from dark blue to white for visibility
+  - Updated icons to orange/purple for better contrast
+  - All text optimized for dark backgrounds
+
+### Changed
+
+- **Complete Color Scheme Transformation**
+  - Global CSS variables updated with nightclub Miami colors
+  - All components updated to dark theme
+  - Gradient backgrounds throughout application
+  - Neon glow effects on buttons, cards, and interactive elements
+  
+- **Email System**
+  - Updated all email templates from "Rice Events" to "Rice Parties"
+  - Changed sender domain to riceparties.com
+  - Parallel email processing for better performance
+  
+- **Navigation and Branding**
+  - All references to "Rice Events" changed to "Rice Parties"
+  - Updated page titles and metadata
+  - Enhanced button styling with gradients and glow effects
+
+### Fixed
+- Build error in email send route (incomplete MongoDB query)
+- Favicon implementation (switched from favicon.ico to icon.png in Next.js 13+ convention)
+- Duplicate closing tag in header component
+- Email delivery issues with rice.edu addresses (removed warning from registration page)
+
+### Technical Details
+- Updated `app/globals.css` with new CSS variables for nightclub theme
+- Modified 20+ component files for dark theme consistency
+- Created `app/opengraph-image.js` for dynamic social media previews
+- Updated `app/layout.js` with comprehensive Open Graph and Twitter Card metadata
+- Refactored `lib/email/sendUpdateEmails.js` for parallel processing
+- Fixed `app/api/email/send/route.js` syntax errors
+- Updated `assets/assets.js` to support white logo variant
+
+---
+
 ## [0.5.9] - 2026-01-17
 
 ### Added

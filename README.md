@@ -2,7 +2,17 @@
 
 A modern event management platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
 
-Version 0.5.8
+**Version 2.0.0** - Public Release 🎉
+
+## What's New in 2.0
+
+🌃 **Complete Visual Redesign** - New Miami nightclub aesthetic with dark backgrounds, neon gradients, and vibrant colors
+
+🎨 **Enhanced User Experience** - Improved search, faster email delivery, and better contrast throughout
+
+🌐 **New Domain** - Now live at [riceparties.com](https://riceparties.com)
+
+📱 **Social Media Ready** - Beautiful link previews when sharing on any platform
 
 ## Table of Contents
 
