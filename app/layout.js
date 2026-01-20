@@ -18,6 +18,20 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "Rice Parties",
   description: "Discover and organize campus events at Rice University",
+  metadataBase: new URL('https://riceparties.com'),
+  openGraph: {
+    title: "Rice Parties - Find Campus Events",
+    description: "Find parties, pregames, and events happening at Rice University",
+    url: 'https://riceparties.com',
+    siteName: 'Rice Parties',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "Rice Parties - Find Campus Events",
+    description: "Find parties, pregames, and events happening at Rice University",
+  },
 };
 
 export default function RootLayout({ children }) {
