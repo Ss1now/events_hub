@@ -1,4 +1,5 @@
 import logo from "./logo.png";
+import logoWhite from "./logo-white.png";
 import post_1 from "./post_1.png";
 import post_icon from "./post_icon.png";
 import profile from "./profile.png";
@@ -6,6 +7,7 @@ import upload from "./upload.png";
 
 export const assets = {
     logo,
+    logoWhite,
     post_1,
     post_icon,
     profile,

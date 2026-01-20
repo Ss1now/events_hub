@@ -193,14 +193,14 @@ const Page = ({ params }) => {
     };
 
     if (loading) {
-        return <div className='min-h-screen flex items-center justify-center'>
-            <p className='text-xl'>Loading...</p>
+        return <div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center'>
+            <p className='text-xl text-white'>Loading...</p>
         </div>;
     }
 
     if (!data) {
-        return <div className='min-h-screen flex items-center justify-center'>
-            <p className='text-xl'>Event not found</p>
+        return <div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center'>
+            <p className='text-xl text-white'>Event not found</p>
         </div>;
     }
 
@@ -209,30 +209,30 @@ const Page = ({ params }) => {
     
     return (
         <>
-        <div className='bg-white py-4 px-4 md:py-6 md:px-12 lg:px-28 border-b border-gray-200'>
+        <div className='bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 py-4 px-4 md:py-6 md:px-12 lg:px-28 border-b border-purple-500/20'>
             <div className='flex justify-between items-center'>
             <Link href='/'>
                 <div className='flex items-center gap-2 cursor-pointer hover:opacity-80'>
-                    <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-10 h-10 md:w-12 md:h-12 object-contain'/>
+                    <Image src={assets.logo} width={50} height={50} alt='Rice Party Logo' className='w-10 h-10 md:w-12 md:h-12 object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'/>
                     <div>
-                        <h2 className='text-lg md:text-xl font-semibold'>Rice Parties</h2>
+                        <h2 className='text-lg md:text-xl font-semibold text-white'>Rice Parties</h2>
                     </div>
                 </div>
             </Link>
-            <button className='bg-black text-white font-medium py-1.5 px-3 md:py-2 md:px-6 rounded-md hover:bg-gray-800 transition-colors text-xs md:text-sm whitespace-nowrap'>Create</button>
+            <button className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-1.5 px-3 md:py-2 md:px-6 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_20px_rgba(255,0,128,0.6)] transition-all text-xs md:text-sm whitespace-nowrap'>Create</button>
             </div>
         </div>
-        <div className='bg-gray-50 min-h-screen py-6 md:py-12'>
+        <div className='bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen py-6 md:py-12'>
             <div className='max-w-4xl mx-auto px-4 sm:px-5 md:px-12'>
                 {/* Event Header */}
-                <div className='bg-white rounded-xl md:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8 mb-4 md:mb-6'>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl md:rounded-2xl shadow-lg border border-purple-500/20 p-4 sm:p-6 md:p-8 mb-4 md:mb-6'>
                     <div className='flex justify-between items-start mb-4 md:mb-6'>
                         <div className='flex-1'>
-                            <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-3'>{data.title}</h1>
-                            <p className='text-sm sm:text-base md:text-lg text-gray-600 mb-3 md:mb-4'>{data.description}</p>
+                            <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-3'>{data.title}</h1>
+                            <p className='text-sm sm:text-base md:text-lg text-gray-300 mb-3 md:mb-4'>{data.description}</p>
                             
                             {/* Event Meta Info */}
-                            <div className='flex flex-wrap gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-gray-600 mb-3 md:mb-4'>
+                            <div className='flex flex-wrap gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-gray-300 mb-3 md:mb-4'>
                                 <div className='flex items-center gap-1.5 sm:gap-2'>
                                     <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
@@ -266,11 +266,11 @@ const Page = ({ params }) => {
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
-                                {data.status === 'live' && <span className='bg-black text-white text-xs px-3 py-1 rounded-full'>#HAPPENING NOW</span>}
-                                {data.status === 'future' && <span className='bg-[#00205B] text-white text-xs px-3 py-1 rounded-full'>#UPCOMING</span>}
-                                <span className='bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full'>{data.eventType}</span>
-                                {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full'>FULL</span>}
-                                {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full'>RSVP Closed</span>}
+                                {data.status === 'live' && <span className='bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.5)]'>#HAPPENING NOW</span>}
+                                {data.status === 'future' && <span className='bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(255,107,53,0.5)]'>#UPCOMING</span>}
+                                <span className='bg-gray-700/50 text-gray-200 text-xs px-3 py-1 rounded-full border border-purple-500/20'>{data.eventType}</span>
+                                {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.5)]'>FULL</span>}
+                                {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.5)]'>RSVP Closed</span>}
                             </div>
 
                             {/* Live Rating Display - prominent placement for live events */}
@@ -302,17 +302,17 @@ const Page = ({ params }) => {
                                 const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDescription)}&location=${encodeURIComponent(data.location)}`;
                                 window.open(googleCalendarUrl, '_blank');
                             }}
-                            className='text-center bg-gray-50 rounded-lg md:rounded-xl p-3 md:p-4 ml-3 md:ml-6 hover:bg-gray-100 transition-colors cursor-pointer group flex-shrink-0'
+                            className='text-center bg-gray-800/50 rounded-lg md:rounded-xl p-3 md:p-4 ml-3 md:ml-6 hover:bg-gray-700/50 hover:shadow-[0_0_20px_rgba(176,38,255,0.4)] transition-all cursor-pointer group flex-shrink-0 border border-purple-500/20'
                             title='Add to Google Calendar'
                         >
-                            <div className='text-[10px] sm:text-xs md:text-sm text-gray-500 uppercase group-hover:text-[#00205B] transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
-                            <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 group-hover:text-[#00205B] transition-colors'>{new Date(data.startDateTime).getDate()}</div>
-                            <div className='text-[10px] sm:text-xs text-gray-400 mt-0.5 md:mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap'>Add Cal</div>
+                            <div className='text-[10px] sm:text-xs md:text-sm text-gray-400 uppercase group-hover:text-orange-400 transition-colors'>{new Date(data.startDateTime).toLocaleDateString('en-US', { month: 'short' })}</div>
+                            <div className='text-2xl sm:text-3xl md:text-4xl font-bold text-white group-hover:text-orange-400 transition-colors'>{new Date(data.startDateTime).getDate()}</div>
+                            <div className='text-[10px] sm:text-xs text-gray-500 mt-0.5 md:mt-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap'>Add Cal</div>
                         </button>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 md:pt-6 border-t border-gray-200'>
+                    <div className='flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 md:pt-6 border-t border-purple-500/20'>
                         {(data.status === 'future' || data.status === 'live') && (
                             <>
                                 {data.needReservation ? (
@@ -321,10 +321,10 @@ const Page = ({ params }) => {
                                             <button 
                                                 onClick={handleReserve}
                                                 disabled={isCapacityReached || isRSVPDeadlinePassed}
-                                                className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium transition-colors ${
+                                                className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
                                                     isCapacityReached || isRSVPDeadlinePassed
-                                                        ? 'bg-gray-400 text-white cursor-not-allowed'
-                                                        : 'bg-black text-white hover:bg-gray-800'
+                                                        ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                                                        : 'bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 shadow-[0_0_20px_rgba(255,0,128,0.6)] hover:shadow-[0_0_30px_rgba(255,0,128,0.8)]'
                                                 }`}
                                             >
                                                 {isCapacityReached ? 'Event Full' : isRSVPDeadlinePassed ? 'RSVP Closed' : 'RSVP'}
@@ -332,7 +332,7 @@ const Page = ({ params }) => {
                                         ) : (
                                             <button 
                                                 onClick={handleCancelRSVP}
-                                                className='flex-1 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium hover:bg-red-700 transition-colors'
+                                                className='flex-1 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-bold hover:bg-red-700 shadow-[0_0_15px_rgba(220,38,38,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.7)] transition-all'
                                             >
                                                 Cancel RSVP
                                             </button>
@@ -341,10 +341,10 @@ const Page = ({ params }) => {
                                 ) : (
                                     <button 
                                         onClick={handleInterested}
-                                        className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-medium transition-colors ${
+                                        className={`flex-1 px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg font-bold transition-all ${
                                             isInterested 
-                                                ? 'bg-[#00205B] text-white hover:bg-[#001840]' 
-                                                : 'bg-black text-white hover:bg-gray-800'
+                                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-[0_0_20px_rgba(236,72,153,0.6)] hover:shadow-[0_0_30px_rgba(236,72,153,0.8)]' 
+                                                : 'bg-gradient-to-r from-orange-500 to-pink-500 text-white hover:from-orange-600 hover:to-pink-600 shadow-[0_0_20px_rgba(255,0,128,0.6)] hover:shadow-[0_0_30px_rgba(255,0,128,0.8)]'
                                         }`}
                                     >
                                         {isInterested ? "I'm Going!" : "I'm Going"}
@@ -354,7 +354,7 @@ const Page = ({ params }) => {
                         )}
                         <button 
                             onClick={() => setShowShareModal(true)}
-                            className='px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2'
+                            className='px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base border-2 border-purple-500/30 bg-gray-800/50 text-gray-200 rounded-lg font-medium hover:bg-gray-700/50 hover:border-purple-500/50 transition-all flex items-center justify-center gap-2'
                         >
                             <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z' />
@@ -365,17 +365,17 @@ const Page = ({ params }) => {
                     
                     {/* RSVP deadline info */}
                     {data.needReservation && data.reservationDeadline && (
-                        <div className='mt-3 md:mt-4 p-2.5 sm:p-3 bg-blue-50 rounded-lg'>
-                            <p className='text-xs sm:text-sm text-blue-800'>
-                                <span className='font-semibold'>RSVP Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                        <div className='mt-3 md:mt-4 p-2.5 sm:p-3 bg-purple-900/30 border border-purple-500/30 rounded-lg'>
+                            <p className='text-xs sm:text-sm text-purple-300'>
+                                <span className='font-semibold text-purple-200'>RSVP Deadline:</span> {new Date(data.reservationDeadline).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                             </p>
                         </div>
                     )}
                     
                     {/* Add to Calendar Section */}
                     {(isInterested || isReserved) && (
-                        <div className='mt-3 md:mt-4 p-3 md:p-4 bg-gray-50 rounded-lg'>
-                            <p className='text-xs sm:text-sm font-semibold text-gray-700 mb-2 md:mb-3'>Add to Calendar</p>
+                        <div className='mt-3 md:mt-4 p-3 md:p-4 bg-gray-800/50 border border-purple-500/20 rounded-lg'>
+                            <p className='text-xs sm:text-sm font-semibold text-white mb-2 md:mb-3'>Add to Calendar</p>
                             <div className='flex flex-col sm:flex-row gap-2 sm:gap-3'>
                                 <button
                                     onClick={() => {
@@ -389,7 +389,7 @@ const Page = ({ params }) => {
                                         const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(data.title)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(data.location)}`;
                                         window.open(googleCalendarUrl, '_blank');
                                     }}
-                                    className='flex-1 bg-[#00205B] text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-[#001840] transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
+                                    className='flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-bold hover:from-purple-600 hover:to-pink-600 shadow-[0_0_15px_rgba(236,72,153,0.5)] hover:shadow-[0_0_25px_rgba(236,72,153,0.7)] transition-all flex items-center justify-center gap-1.5 sm:gap-2'
                                 >
                                     <svg className='w-4 h-4 sm:w-5 sm:h-5' viewBox='0 0 24 24' fill='currentColor'>
                                         <path d='M19.5 8.25v7.5a2.25 2.25 0 01-2.25 2.25H6.75a2.25 2.25 0 01-2.25-2.25v-7.5m15 0V6a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6v2.25m15 0h-15' />
@@ -430,7 +430,7 @@ END:VCALENDAR`;
                                         link.click();
                                         document.body.removeChild(link);
                                     }}
-                                    className='flex-1 bg-gray-700 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-1.5 sm:gap-2'
+                                    className='flex-1 bg-gray-700 text-white py-2 sm:py-2.5 text-xs sm:text-sm rounded-lg font-bold hover:bg-gray-600 shadow-[0_0_10px_rgba(100,100,100,0.3)] hover:shadow-[0_0_20px_rgba(100,100,100,0.5)] transition-all flex items-center justify-center gap-1.5 sm:gap-2'
                                 >
                                     <svg className='w-4 h-4 sm:w-5 sm:h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10' />
@@ -444,7 +444,7 @@ END:VCALENDAR`;
                 </div>
 
                 {/* Event Details */}
-                <div className='bg-white rounded-xl md:rounded-2xl shadow-sm p-4 sm:p-6 md:p-8'>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl md:rounded-2xl shadow-lg border border-purple-500/20 p-4 sm:p-6 md:p-8'>
                     {/* Image Gallery - Only show if images exist */}
                     {data.images && data.images.length > 0 && (
                         <div className='mb-6 md:mb-8'>
@@ -460,11 +460,11 @@ END:VCALENDAR`;
                         </div>
                     )}
                     
-                    <h2 className='text-2xl font-bold mb-4 text-gray-900'>About this Event</h2>
-                    <p className='text-gray-700 leading-relaxed mb-6'>{data.description}</p>
+                    <h2 className='text-2xl font-bold mb-4 text-white'>About this Event</h2>
+                    <p className='text-gray-300 leading-relaxed mb-6'>{data.description}</p>
                     
-                    <h3 className='text-xl font-semibold mb-3 text-gray-900'>Event Details</h3>
-                    <div className='space-y-3 text-gray-700'>
+                    <h3 className='text-xl font-semibold mb-3 text-white'>Event Details</h3>
+                    <div className='space-y-3 text-gray-300'>
                         <div className='flex gap-2'>
                             <span className='font-semibold min-w-[120px]'>Event Type:</span>
                             <span>{data.eventType}</span>

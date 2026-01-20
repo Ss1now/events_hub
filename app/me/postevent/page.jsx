@@ -100,11 +100,11 @@ export default function PostEventPage() {
 
 
     return (
-        <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-3xl mx-auto'>
                 <button
                     onClick={() => router.back()}
-                    className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
+                    className='mb-4 text-gray-300 hover:text-orange-400 flex items-center gap-2 transition-colors'
                 >
                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
@@ -112,15 +112,15 @@ export default function PostEventPage() {
                     Back to Home
                 </button>
                 
-                <div className='bg-white rounded-lg shadow-md p-8'>
-                    <h1 className='text-3xl font-bold text-gray-900 mb-6'>Create a New Event</h1>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-8'>
+                    <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 mb-6'>Create a New Event</h1>
                     
                     <form onSubmit={onSubmitHandler} className='space-y-6'>
                         <div>
-                            <p className='text-xl font-medium mb-2'>Upload Images</p>
+                            <p className='text-xl font-medium mb-2 text-white'>Upload Images</p>
                             <div
                                 onClick={() => document.getElementById('images')?.click()}
-                                className='inline-block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg overflow-hidden hover:border-gray-400 transition-colors flex items-center justify-center'
+                                className='inline-block cursor-pointer border-2 border-dashed border-purple-500/50 rounded-lg overflow-hidden hover:border-purple-500 transition-colors flex items-center justify-center bg-gray-800/50'
                                 style={{ width: 140, height: 70 }}
                             >
                                 <span className='text-gray-400 text-sm'>Choose files</span>
@@ -145,7 +145,7 @@ export default function PostEventPage() {
                                                 width={100} 
                                                 height={100} 
                                                 alt={`Preview ${idx + 1}`}
-                                                className='rounded border object-cover'
+                                                className='rounded border border-purple-500/30 object-cover'
                                             />
                                             <button
                                                 type='button'
@@ -161,66 +161,67 @@ export default function PostEventPage() {
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Event Title</p>
-                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type="text" required/>
+                            <p className='text-xl font-medium mb-2 text-white'>Event Title</p>
+                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type="text" placeholder="Enter event title" required/>
                         </div>
                         
                         {/* Description */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Description</p>
-                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' rows={4} required></textarea>
+                            <p className='text-xl font-medium mb-2 text-white'>Description</p>
+                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' rows={4} placeholder="Describe your event" required></textarea>
                         </div>
 
                         {/* Start Date & Time */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Start Date & Time</p>
-                            <input name='startDateTime' onChange={onChangeHandler} value={data.startDateTime} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' required/>
+                            <p className='text-xl font-medium mb-2 text-white'>Start Date & Time</p>
+                            <input name='startDateTime' onChange={onChangeHandler} value={data.startDateTime} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='datetime-local' required/>
                         </div>
 
                         {/* End Date & Time */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>End Date & Time</p>
-                            <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' required/>
+                            <p className='text-xl font-medium mb-2 text-white'>End Date & Time</p>
+                            <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='datetime-local' required/>
                         </div>
 
                         {/* Event Type */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Event Type</p>
+                            <p className='text-xl font-medium mb-2 text-white'>Event Type</p>
                             <input
                                 name='eventType'
-                                className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
                                 type='text'
                                 value={data.eventType}
                                 onChange={onChangeHandler}
+                                placeholder="e.g., Party, Networking, Workshop"
                                 required
                             />
                         </div>
 
                         {/* Location */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Location</p>
-                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' required/>
+                            <p className='text-xl font-medium mb-2 text-white'>Location</p>
+                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type='text' placeholder="Event location" required/>
                         </div>
 
                         {/* Need RSVP */}
                         <div className='flex items-center gap-2 mb-6'>
-                            <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border' onChange={onChangeHandler} checked={data.needReservation}/>
-                            <label htmlFor='needReservation' className='text-base'>Need RSVP</label>
+                            <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border accent-purple-500' onChange={onChangeHandler} checked={data.needReservation}/>
+                            <label htmlFor='needReservation' className='text-base text-white'>Need RSVP</label>
                         </div>
 
                         {/* Capacity */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Capacity</p>
-                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' required/>
+                            <p className='text-xl font-medium mb-2 text-white'>Capacity</p>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='number' min='1' required/>
                         </div>
 
                         {/* Host */}
                         <div>
-                            <p className='text-xl font-medium mb-2'>Host</p>
-                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' required/>
+                            <p className='text-xl font-medium mb-2 text-white'>Host</p>
+                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type='text' placeholder="Host name" required/>
                         </div>
                         
-                        <button type="submit" className='w-full bg-black text-white font-medium py-3 rounded-md hover:bg-gray-800 transition-colors'>
+                        <button type="submit" className='w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-3 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_25px_rgba(255,0,128,0.6)] hover:shadow-[0_0_35px_rgba(255,0,128,0.8)] transition-all'>
                             Create Event
                         </button>
                     </form>
