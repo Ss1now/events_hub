@@ -268,6 +268,57 @@ export async function PUT(request) {
         const newStartDateTime = new Date(formData.get('startDateTime'));
         const newEndDateTime = new Date(formData.get('endDateTime'));
         
+        // Track changes for notification
+        const changes = [];
+        
+        if (event.title !== formData.get('title')) {
+            changes.push(`Title changed from "${event.title}" to "${formData.get('title')}"`);
+        }
+        
+        if (event.description !== formData.get('description')) {
+            changes.push('Description updated');
+        }
+        
+        if (event.startDateTime.getTime() !== newStartDateTime.getTime()) {
+            changes.push(`Start time changed from ${event.startDateTime.toLocaleString()} to ${newStartDateTime.toLocaleString()}`);
+        }
+        
+        if (event.endDateTime.getTime() !== newEndDateTime.getTime()) {
+            changes.push(`End time changed from ${event.endDateTime.toLocaleString()} to ${newEndDateTime.toLocaleString()}`);
+        }
+        
+        if (event.eventType !== formData.get('eventType')) {
+            changes.push(`Event type changed from "${event.eventType}" to "${formData.get('eventType')}"`);
+        }
+        
+        if (event.location !== formData.get('location')) {
+            changes.push(`Location changed from "${event.location}" to "${formData.get('location')}"`);
+        }
+        
+        const newNeedReservation = formData.get('needReservation') === 'true';
+        if (event.needReservation !== newNeedReservation) {
+            changes.push(`RSVP requirement ${newNeedReservation ? 'added' : 'removed'}`);
+        }
+        
+        const newCapacity = parseInt(formData.get('capacity')) || 0;
+        if (event.capacity !== newCapacity) {
+            changes.push(`Capacity changed from ${event.capacity} to ${newCapacity}`);
+        }
+        
+        if (event.host !== formData.get('host')) {
+            changes.push(`Host changed from "${event.host}" to "${formData.get('host')}"`);
+        }
+        
+        const newInstagram = formData.get('instagram') || '';
+        if (event.instagram !== newInstagram) {
+            changes.push('Contact information updated');
+        }
+        
+        // Check if images changed
+        if (newImages && newImages.length > 0 && newImages[0].size > 0) {
+            changes.push('Event images updated');
+        }
+        
         // Recalculate status based on new times
         let currentStatus;
         if (now < newStartDateTime) {
@@ -286,15 +337,15 @@ export async function PUT(request) {
         event.status = currentStatus;
         event.eventType = formData.get('eventType');
         event.location = formData.get('location');
-        event.needReservation = formData.get('needReservation') === 'true';
-        event.capacity = parseInt(formData.get('capacity')) || 0;
+        event.needReservation = newNeedReservation;
+        event.capacity = newCapacity;
         event.reservationDeadline = formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null;
         event.host = formData.get('host');
-        event.instagram = formData.get('instagram') || '';
+        event.instagram = newInstagram;
         event.lastUpdated = new Date();
 
-        // Notify interested/reserved users about event update (for future or live events)
-        if (currentStatus === 'future' || currentStatus === 'live') {
+        // Notify interested/reserved users about event update if there are ANY changes
+        if (changes.length > 0 && (currentStatus === 'future' || currentStatus === 'live')) {
             // Get all users who are interested or reserved
             const affectedUsers = [...new Set([
                 ...event.interestedUsers.map(id => id.toString()),
@@ -303,7 +354,7 @@ export async function PUT(request) {
 
             if (affectedUsers.length > 0) {
                 // Create a summary of changes
-                const changes = `Event updated`;
+                const changesSummary = changes.join('; ');
                 
                 // Add in-app notification to each affected user
                 await userModel.updateMany(
@@ -313,7 +364,7 @@ export async function PUT(request) {
                             eventUpdateNotifications: {
                                 eventId: event._id,
                                 eventTitle: event.title,
-                                changes: changes,
+                                changes: changesSummary,
                                 timestamp: new Date(),
                                 read: false
                             }
@@ -321,14 +372,14 @@ export async function PUT(request) {
                     }
                 );
                 
-                console.log(`Notified ${affectedUsers.length} users about event update`);
+                console.log(`Notified ${affectedUsers.length} users about event update: ${changesSummary}`);
                 
                 // Send email notifications to subscribed users (async, don't block response)
                 console.log('[Email Trigger] About to call sendUpdateEmails');
                 console.log('[Email Trigger] Event ID:', event._id.toString());
-                console.log('[Email Trigger] Changes:', changes);
+                console.log('[Email Trigger] Changes:', changesSummary);
                 
-                sendUpdateEmails(event._id.toString(), changes)
+                sendUpdateEmails(event._id.toString(), changesSummary)
                     .then(result => {
                         console.log('[Email Trigger] Email sending result:', result);
                     })
