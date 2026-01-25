@@ -159,11 +159,12 @@ export async function POST(request){
             weeklyTheme: formData.get('weeklyTheme') || '',
             eventPageType: formData.get('eventPageType') || 'party',
             isCollegeOnly: formData.get('isCollegeOnly') === 'true',
-            targetCollege: formData.get('targetCollege') || null
+            targetCollege: formData.get('isCollegeOnly') === 'true' ? (formData.get('targetCollege') || null) : null
         }
 
+        console.log('Creating blog with data:', JSON.stringify(blogData, null, 2));
         const createdBlog = await Blogmodel.create(blogData);
-        console.log("Post Created");
+        console.log("Post Created Successfully:", createdBlog._id);
 
         return NextResponse.json({success:true, msg:"Post Created Successfully", blog: createdBlog});
     } catch (error) {

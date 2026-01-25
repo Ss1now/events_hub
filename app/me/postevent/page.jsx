@@ -104,12 +104,12 @@ export default function PostEventPage() {
         formData.append('endDateTime', endDateTimeISO);
         formData.append('eventType', data.eventType);
         formData.append('location', data.location);
-        formData.append('needReservation', data.needReservation);
+        formData.append('needReservation', String(data.needReservation));
         formData.append('capacity', data.capacity);
         formData.append('host', data.host);
         formData.append('eventPageType', data.eventPageType);
-        formData.append('isCollegeOnly', data.isCollegeOnly);
-        if (data.isCollegeOnly) {
+        formData.append('isCollegeOnly', String(data.isCollegeOnly));
+        if (data.isCollegeOnly && userCollege) {
             formData.append('targetCollege', userCollege);
         }
 
