@@ -52,13 +52,13 @@ const Header = () => {
                         <>
                             <button 
                                 onClick={() => router.push('/me')}
-                                className='bg-transparent text-orange-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-orange-400 hover:bg-orange-400/10 hover:shadow-[0_0_15px_rgba(255,107,53,0.5)] transition-all text-xs sm:text-sm'
+                                className='bg-transparent text-orange-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-orange-400/60 hover:bg-orange-400/10 hover:border-orange-400 hover:shadow-[0_0_15px_rgba(255,107,53,0.4)] transition-all text-xs sm:text-sm'
                             >
                                 Profile
                             </button>
                             <button 
                                 onClick={handleLogout}
-                                className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-400 hover:bg-purple-400/10 hover:shadow-[0_0_15px_rgba(176,38,255,0.5)] transition-all text-xs sm:text-sm'
+                                className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-purple-400/60 hover:bg-purple-400/10 hover:border-purple-400 hover:shadow-[0_0_15px_rgba(176,38,255,0.4)] transition-all text-xs sm:text-sm'
                             >
                                 Logout
                             </button>
@@ -72,7 +72,7 @@ const Header = () => {
                     ) : (
                         <>
                             <Link href='/login'>
-                                <button className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border-2 border-purple-400 hover:bg-purple-400/10 hover:shadow-[0_0_15px_rgba(176,38,255,0.5)] transition-all text-xs sm:text-sm'>
+                                <button className='bg-transparent text-purple-400 font-medium py-1.5 px-2 sm:py-2 sm:px-4 md:px-6 rounded-md border border-purple-400/60 hover:bg-purple-400/10 hover:border-purple-400 hover:shadow-[0_0_15px_rgba(176,38,255,0.4)] transition-all text-xs sm:text-sm'>
                                     Login
                                 </button>
                             </Link>

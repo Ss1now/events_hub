@@ -8,7 +8,7 @@ const PageToggle = () => {
 
     return (
         <div className='max-w-md mx-auto px-4 sm:px-5 mb-6 md:mb-8'>
-            <div className='bg-gray-800/50 backdrop-blur-sm p-1 rounded-full flex border-2 border-purple-500/30 shadow-[0_0_20px_rgba(176,38,255,0.3)]'>
+            <div className='bg-gray-800/50 backdrop-blur-sm p-1 rounded-full flex border border-purple-500/10 shadow-[0_0_15px_rgba(176,38,255,0.15)]'>
                 <Link 
                     href='/'
                     className={`flex-1 py-2.5 px-6 rounded-full font-medium text-center transition-all text-sm ${

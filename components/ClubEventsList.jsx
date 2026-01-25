@@ -45,12 +45,12 @@ const ClubEventsList = () => {
                     <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-400' fill='none' stroke='currentColor' viewBox='0 0 24 24' strokeWidth={2.5}>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
-                    <input 
-                        type='text' 
-                        placeholder='Search club events' 
+                    <input
+                        type='text'
+                        placeholder='Find club events...'
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-2 border-blue-500/30 bg-gray-900/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border border-blue-500/15 bg-gray-900/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-transparent shadow-[0_0_10px_rgba(59,130,246,0.15)]'
                     />
                 </div>
             </div>
