@@ -149,7 +149,6 @@ END:VCALENDAR`;
                     username: editUsername,
                     instagram: editInstagram,
                     residentialCollege: selectedCollege
-                },  residentialCollege: selectedCollege
                 },
                 {
                     headers: {
