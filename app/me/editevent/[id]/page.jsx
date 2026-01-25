@@ -187,17 +187,17 @@ export default function EditEventPage({ params }) {
 
     if (loading) {
         return (
-            <div className='min-h-screen flex items-center justify-center'>
+            <div className='min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800'>
                 <div className='text-center'>
-                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto'></div>
-                    <p className='mt-4 text-gray-600'>Loading event data...</p>
+                    <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto'></div>
+                    <p className='mt-4 text-gray-300'>Loading event data...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-3xl mx-auto'>
                 <button
                     onClick={() => router.back()}
@@ -209,7 +209,7 @@ export default function EditEventPage({ params }) {
                     Back to My Events
                 </button>
                 
-                <div className='bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-8'>
+                <div className='bg-gradient-to-br from-gray-800/80 to-gray-900/80 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-8 backdrop-blur-sm'>
                     <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 mb-2'>Edit Event</h1>
                     <p className='text-gray-300 mb-6'>Update your event details</p>
                     
@@ -218,21 +218,21 @@ export default function EditEventPage({ params }) {
                             <p className='text-xl font-medium mb-2 text-white'>Event Images</p>
                             {existingImages.length > 0 && newImages.length === 0 && (
                                 <div className='mb-3'>
-                                    <p className='text-sm text-gray-600 mb-2'>Current images:</p>
+                                    <p className='text-sm text-gray-400 mb-2'>Current images:</p>
                                     <div className='flex flex-wrap gap-2'>
                                         {existingImages.map((img, idx) => (
-                                            <img key={idx} src={img} alt={`Current ${idx + 1}`} className='w-24 h-24 object-cover rounded border' />
+                                            <img key={idx} src={img} alt={`Current ${idx + 1}`} className='w-24 h-24 object-cover rounded border border-purple-500/30' />
                                         ))}
                                     </div>
                                 </div>
                             )}
-                            <p className='text-sm text-gray-600 mb-2'>Upload new images (optional, will replace existing, Max 5):</p>
+                            <p className='text-sm text-gray-400 mb-2'>Upload new images (optional, will replace existing, Max 5):</p>
                             <div
                                 onClick={() => document.getElementById('images')?.click()}
-                                className='inline-block cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-gray-400 transition-colors'
+                                className='inline-flex items-center justify-center cursor-pointer border-2 border-dashed border-purple-500/30 rounded-lg hover:border-purple-500/50 transition-colors bg-gray-800/50'
                                 style={{ width: 140, height: 70 }}
                             >
-                                <Image src={assets.upload} width={140} height={70} alt='upload images' />
+                                <span className='text-gray-400 text-sm'>Click to upload</span>
                             </div>
                             <input 
                                 onChange={(e) => {
