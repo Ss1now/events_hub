@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function BlogTableItem({host, title, date, status, deleteBlog, mongoId, isSelected, toggleSelect, eventCategory, onMakeOfficial}) {
+export default function BlogTableItem({host, title, date, status, deleteBlog, mongoId, isSelected, toggleSelect, eventCategory, onMakeOfficial, onTransferOwnership}) {
     const BlogDate = new Date(date);
     
     const getStatusBadge = (status) => {
@@ -79,6 +79,15 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
                     >
                         <svg className='w-5 h-5' fill={isOfficial ? 'currentColor' : 'none'} stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
+                        </svg>
+                    </button>
+                    <button
+                        onClick={() => onTransferOwnership(mongoId, host)}
+                        className='text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-lg transition-colors inline-flex items-center gap-1'
+                        title='Transfer Ownership'
+                    >
+                        <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4' />
                         </svg>
                     </button>
                     <button

@@ -18,6 +18,7 @@ export default function MePage() {
     const [isEditingPersonalInfo, setIsEditingPersonalInfo] = useState(false)
     const [editName, setEditName] = useState('')
     const [editUsername, setEditUsername] = useState('')
+    const [editInstagram, setEditInstagram] = useState('')
     const [selectedCollege, setSelectedCollege] = useState('')
     const [activeTab, setActiveTab] = useState('hosted') // 'hosted', 'interested', 'reserved', 'participated'
     const [showCohostModal, setShowCohostModal] = useState(false)
@@ -121,6 +122,7 @@ END:VCALENDAR`;
                     setSelectedCollege(response.data.user.residentialCollege || '')
                     setEditName(response.data.user.name || '')
                     setEditUsername(response.data.user.username || '')
+                    setEditInstagram(response.data.user.instagram || '')
                 } else {
                     toast.error('Could not load profile')
                     router.push('/login')
@@ -141,12 +143,13 @@ END:VCALENDAR`;
     const handleUpdatePersonalInfo = async () => {
         const token = localStorage.getItem('token')
         
-        try {
             const response = await axios.put('/api/user', 
                 { 
                     name: editName,
                     username: editUsername,
+                    instagram: editInstagram,
                     residentialCollege: selectedCollege
+                },  residentialCollege: selectedCollege
                 },
                 {
                     headers: {
@@ -316,6 +319,41 @@ END:VCALENDAR`;
                             <label className='text-sm font-medium text-gray-300'>Email</label>
                             <p className='text-lg font-semibold text-white'>{user?.email}</p>
                         </div>
+                        <div>
+                            <label className='text-sm font-medium text-gray-300'>Instagram</label>
+                            {isEditingPersonalInfo ? (
+                                <div>
+                                    <div className='mt-1 flex items-center'>
+                                        <span className='text-gray-400 mr-2'>@</span>
+                                        <input
+                                            type='text'
+                                            value={editInstagram}
+                                            onChange={(e) => setEditInstagram(e.target.value.toLowerCase().replace(/[^a-z0-9._]/g, ''))}
+                                            className='flex-1 px-4 py-2 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
+                                            placeholder='username'
+                                            maxLength={30}
+                                        />
+                                    </div>
+                                    <p className='text-xs text-gray-400 mt-1'>Your Instagram username (optional)</p>
+                                </div>
+                            ) : (
+                                <p className='text-lg font-semibold text-white'>
+                                    {user?.instagram ? (
+                                        <a 
+                                            href={`https://instagram.com/${user.instagram}`}
+                                            target='_blank'
+                                            rel='noopener noreferrer'
+                                            className='text-pink-400 hover:text-pink-300 flex items-center gap-1'
+                                        >
+                                            <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 24 24'>
+                                                <path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z'/>
+                                            </svg>
+                                            @{user.instagram}
+                                        </a>
+                                    ) : 'Not set'}
+                                </p>
+                            )}
+                        </div>
                         <div className='md:col-span-2'>
                             <label className='text-sm font-medium text-gray-300'>Residential College</label>
                             {isEditingPersonalInfo ? (
@@ -352,6 +390,7 @@ END:VCALENDAR`;
                                     setIsEditingPersonalInfo(false)
                                     setEditName(user?.name || '')
                                     setEditUsername(user?.username || '')
+                                    setEditInstagram(user?.instagram || '')
                                     setSelectedCollege(user?.residentialCollege || '')
                                 }}
                                 className='bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors border border-purple-500/30'

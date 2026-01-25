@@ -95,6 +95,7 @@ export async function GET(request) {
                 name: user.name,
                 email: user.email,
                 username: user.username,
+                instagram: user.instagram,
                 residentialCollege: user.residentialCollege,
                 isAdmin: user.isAdmin || false,
                 ratedEvents: user.ratedEvents || [],
@@ -126,7 +127,7 @@ export async function PUT(request) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
         const body = await request.json();
-        const { residentialCollege, name, username } = body;
+        const { residentialCollege, name, username, instagram } = body;
         
         await connectDB();
         
@@ -138,6 +139,16 @@ export async function PUT(request) {
         if (name !== undefined) {
             // Allow empty name (user can clear it)
             updateFields.name = name;
+        }
+        if (instagram !== undefined) {
+            // Validate Instagram username format if provided
+            if (instagram && !/^[a-z0-9._]{1,30}$/.test(instagram)) {
+                return NextResponse.json({ 
+                    success: false, 
+                    msg: 'Instagram username must be 1-30 characters and contain only lowercase letters, numbers, dots, and underscores' 
+                }, { status: 400 });
+            }
+            updateFields.instagram = instagram;
         }
         if (username !== undefined) {
             // Validate username format (alphanumeric and underscore only, 3-20 chars)
@@ -188,6 +199,7 @@ export async function PUT(request) {
                 name: user.name,
                 email: user.email,
                 username: user.username,
+                instagram: user.instagram,
                 residentialCollege: user.residentialCollege
             }
         });

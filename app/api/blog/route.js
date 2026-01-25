@@ -19,7 +19,7 @@ export async function GET(request){
 
     const blogId = request.nextUrl.searchParams.get("id")
     if (blogId){
-        const blog = await Blogmodel.findById(blogId);
+        const blog = await Blogmodel.findById(blogId).populate('authorId', 'instagram name username');
         
         // Calculate current status based on time
         const now = new Date();
@@ -443,6 +443,32 @@ export async function PATCH(request){
                     success: true, 
                     msg: eventCategory === 'user' ? 'Official status removed' : 'Event marked as official',
                     eventCategory: event.eventCategory
+                });
+            
+            case 'transfer-ownership':
+                // Check if user is admin
+                const transferAdminUser = await userModel.findById(userId);
+                if (!transferAdminUser?.isAdmin) {
+                    return NextResponse.json({ success: false, msg: 'Admin privileges required' }, { status: 403 });
+                }
+                
+                const { newOwnerId } = body;
+                
+                // Validate new owner exists
+                const newOwner = await userModel.findById(newOwnerId);
+                if (!newOwner) {
+                    return NextResponse.json({ success: false, msg: 'Target user not found' }, { status: 404 });
+                }
+                
+                // Update event ownership
+                event.authorId = newOwnerId;
+                event.host = newOwner.name || newOwner.username;
+                await event.save();
+                
+                return NextResponse.json({ 
+                    success: true, 
+                    msg: `Event transferred to ${newOwner.name || newOwner.username}`,
+                    newHost: event.host
                 });
             
             case 'interested':

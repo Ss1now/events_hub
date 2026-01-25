@@ -24,6 +24,12 @@ export default function Page() {
     });
     const [showOfficialModal, setShowOfficialModal] = useState(false);
     const [selectedEventId, setSelectedEventId] = useState(null);
+    const [showTransferModal, setShowTransferModal] = useState(false);
+    const [transferEventId, setTransferEventId] = useState(null);
+    const [transferCurrentHost, setTransferCurrentHost] = useState('');
+    const [searchUsername, setSearchUsername] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [searching, setSearching] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -195,6 +201,75 @@ export default function Page() {
             setSelectedBlogs(selectedBlogs.filter(blogId => blogId !== id));
         } else {
             setSelectedBlogs([...selectedBlogs, id]);
+        }
+    }
+    
+    const handleTransferOwnership = (eventId, currentHost) => {
+        setTransferEventId(eventId);
+        setTransferCurrentHost(currentHost);
+        setShowTransferModal(true);
+        setSearchUsername('');
+        setSearchResults([]);
+    }
+    
+    const searchUsers = async () => {
+        if (!searchUsername || searchUsername.length < 2) {
+            toast.error('Please enter at least 2 characters to search');
+            return;
+        }
+        
+        setSearching(true);
+        const token = localStorage.getItem('token');
+        
+        try {
+            const response = await axios.get(`/api/user/search?query=${encodeURIComponent(searchUsername)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.data.success) {
+                setSearchResults(response.data.users || []);
+                if (response.data.users.length === 0) {
+                    toast.info('No users found');
+                }
+            }
+        } catch (error) {
+            toast.error('Could not search users');
+            console.error(error);
+        } finally {
+            setSearching(false);
+        }
+    }
+    
+    const confirmTransfer = async (targetUserId, targetUsername) => {
+        if (!confirm(`Transfer this event to @${targetUsername}?`)) {
+            return;
+        }
+        
+        const token = localStorage.getItem('token');
+        
+        try {
+            const response = await axios.patch('/api/blog', {
+                action: 'transfer-ownership',
+                eventId: transferEventId,
+                newOwnerId: targetUserId
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.data.success) {
+                toast.success('Event ownership transferred successfully');
+                fetchBlogs();
+                setShowTransferModal(false);
+                setTransferEventId(null);
+                setTransferCurrentHost('');
+                setSearchUsername('');
+                setSearchResults([]);
+            } else {
+                toast.error(response.data.msg);
+            }
+        } catch (error) {
+            toast.error('Could not transfer ownership');
+            console.error(error);
         }
     }
     
@@ -372,6 +447,7 @@ export default function Page() {
                                         isSelected={selectedBlogs.includes(item._id)}
                                         toggleSelect={toggleSelect}
                                         onMakeOfficial={handleMakeOfficial}
+                                        onTransferOwnership={handleTransferOwnership}
                                     />
                                 ))
                             ) : (
@@ -445,6 +521,91 @@ export default function Page() {
                                 setSelectedEventId(null);
                             }}
                             className='w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700 font-medium'
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Transfer Ownership Modal */}
+            {showTransferModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+                    <div className='bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto'>
+                        <h3 className='text-xl font-bold text-gray-900 mb-2'>Transfer Event Ownership</h3>
+                        <p className='text-gray-600 mb-4'>Current host: <span className='font-semibold'>{transferCurrentHost}</span></p>
+                        
+                        <div className='mb-6'>
+                            <label className='block text-sm font-medium text-gray-700 mb-2'>
+                                Search for new owner by username or email
+                            </label>
+                            <div className='flex gap-2'>
+                                <input
+                                    type='text'
+                                    value={searchUsername}
+                                    onChange={(e) => setSearchUsername(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && searchUsers()}
+                                    placeholder='Enter username or email...'
+                                    className='flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+                                />
+                                <button
+                                    onClick={searchUsers}
+                                    disabled={searching}
+                                    className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400'
+                                >
+                                    {searching ? 'Searching...' : 'Search'}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {searchResults.length > 0 && (
+                            <div className='mb-6'>
+                                <p className='text-sm font-medium text-gray-700 mb-3'>Search Results ({searchResults.length}):</p>
+                                <div className='space-y-2 max-h-60 overflow-y-auto'>
+                                    {searchResults.map((user) => (
+                                        <div 
+                                            key={user._id}
+                                            className='p-3 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center justify-between'
+                                        >
+                                            <div>
+                                                <div className='font-medium text-gray-900'>
+                                                    {user.name || 'No name'}
+                                                    {user.isOrganization && (
+                                                        <span className='ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full'>
+                                                            Organization
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className='text-sm text-gray-500'>
+                                                    @{user.username} • {user.email}
+                                                </div>
+                                                {user.residentialCollege && (
+                                                    <div className='text-xs text-gray-400 mt-1'>
+                                                        {user.residentialCollege}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <button
+                                                onClick={() => confirmTransfer(user._id, user.username)}
+                                                className='px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors'
+                                            >
+                                                Transfer
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        <button
+                            onClick={() => {
+                                setShowTransferModal(false);
+                                setTransferEventId(null);
+                                setTransferCurrentHost('');
+                                setSearchUsername('');
+                                setSearchResults([]);
+                            }}
+                            className='w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700 font-medium'
                         >
                             Cancel
                         </button>
