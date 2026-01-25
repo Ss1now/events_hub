@@ -143,6 +143,7 @@ END:VCALENDAR`;
     const handleUpdatePersonalInfo = async () => {
         const token = localStorage.getItem('token')
         
+        try {
             const response = await axios.put('/api/user', 
                 { 
                     name: editName,
