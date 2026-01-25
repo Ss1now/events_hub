@@ -12,8 +12,6 @@ export default function EditEventPage({ params }) {
     const [eventId, setEventId] = useState(null);
     const [newImages, setNewImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
-    const [eventTypeOption, setEventTypeOption] = useState('Socializing');
-    const [customEventType, setCustomEventType] = useState('');
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
         title: '',
@@ -100,15 +98,6 @@ export default function EditEventPage({ params }) {
                 });
 
                 setExistingImages(eventData.images || []);
-                
-                // Check if event type is custom
-                const standardTypes = ['Private Party', 'Socializing', 'Gathering', 'Entertainment', 'Workshop', 'Game Night'];
-                if (!standardTypes.includes(eventData.eventType)) {
-                    setEventTypeOption('Other');
-                    setCustomEventType(eventData.eventType);
-                } else {
-                    setEventTypeOption(eventData.eventType);
-                }
 
                 setLoading(false);
             } catch (error) {
@@ -291,33 +280,16 @@ export default function EditEventPage({ params }) {
 
                         <div>
                             <p className='text-xl font-medium mb-2 text-white'>Event Type</p>
-                            <select
+                            <input
                                 name='eventType'
-                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent'
-                                value={eventTypeOption}
-                                onChange={(e) => {
-                                    setEventTypeOption(e.target.value);
-                                    if (e.target.value !== 'Other') {
-                                        setData(prev => ({ ...prev, eventType: e.target.value }));
-                                    }
-                                }}
+                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
+                                type='text'
+                                placeholder=''
+                                value={data.eventType}
+                                onChange={onChangeHandler}
                                 required
-                            >
-                                <option value='Private Party'>Private Party</option>
-                                <option value='Socializing'>Socializing</option>
-                                <option value='Gathering'>Gathering</option>
-                                <option value='Entertainment'>Entertainment</option>
-                                <option value='Workshop'>Workshop</option>
-                                <option value='Game Night'>Game Night</option>
-                                <option value='Other'>Other (type manually)</option>
-                            </select>
-                            {eventTypeOption === 'Other' && (
-                                <input
-                                    name='eventType'
-                                    className='w-full mt-4 px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
-                                    type='text'
-                                    placeholder='Type event type'
-                                    value={data.eventType}
+                            />
+                        </div>
                                     onChange={onChangeHandler}
                                     required
                                 />

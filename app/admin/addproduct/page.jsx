@@ -9,14 +9,12 @@ import { toast } from 'react-toastify';
 export default function Page() {
 
     const [image,setImage] = useState(false);
-    const [eventTypeOption, setEventTypeOption] = useState('Socializing');
-    const [customEventType, setCustomEventType] = useState('');
     const [data,setData] = useState({
         title:'',
         description:'',
         startDateTime:'',
         endDateTime:'',
-        eventType:eventTypeOption,
+        eventType:'',
         theme:'',
         dressCode:'',
         location:'',
@@ -90,37 +88,15 @@ export default function Page() {
 
             {/* Event Type */}
             <p className='text-xl mt-6'>Event Type</p>
-            <select
+            <input
                 name='eventType'
                 className='w-full sm:w-[500px] mt-4 px-4 py-3 border'
-                value={eventTypeOption}
-                onChange={(e)=> { 
-                    setEventTypeOption(e.target.value); 
-                    if(e.target.value !== 'Other'){ 
-                        setData(prev => ({ ...prev, eventType: e.target.value }));
-                    } 
-                }}
+                type='text'
+                placeholder=''
+                value={data.eventType}
+                onChange={onChangeHandler}
                 required
-            >
-                <option value='Private Party'>Private Party</option>
-                <option value='Socializing'>Socializing</option>
-                <option value='Gathering'>Gathering</option>
-                <option value='Entertainment'>Entertainment</option>
-                <option value='Workshop'>Workshop</option>
-                <option value='Game Night'>Game Night</option>
-                <option value='Other'>Other (type manually)</option>
-            </select>
-            {eventTypeOption === 'Other' && (
-                <input
-                    name='eventType'
-                    className='w-full sm:w-[500px] mt-4 px-4 py-3 border'
-                    type='text'
-                    placeholder='Type event type'
-                    value={data.eventType}
-                    onChange={onChangeHandler}
-                    required
-                />
-            )}
+            />
 
             {/* Location */}
             <p className='text-xl mt-6'>Location</p>

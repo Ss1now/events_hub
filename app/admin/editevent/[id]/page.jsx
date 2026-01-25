@@ -12,8 +12,6 @@ export default function AdminEditEventPage({ params }) {
     const [eventId, setEventId] = useState(null);
     const [newImages, setNewImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
-    const [eventTypeOption, setEventTypeOption] = useState('Socializing');
-    const [customEventType, setCustomEventType] = useState('');
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState({
         title: '',
@@ -82,15 +80,6 @@ export default function AdminEditEventPage({ params }) {
                 });
 
                 setExistingImages(eventData.images || []);
-                
-                // Check if event type is custom
-                const standardTypes = ['Private Party', 'Socializing', 'Gathering', 'Entertainment', 'Workshop', 'Game Night'];
-                if (!standardTypes.includes(eventData.eventType)) {
-                    setEventTypeOption('Other');
-                    setCustomEventType(eventData.eventType);
-                } else {
-                    setEventTypeOption(eventData.eventType);
-                }
 
                 setLoading(false);
             } catch (error) {
@@ -301,38 +290,15 @@ export default function AdminEditEventPage({ params }) {
                             <label htmlFor='eventType' className='block text-sm font-medium text-gray-300 mb-2'>
                                 Event Type *
                             </label>
-                            <select
-                                value={eventTypeOption}
-                                onChange={(e) => {
-                                    setEventTypeOption(e.target.value);
-                                    if (e.target.value !== 'Other') {
-                                        setData(prev => ({ ...prev, eventType: e.target.value }));
-                                        setCustomEventType('');
-                                    }
-                                }}
-                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent'
-                            >
-                                <option value='Private Party'>Private Party</option>
-                                <option value='Socializing'>Socializing</option>
-                                <option value='Gathering'>Gathering</option>
-                                <option value='Entertainment'>Entertainment</option>
-                                <option value='Workshop'>Workshop</option>
-                                <option value='Game Night'>Game Night</option>
-                                <option value='Other'>Other</option>
-                            </select>
-                            {eventTypeOption === 'Other' && (
-                                <input
-                                    type='text'
-                                    value={customEventType}
-                                    onChange={(e) => {
-                                        setCustomEventType(e.target.value);
-                                        setData(prev => ({ ...prev, eventType: e.target.value }));
-                                    }}
-                                    placeholder='Enter custom event type'
-                                    required
-                                    className='mt-3 w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
-                                />
-                            )}
+                            <input
+                                name='eventType'
+                                type='text'
+                                value={data.eventType}
+                                onChange={onChangeHandler}
+                                placeholder=''
+                                required
+                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
+                            />
                         </div>
 
                         {/* Location */}
