@@ -249,6 +249,7 @@ export async function PUT(request) {
         const newImages = formData.getAll('images');
         
         let imageUrls = event.images || []; // Keep existing images by default
+        let imagesChanged = false;
         
         // Only process new images if uploaded
         if (newImages && newImages.length > 0 && newImages[0].size > 0) {
@@ -261,6 +262,7 @@ export async function PUT(request) {
             }
             
             imageUrls = uploadedUrls;
+            imagesChanged = true;
         }
 
         // Update event fields
@@ -315,9 +317,11 @@ export async function PUT(request) {
         }
         
         // Check if images changed
-        if (newImages && newImages.length > 0 && newImages[0].size > 0) {
+        if (imagesChanged) {
             changes.push('Event images updated');
         }
+        
+        console.log('[Event Update] Detected changes:', changes);
         
         // Recalculate status based on new times
         let currentStatus;
@@ -344,17 +348,29 @@ export async function PUT(request) {
         event.instagram = newInstagram;
         event.lastUpdated = new Date();
 
-        // Notify interested/reserved users about event update if there are ANY changes
-        if (changes.length > 0 && (currentStatus === 'future' || currentStatus === 'live')) {
+        console.log('[Event Update] Total changes detected:', changes.length);
+        console.log('[Event Update] Current status:', currentStatus);
+        console.log('[Event Update] Interested users count:', event.interestedUsers.length);
+        console.log('[Event Update] Reserved users count:', event.reservedUsers.length);
+
+        // Notify interested/reserved users about event update
+        // Send notifications if there are changes OR as a safety measure always notify on update
+        const shouldNotify = (currentStatus === 'future' || currentStatus === 'live');
+        
+        if (shouldNotify) {
             // Get all users who are interested or reserved
             const affectedUsers = [...new Set([
                 ...event.interestedUsers.map(id => id.toString()),
                 ...event.reservedUsers.map(id => id.toString())
             ])];
 
+            console.log('[Event Update] Affected users count:', affectedUsers.length);
+
             if (affectedUsers.length > 0) {
-                // Create a summary of changes
-                const changesSummary = changes.join('; ');
+                // Create a summary of changes - use generic message if no specific changes detected
+                const changesSummary = changes.length > 0 ? changes.join('; ') : 'Event details updated';
+                
+                console.log('[Event Update] Sending notifications with changes:', changesSummary);
                 
                 // Add in-app notification to each affected user
                 await userModel.updateMany(
