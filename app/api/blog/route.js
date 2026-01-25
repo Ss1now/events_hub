@@ -8,14 +8,6 @@ import mongoose from 'mongoose';
 import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
 import { sendUpdateEmails } from "@/lib/email/sendUpdateEmails";
 
-// Configure API route to handle larger payloads for file uploads
-export const config = {
-    api: {
-        bodyParser: false,
-        responseLimit: false,
-    },
-};
-
 const LoadDB = async () => {
     await connectDB();
 }

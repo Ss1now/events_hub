@@ -126,11 +126,21 @@ export default function PostEventPage() {
                 setCreatedEvent(response.data.blog);
                 setShowCreatedModal(true);
             } else {
-                toast.error('Could not create event');
+                toast.error(response.data.msg || 'Could not create event');
             }
         } catch (error) {
-            console.error(error);
-            toast.error('Event creation failed');
+            console.error('Event creation error:', error);
+            
+            // Show more specific error messages
+            if (error.response?.data?.msg) {
+                toast.error(error.response.data.msg);
+            } else if (error.response?.status === 413) {
+                toast.error('Images are too large. Please use smaller images (under 10MB total).');
+            } else if (error.message.includes('Network Error')) {
+                toast.error('Network error. Please check your connection and try again.');
+            } else {
+                toast.error('Event creation failed. Please try again.');
+            }
         }
     }
 
