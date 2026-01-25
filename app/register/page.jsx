@@ -134,6 +134,7 @@ export default function RegisterPage() {
                                 <option value='Will Rice College'>Will Rice College</option>
                                 <option value='Others'>Others</option>
                             </select>
+                        </div>
                     </div>
 
                     <div className='flex items-start space-x-2'>
