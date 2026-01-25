@@ -163,7 +163,6 @@ export default function RegisterPage() {
                         <label htmlFor='email-consent' className='text-xs text-gray-600 cursor-pointer'>
                             I consent to receive email notifications including event reminders, event updates, and platform announcements.
                         </label>
-                    </div>label>
                     </div>
 
                     <div>
