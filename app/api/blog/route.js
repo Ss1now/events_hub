@@ -145,6 +145,14 @@ export async function POST(request){
             currentStatus = 'past';
         }
        
+        const hostName = `${formData.get('host')}`;
+        const eventCategoryValue = isOrganization ? (formData.get('eventCategory') || 'user') : 'user';
+        
+        // For residential college events, use host name as organizer
+        const organizerValue = eventCategoryValue === 'residential_college' 
+            ? hostName 
+            : (formData.get('organizer') || null);
+        
         const blogData = {
             title: `${formData.get('title')}`,
             description: `${formData.get('description')}`,
@@ -160,11 +168,11 @@ export async function POST(request){
             reservationDeadline: formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null,
             interestedUsers: [],
             reservedUsers: [],
-            host: `${formData.get('host')}`,
+            host: hostName,
             authorId: userId,
             cohosts: [],
-            eventCategory: isOrganization ? (formData.get('eventCategory') || 'user') : 'user',
-            organizer: formData.get('organizer') || null,
+            eventCategory: eventCategoryValue,
+            organizer: organizerValue,
             isRecurring: formData.get('isRecurring') === 'true',
             recurrencePattern: formData.get('recurrencePattern') || 'none',
             weeklyTheme: formData.get('weeklyTheme') || '',
