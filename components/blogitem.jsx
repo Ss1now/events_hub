@@ -244,7 +244,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
 
     // Check if RSVP deadline has passed
     const isRSVPDeadlinePassed = reservationDeadline && new Date() > new Date(reservationDeadline);
-    const isCapacityReached = needReservation && reservedCount >= capacity;
+    const isCapacityReached = needReservation && capacity > 0 && reservedCount >= capacity;
     
     return (
         <>
@@ -331,7 +331,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                         </svg>
                         <span>{location}</span>
                     </div>
-                    {needReservation && (
+                    {needReservation && capacity > 0 && (
                         <>
                             <div className='flex items-center gap-1'>
                                 <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -348,6 +348,14 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                                 </div>
                             )}
                         </>
+                    )}
+                    {needReservation && (!capacity || capacity === 0) && reservationDeadline && (
+                        <div className='flex items-center gap-1'>
+                            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
+                            </svg>
+                            <span className='text-xs'>RSVP by: {new Date(reservationDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                        </div>
                     )}
                     {!needReservation && (status === 'future' || status === 'live') && (
                         <div className='flex items-center gap-1.5 text-xs sm:text-sm'>
