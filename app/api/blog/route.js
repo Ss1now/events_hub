@@ -8,6 +8,14 @@ import mongoose from 'mongoose';
 import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
 import { sendUpdateEmails } from "@/lib/email/sendUpdateEmails";
 
+// Configure API route to handle larger payloads for file uploads
+export const config = {
+    api: {
+        bodyParser: false,
+        responseLimit: false,
+    },
+};
+
 const LoadDB = async () => {
     await connectDB();
 }
@@ -77,9 +85,13 @@ export async function GET(request){
 // API Endpoint for uploading post
 export async function POST(request){
 
+    console.log('POST /api/blog - Request received');
+    
     try {
         // Extract and verify JWT token
         const authHeader = request.headers.get('authorization');
+        
+        console.log('Auth header present:', !!authHeader);
         
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
@@ -88,16 +100,23 @@ export async function POST(request){
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
+        
+        console.log('User authenticated:', userId);
 
         await connectDB();
         
         // Check if user is an organization
         const user = await userModel.findById(userId);
         const isOrganization = user && user.isOrganization;
+        
+        console.log('User found, isOrganization:', isOrganization);
 
         const formData = await request.formData();
+        console.log('FormData parsed successfully');
+        
         const timestamp = Date.now();
         const images = formData.getAll('images');
+        console.log('Images count:', images.length);
         const imageUrls = [];
         
         // Process multiple images - upload to Cloudinary
