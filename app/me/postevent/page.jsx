@@ -23,8 +23,10 @@ export default function PostEventPage() {
         needReservation:false,
         capacity:0,
         host:'',
-        eventPageType:'party'
+        eventPageType:'party',
+        isCollegeOnly:false
     })
+    const [userCollege, setUserCollege] = useState('')
 
     useEffect(() => {
         // Check if user is logged in
@@ -32,7 +34,26 @@ export default function PostEventPage() {
         if (!token) {
             toast.error('Please login to post an event');
             router.push('/login');
+            return;
         }
+        
+        // Fetch user profile to get residential college
+        const fetchUserProfile = async () => {
+            try {
+                const response = await axios.get('/api/user', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.data.success) {
+                    setUserCollege(response.data.user.residentialCollege || '');
+                }
+            } catch (error) {
+                console.error('Failed to fetch user profile:', error);
+            }
+        };
+        
+        fetchUserProfile();
     }, [router]);
 
     const onChangeHandler = (event) =>{
@@ -49,6 +70,18 @@ export default function PostEventPage() {
         if (!token) {
             toast.error('Please login to post an event');
             router.push('/login');
+            return;
+        }
+        
+        // Validate college-only events
+        if (data.isCollegeOnly && !userCollege) {
+            toast.error('Please select a residential college in your profile before creating college-only events');
+            return;
+        }
+        
+        // College-only events must be parties
+        if (data.isCollegeOnly && data.eventPageType !== 'party') {
+            toast.error('College-only events can only be parties');
             return;
         }
 
@@ -75,6 +108,10 @@ export default function PostEventPage() {
         formData.append('capacity', data.capacity);
         formData.append('host', data.host);
         formData.append('eventPageType', data.eventPageType);
+        formData.append('isCollegeOnly', data.isCollegeOnly);
+        if (data.isCollegeOnly) {
+            formData.append('targetCollege', userCollege);
+        }
 
         try {
             const response = await axios.post('/api/blog', formData, {
@@ -252,6 +289,37 @@ export default function PostEventPage() {
                             </div>
                             <p className='text-sm text-gray-400 mt-2'>Choose where your event will appear</p>
                         </div>
+
+                        {/* My College Only */}
+                        {data.eventPageType === 'party' && (
+                            <div className='bg-gradient-to-r from-indigo-900/30 to-blue-900/30 border-2 border-indigo-500/40 rounded-lg p-5'>
+                                <div className='flex items-start gap-3'>
+                                    <input
+                                        id='isCollegeOnly'
+                                        name='isCollegeOnly'
+                                        type='checkbox'
+                                        checked={data.isCollegeOnly}
+                                        onChange={onChangeHandler}
+                                        disabled={!userCollege}
+                                        className='mt-1 w-5 h-5 accent-indigo-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'
+                                    />
+                                    <div className='flex-1'>
+                                        <label htmlFor='isCollegeOnly' className={`text-lg font-medium text-white ${!userCollege ? 'opacity-50' : 'cursor-pointer'}`}>
+                                            My College Only
+                                        </label>
+                                        {userCollege ? (
+                                            <p className='text-sm text-gray-300 mt-1'>
+                                                This event will only appear to students from <span className='font-semibold text-indigo-300'>{userCollege}</span>
+                                            </p>
+                                        ) : (
+                                            <p className='text-sm text-amber-400 mt-1'>
+                                                ⚠️ You must select a residential college in your profile to use this option
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         
                         <button type="submit" className='w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-3 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_25px_rgba(255,0,128,0.6)] hover:shadow-[0_0_35px_rgba(255,0,128,0.8)] transition-all'>
                             Create Event

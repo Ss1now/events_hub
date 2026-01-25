@@ -147,7 +147,9 @@ export async function POST(request){
             isRecurring: formData.get('isRecurring') === 'true',
             recurrencePattern: formData.get('recurrencePattern') || 'none',
             weeklyTheme: formData.get('weeklyTheme') || '',
-            eventPageType: formData.get('eventPageType') || 'party'
+            eventPageType: formData.get('eventPageType') || 'party',
+            isCollegeOnly: formData.get('isCollegeOnly') === 'true',
+            targetCollege: formData.get('targetCollege') || null
         }
 
         const createdBlog = await Blogmodel.create(blogData);
