@@ -18,7 +18,7 @@ export default function AdminEditEventPage({ params }) {
         description: '',
         startDateTime: '',
         endDateTime: '',
-        eventType: eventTypeOption,
+        eventType: '',
         location: '',
         needReservation: false,
         capacity: 0,

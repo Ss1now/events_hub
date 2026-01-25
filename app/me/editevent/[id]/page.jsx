@@ -18,7 +18,7 @@ export default function EditEventPage({ params }) {
         description: '',
         startDateTime: '',
         endDateTime: '',
-        eventType: eventTypeOption,
+        eventType: '',
         theme: '',
         dressCode: '',
         location: '',
