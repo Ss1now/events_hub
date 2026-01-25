@@ -37,8 +37,9 @@ export async function GET(request){
         
         // Update the blog status if it has changed
         if (blog.status !== currentStatus) {
-            blog.status = currentStatus;
-            await blog.save();
+            // Only update the status field, don't re-save entire document
+            await Blogmodel.findByIdAndUpdate(blogId, { status: currentStatus });
+            blog.status = currentStatus; // Update local object for response
         }
         
         return NextResponse.json(blog);
@@ -47,6 +48,7 @@ export async function GET(request){
         
         // Update status for all blogs based on current time
         const now = new Date();
+        const blogsToUpdate = [];
         const updatedBlogs = blogs.map(blog => {
             const startTime = new Date(blog.startDateTime);
             const endTime = new Date(blog.endDateTime);
@@ -60,14 +62,24 @@ export async function GET(request){
                 currentStatus = 'past';
             }
             
-            // Update in database if status changed
+            // Update in database if status changed (batch update, don't use save())
             if (blog.status !== currentStatus) {
-                blog.status = currentStatus;
-                blog.save();
+                blogsToUpdate.push({
+                    updateOne: {
+                        filter: { _id: blog._id },
+                        update: { status: currentStatus }
+                    }
+                });
+                blog.status = currentStatus; // Update local object for response
             }
             
             return blog;
         });
+        
+        // Batch update all changed statuses
+        if (blogsToUpdate.length > 0) {
+            await Blogmodel.bulkWrite(blogsToUpdate);
+        }
         
         return NextResponse.json({blogs: updatedBlogs});
     }
