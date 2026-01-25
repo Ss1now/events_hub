@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 
 export default function BlogTableItem({host, title, date, status, deleteBlog, mongoId, isSelected, toggleSelect, eventCategory, onMakeOfficial, onTransferOwnership}) {
     const BlogDate = new Date(date);
@@ -72,6 +73,16 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
             </td>
             <td className='px-6 py-4 whitespace-nowrap'>
                 <div className='flex items-center gap-2'>
+                    <Link href={`/admin/editevent/${mongoId}`}>
+                        <button
+                            className='text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-lg transition-colors inline-flex items-center gap-1'
+                            title='Edit Event'
+                        >
+                            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
+                            </svg>
+                        </button>
+                    </Link>
                     <button
                         onClick={() => onMakeOfficial(mongoId, eventCategory)}
                         className={`${isOfficial ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' : 'text-purple-600 hover:text-purple-900 hover:bg-purple-50'} p-2 rounded-lg transition-colors inline-flex items-center gap-1`}
@@ -83,7 +94,7 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
                     </button>
                     <button
                         onClick={() => onTransferOwnership(mongoId, host)}
-                        className='text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-lg transition-colors inline-flex items-center gap-1'
+                        className='text-orange-600 hover:text-orange-900 hover:bg-orange-50 p-2 rounded-lg transition-colors inline-flex items-center gap-1'
                         title='Transfer Ownership'
                     >
                         <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

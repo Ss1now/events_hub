@@ -419,13 +419,13 @@ END:VCALENDAR`;
                     </div>
 
                     {/* Tabs */}
-                    <div className='flex gap-4 mb-6 border-b border-gray-200'>
+                    <div className='flex gap-4 mb-6 border-b border-purple-500/30'>
                         <button
                             onClick={() => setActiveTab('hosted')}
                             className={`pb-3 px-4 font-medium transition-colors ${
                                 activeTab === 'hosted'
-                                    ? 'border-b-2 border-black text-black'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'border-b-2 border-pink-500 text-white'
+                                    : 'text-gray-400 hover:text-gray-200'
                             }`}
                         >
                             Events I Host ({events.length})
@@ -434,8 +434,8 @@ END:VCALENDAR`;
                             onClick={() => setActiveTab('interested')}
                             className={`pb-3 px-4 font-medium transition-colors ${
                                 activeTab === 'interested'
-                                    ? 'border-b-2 border-black text-black'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'border-b-2 border-pink-500 text-white'
+                                    : 'text-gray-400 hover:text-gray-200'
                             }`}
                         >
                             Going ({interestedEvents.length})
@@ -444,8 +444,8 @@ END:VCALENDAR`;
                             onClick={() => setActiveTab('reserved')}
                             className={`pb-3 px-4 font-medium transition-colors ${
                                 activeTab === 'reserved'
-                                    ? 'border-b-2 border-black text-black'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'border-b-2 border-pink-500 text-white'
+                                    : 'text-gray-400 hover:text-gray-200'
                             }`}
                         >
                             Reserved ({reservedEvents.length})
@@ -454,8 +454,8 @@ END:VCALENDAR`;
                             onClick={() => setActiveTab('participated')}
                             className={`pb-3 px-4 font-medium transition-colors ${
                                 activeTab === 'participated'
-                                    ? 'border-b-2 border-black text-black'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                    ? 'border-b-2 border-pink-500 text-white'
+                                    : 'text-gray-400 hover:text-gray-200'
                             }`}
                         >
                             Past Events ({participatedEvents.length})
@@ -467,28 +467,28 @@ END:VCALENDAR`;
                         <>
                             {events.length === 0 ? (
                                 <div className='text-center py-12'>
-                                    <p className='text-gray-500 text-lg mb-4'>You haven&apos;t posted any events yet</p>
+                                    <p className='text-gray-400 text-lg mb-4'>You haven&apos;t posted any events yet</p>
                                     <Link href='/me/postevent'>
-                                        <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
+                                        <button className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-2 px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors shadow-[0_0_20px_rgba(255,0,128,0.5)]'>
                                             Create Your First Event
                                         </button>
                                     </Link>
                                 </div>
                             ) : (
                                 <div className='overflow-x-auto'>
-                                    <table className='min-w-full divide-y divide-gray-200'>
-                                        <thead className='bg-gray-50'>
+                                    <table className='min-w-full divide-y divide-purple-500/20'>
+                                        <thead className='bg-gray-800/50'>
                                             <tr>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Event</th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Status</th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Date</th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Location</th>
-                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>Actions</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'>Event</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'>Status</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'>Date</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'>Location</th>
+                                                <th className='px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider'>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody className='bg-white divide-y divide-gray-200'>
+                                        <tbody className='bg-gray-900/30 divide-y divide-purple-500/10'>
                                             {events.map((event) => (
-                                                <tr key={event._id} className='hover:bg-gray-50 cursor-pointer' onClick={() => router.push(`/blogs/${event._id}`)}>
+                                                <tr key={event._id} className='hover:bg-purple-900/20 cursor-pointer transition-colors' onClick={() => router.push(`/blogs/${event._id}`)}>
                                                     <td className='px-6 py-4'>
                                                         <div className='flex items-center'>
                                                             {event.images && event.images.length > 0 && (
@@ -501,8 +501,8 @@ END:VCALENDAR`;
                                                                 />
                                                             )}
                                                             <div>
-                                                                <div className='text-sm font-medium text-gray-900'>{event.title}</div>
-                                                                <div className='text-sm text-gray-500'>{event.eventType}</div>
+                                                                <div className='text-sm font-medium text-white'>{event.title}</div>
+                                                                <div className='text-sm text-gray-400'>{event.eventType}</div>
                                                             </div>
                                                         </div>
                                                     </td>
@@ -514,15 +514,15 @@ END:VCALENDAR`;
                                                             {event.status === 'live' ? 'Happening Now' : event.status === 'future' ? 'Upcoming' : 'Past'}
                                                         </span>
                                                     </td>
-                                                    <td className='px-6 py-4 text-sm text-gray-500'>
+                                                    <td className='px-6 py-4 text-sm text-gray-300'>
                                                         {new Date(event.startDateTime).toLocaleDateString()}
                                                     </td>
-                                                    <td className='px-6 py-4 text-sm text-gray-500'>{event.location}</td>
+                                                    <td className='px-6 py-4 text-sm text-gray-300'>{event.location}</td>
                                                     <td className='px-6 py-4 text-sm font-medium' onClick={(e) => e.stopPropagation()}>
                                                         <div className='flex gap-3'>
                                                             {(event.status === 'future' || event.status === 'live') && (
                                                                 <Link href={`/me/editevent/${event._id}`}>
-                                                                    <button className='text-[#00205B] hover:text-[#001840] flex items-center gap-1'>
+                                                                    <button className='text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors'>
                                                                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
                                                                             <path strokeLinecap='round' strokeLinejoin='round' d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10' />
                                                                         </svg>
@@ -536,7 +536,7 @@ END:VCALENDAR`;
                                                                         setSelectedEventForCohost(event)
                                                                         setShowCohostModal(true)
                                                                     }}
-                                                                    className='text-purple-600 hover:text-purple-900 flex items-center gap-1'
+                                                                    className='text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors'
                                                                 >
                                                                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
                                                                         <path strokeLinecap='round' strokeLinejoin='round' d='M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z' />
@@ -546,7 +546,7 @@ END:VCALENDAR`;
                                                             )}
                                                             <button
                                                                 onClick={() => handleDeleteEvent(event._id)}
-                                                                className='text-red-600 hover:text-red-900 flex items-center gap-1'
+                                                                className='text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors'
                                                             >
                                                                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={1.5} stroke='currentColor' className='w-4 h-4'>
                                                                     <path strokeLinecap='round' strokeLinejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0' />

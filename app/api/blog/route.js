@@ -290,6 +290,7 @@ export async function PUT(request) {
         event.capacity = parseInt(formData.get('capacity')) || 0;
         event.reservationDeadline = formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null;
         event.host = formData.get('host');
+        event.instagram = formData.get('instagram') || '';
         event.lastUpdated = new Date();
 
         // Notify interested/reserved users about event update (for future or live events)
