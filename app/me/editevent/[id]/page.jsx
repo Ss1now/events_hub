@@ -338,8 +338,8 @@ export default function EditEventPage({ params }) {
                         )}
 
                         <div>
-                            <p className='text-xl font-medium mb-2 text-white'>Capacity</p>
-                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='number' min='1' placeholder='120' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Capacity (Optional)</p>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='number' min='1' placeholder='120' />
                         </div>
 
                         <div>
