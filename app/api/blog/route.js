@@ -414,6 +414,29 @@ export async function PATCH(request){
         }
 
         switch(action) {
+            case 'update-category':
+                // Check if user is admin
+                const adminUser = await userModel.findById(userId);
+                if (!adminUser?.isAdmin) {
+                    return NextResponse.json({ success: false, msg: 'Admin privileges required' }, { status: 403 });
+                }
+                
+                const { eventCategory } = body;
+                
+                // Validate category
+                if (!['user', 'residential_college', 'university'].includes(eventCategory)) {
+                    return NextResponse.json({ success: false, msg: 'Invalid event category' }, { status: 400 });
+                }
+                
+                event.eventCategory = eventCategory;
+                await event.save();
+                
+                return NextResponse.json({ 
+                    success: true, 
+                    msg: eventCategory === 'user' ? 'Official status removed' : 'Event marked as official',
+                    eventCategory: event.eventCategory
+                });
+            
             case 'interested':
                 // Initialize interestedUsers if it doesn't exist
                 if (!event.interestedUsers) {

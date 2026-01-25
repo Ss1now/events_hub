@@ -22,6 +22,8 @@ export default function Page() {
         future: 0,
         past: 0
     });
+    const [showOfficialModal, setShowOfficialModal] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -102,6 +104,51 @@ export default function Page() {
             }
         } catch (error) {
             toast.error('Could not delete');
+            console.error(error);
+        }
+    }
+    
+    const handleMakeOfficial = async (mongoId, currentCategory) => {
+        const isCurrentlyOfficial = currentCategory === 'residential_college' || currentCategory === 'university';
+        
+        if (isCurrentlyOfficial) {
+            // Remove official status
+            updateEventCategory(mongoId, 'user');
+        } else {
+            // Show modal to select category
+            setSelectedEventId(mongoId);
+            setShowOfficialModal(true);
+        }
+    }
+    
+    const updateEventCategory = async (mongoId, newCategory) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            toast.error('Please login to modify events');
+            return;
+        }
+        
+        try {
+            const response = await axios.patch('/api/blog', {
+                action: 'update-category',
+                eventId: mongoId,
+                eventCategory: newCategory
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.data.success) {
+                toast.success(response.data.msg);
+                fetchBlogs();
+                setShowOfficialModal(false);
+                setSelectedEventId(null);
+            } else {
+                toast.error(response.data.msg);
+            }
+        } catch (error) {
+            toast.error('Could not update event category');
             console.error(error);
         }
     }
@@ -320,9 +367,11 @@ export default function Page() {
                                         host={item.host} 
                                         date={item.date}
                                         status={item.status}
+                                        eventCategory={item.eventCategory}
                                         deleteBlog={deleterBlogs}
                                         isSelected={selectedBlogs.includes(item._id)}
                                         toggleSelect={toggleSelect}
+                                        onMakeOfficial={handleMakeOfficial}
                                     />
                                 ))
                             ) : (
@@ -346,6 +395,62 @@ export default function Page() {
             <div className='mt-4 text-sm text-gray-600 text-center'>
                 Showing {filteredBlogs.length} of {blogs.length} events
             </div>
+
+            {/* Official Event Modal */}
+            {showOfficialModal && (
+                <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+                    <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
+                        <h3 className='text-xl font-bold text-gray-900 mb-4'>Make Event Official</h3>
+                        <p className='text-gray-600 mb-6'>Select the official category for this event:</p>
+                        
+                        <div className='space-y-3'>
+                            <button
+                                onClick={() => updateEventCategory(selectedEventId, 'residential_college')}
+                                className='w-full p-4 border-2 border-purple-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all text-left'
+                            >
+                                <div className='flex items-center gap-3'>
+                                    <div className='bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg'>
+                                        <svg className='w-6 h-6 text-white' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path d='M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z'/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className='font-semibold text-gray-900'>Residential College</div>
+                                        <div className='text-sm text-gray-500'>Official college-hosted event</div>
+                                    </div>
+                                </div>
+                            </button>
+                            
+                            <button
+                                onClick={() => updateEventCategory(selectedEventId, 'university')}
+                                className='w-full p-4 border-2 border-orange-200 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition-all text-left'
+                            >
+                                <div className='flex items-center gap-3'>
+                                    <div className='bg-gradient-to-r from-orange-500 to-yellow-500 p-2 rounded-lg'>
+                                        <svg className='w-6 h-6 text-white' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path d='M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z'/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div className='font-semibold text-gray-900'>Rice University</div>
+                                        <div className='text-sm text-gray-500'>Official university-hosted event</div>
+                                    </div>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <button
+                            onClick={() => {
+                                setShowOfficialModal(false);
+                                setSelectedEventId(null);
+                            }}
+                            className='w-full mt-4 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700 font-medium'
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div>
     )

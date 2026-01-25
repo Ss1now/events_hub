@@ -229,7 +229,7 @@ const Page = ({ params }) => {
                     <div className='flex justify-between items-start mb-4 md:mb-6'>
                         <div className='flex-1'>
                             <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-3'>{data.title}</h1>
-                            <p className='text-sm sm:text-base md:text-lg text-gray-300 mb-3 md:mb-4'>{data.description}</p>
+                            <p className='text-sm sm:text-base md:text-lg text-gray-300 mb-3 md:mb-4 whitespace-pre-wrap'>{data.description}</p>
                             
                             {/* Event Meta Info */}
                             <div className='flex flex-wrap gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm text-gray-300 mb-3 md:mb-4'>
@@ -500,7 +500,7 @@ END:VCALENDAR`;
                     )}
                     
                     <h2 className='text-2xl font-bold mb-4 text-white'>About this Event</h2>
-                    <p className='text-gray-300 leading-relaxed mb-6'>{data.description}</p>
+                    <p className='text-gray-300 leading-relaxed mb-6 whitespace-pre-wrap'>{data.description}</p>
                     
                     <h3 className='text-xl font-semibold mb-3 text-white'>Event Details</h3>
                     <div className='space-y-3 text-gray-300'>
