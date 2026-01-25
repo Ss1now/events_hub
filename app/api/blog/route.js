@@ -104,8 +104,18 @@ export async function POST(request){
         if (images && images.length > 0) {
             const validImages = images.filter(img => img && img.size > 0);
             if (validImages.length > 0) {
-                const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'events');
-                imageUrls.push(...uploadedUrls);
+                try {
+                    console.log(`Uploading ${validImages.length} images to Cloudinary...`);
+                    const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'events');
+                    imageUrls.push(...uploadedUrls);
+                    console.log('Images uploaded successfully:', uploadedUrls);
+                } catch (uploadError) {
+                    console.error('Cloudinary upload failed:', uploadError);
+                    return NextResponse.json({
+                        success: false, 
+                        msg: `Image upload failed: ${uploadError.message || 'Unknown error'}`
+                    }, { status: 500 });
+                }
             }
         }
        
@@ -157,8 +167,12 @@ export async function POST(request){
 
         return NextResponse.json({success:true, msg:"Post Created Successfully", blog: createdBlog});
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({success:false, msg:"Error creating post"}, { status: 500 });
+        console.error('Event creation error:', error);
+        console.error('Error stack:', error.stack);
+        return NextResponse.json({
+            success:false, 
+            msg: `Error creating post: ${error.message || 'Unknown error'}`
+        }, { status: 500 });
     }
 }
 
