@@ -42,7 +42,7 @@ const Header = () => {
     };
 
     return (
-        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 shadow-lg'>
+        <div className='relative py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 shadow-lg'>
             <div className='flex justify-between items-center mb-6 md:mb-8'>
                 <Link href='/' className='flex items-center gap-2 cursor-pointer'>
                     <Image src={assets.logoWhite} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'/>
@@ -95,6 +95,8 @@ const Header = () => {
                 <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 drop-shadow-[0_0_30px_rgba(255,0,128,0.5)]'>What's The Move?</h1>
                 <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-300 px-4'>Discover events</p>
             </div>
+            {/* Gradient fade to blend with black background below */}
+            <div className='absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-b from-transparent via-gray-900/50 to-[#0A0A0F] pointer-events-none'></div>
         </div>
     )
 }
