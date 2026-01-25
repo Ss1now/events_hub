@@ -247,30 +247,30 @@ END:VCALENDAR`;
     }
 
     return (
-        <div className='min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8'>
+        <div className='min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4 sm:px-6 lg:px-8'>
             <div className='max-w-7xl mx-auto'>
                 {/* Header */}
                 <div className='mb-8'>
                     <button
                         onClick={() => router.back()}
-                        className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
+                        className='mb-4 text-gray-300 hover:text-orange-400 flex items-center gap-2 transition-colors'
                     >
                         <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
                             <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
                         </svg>
                         Back to Home
                     </button>
-                    <h1 className='text-4xl font-bold text-gray-900'>My Profile</h1>
+                    <h1 className='text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500'>My Profile</h1>
                 </div>
 
                 {/* Profile Card */}
-                <div className='bg-white rounded-lg shadow-md p-6 mb-8'>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-6 mb-8'>
                     <div className='flex justify-between items-center mb-6'>
-                        <h2 className='text-2xl font-bold text-gray-900'>Personal Information</h2>
+                        <h2 className='text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500'>Personal Information</h2>
                         {!isEditingPersonalInfo && (
                             <button
                                 onClick={() => setIsEditingPersonalInfo(true)}
-                                className='bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-colors flex items-center gap-2'
+                                className='bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-md hover:from-red-600 hover:to-pink-600 transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,0,128,0.4)]'
                             >
                                 <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-4 h-4'>
                                     <path strokeLinecap='round' strokeLinejoin='round' d='M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10' />
@@ -281,17 +281,17 @@ END:VCALENDAR`;
                     </div>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                         <div>
-                            <label className='text-sm font-medium text-gray-500'>Name</label>
+                            <label className='text-sm font-medium text-gray-300'>Name</label>
                             {isEditingPersonalInfo ? (
                                 <input
                                     type='text'
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
-                                    className='mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                    className='mt-1 w-full px-4 py-2 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
                                     placeholder='Enter your name'
                                 />
                             ) : (
-                                <p className='text-lg font-semibold text-gray-900'>{user?.name || 'Not set'}</p>
+                                <p className='text-lg font-semibold text-white'>{user?.name || 'Not set'}</p>
                             )}
                         </div>
                         <div>
@@ -309,20 +309,20 @@ END:VCALENDAR`;
                                     <p className='text-xs text-gray-500 mt-1'>3-20 characters, lowercase letters, numbers, and underscores only</p>
                                 </div>
                             ) : (
-                                <p className='text-lg font-semibold text-gray-900'>@{user?.username}</p>
+                                <p className='text-lg font-semibold text-white'>@{user?.username}</p>
                             )}
                         </div>
                         <div>
-                            <label className='text-sm font-medium text-gray-500'>Email</label>
-                            <p className='text-lg font-semibold text-gray-900'>{user?.email}</p>
+                            <label className='text-sm font-medium text-gray-300'>Email</label>
+                            <p className='text-lg font-semibold text-white'>{user?.email}</p>
                         </div>
                         <div className='md:col-span-2'>
-                            <label className='text-sm font-medium text-gray-500'>Residential College</label>
+                            <label className='text-sm font-medium text-gray-300'>Residential College</label>
                             {isEditingPersonalInfo ? (
                                 <select
                                     value={selectedCollege}
                                     onChange={(e) => setSelectedCollege(e.target.value)}
-                                    className='mt-1 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                    className='mt-1 w-full px-4 py-2 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent'
                                 >
                                     <option value=''>Select your residential college</option>
                                     <option value='Baker College'>Baker College</option>
@@ -339,7 +339,7 @@ END:VCALENDAR`;
                                     <option value='Others'>Others</option>
                                 </select>
                             ) : (
-                                <p className='text-lg font-semibold text-gray-900'>
+                                <p className='text-lg font-semibold text-white'>
                                     {user?.residentialCollege || 'Not set'}
                                 </p>
                             )}
@@ -354,13 +354,13 @@ END:VCALENDAR`;
                                     setEditUsername(user?.username || '')
                                     setSelectedCollege(user?.residentialCollege || '')
                                 }}
-                                className='bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition-colors'
+                                className='bg-gray-700 text-white px-6 py-2 rounded-md hover:bg-gray-600 transition-colors border border-purple-500/30'
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleUpdatePersonalInfo}
-                                className='bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors'
+                                className='bg-gradient-to-r from-orange-500 to-pink-500 text-white px-6 py-2 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors shadow-[0_0_20px_rgba(255,0,128,0.5)]'
                             >
                                 Save Changes
                             </button>
@@ -369,11 +369,11 @@ END:VCALENDAR`;
                 </div>
 
                 {/* Events Dashboard */}
-                <div className='bg-white rounded-lg shadow-md p-6'>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-6'>
                     <div className='flex justify-between items-center mb-6'>
-                        <h2 className='text-2xl font-bold text-gray-900'>My Events</h2>
+                        <h2 className='text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500'>My Events</h2>
                         <Link href='/me/postevent'>
-                            <button className='bg-black text-white font-medium py-2 px-6 rounded-md hover:bg-gray-800 transition-colors'>
+                            <button className='bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-2 px-6 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors shadow-[0_0_20px_rgba(255,0,128,0.5)]'>
                                 Create New Event
                             </button>
                         </Link>

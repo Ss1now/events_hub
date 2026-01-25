@@ -197,7 +197,7 @@ export default function EditEventPage({ params }) {
             <div className='max-w-3xl mx-auto'>
                 <button
                     onClick={() => router.back()}
-                    className='mb-4 text-gray-600 hover:text-black flex items-center gap-2 transition-colors'
+                    className='mb-4 text-gray-300 hover:text-orange-400 flex items-center gap-2 transition-colors'
                 >
                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' strokeWidth={2} stroke='currentColor' className='w-5 h-5'>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18' />
@@ -205,13 +205,13 @@ export default function EditEventPage({ params }) {
                     Back to My Events
                 </button>
                 
-                <div className='bg-white rounded-lg shadow-md p-8'>
-                    <h1 className='text-3xl font-bold text-gray-900 mb-2'>Edit Event</h1>
-                    <p className='text-gray-600 mb-6'>Update your event details</p>
+                <div className='bg-gradient-to-br from-gray-900 to-gray-800 border border-purple-500/20 rounded-lg shadow-[0_0_30px_rgba(176,38,255,0.3)] p-8'>
+                    <h1 className='text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 mb-2'>Edit Event</h1>
+                    <p className='text-gray-300 mb-6'>Update your event details</p>
                     
                     <form onSubmit={onSubmitHandler} className='space-y-6'>
                         <div>
-                            <p className='text-xl font-medium mb-2'>Event Images</p>
+                            <p className='text-xl font-medium mb-2 text-white'>Event Images</p>
                             {existingImages.length > 0 && newImages.length === 0 && (
                                 <div className='mb-3'>
                                     <p className='text-sm text-gray-600 mb-2'>Current images:</p>
@@ -266,30 +266,30 @@ export default function EditEventPage({ params }) {
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Event Title</p>
-                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type="text" placeholder='Type here' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Event Title</p>
+                            <input name='title' onChange={onChangeHandler} value={data.title} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type="text" placeholder='Type here' required />
                         </div>
                         
                         <div>
-                            <p className='text-xl font-medium mb-2'>Description</p>
-                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' rows={4} placeholder='Describe your event' required></textarea>
+                            <p className='text-xl font-medium mb-2 text-white'>Description</p>
+                            <textarea name='description' onChange={onChangeHandler} value={data.description} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' rows={4} placeholder='Describe your event' required></textarea>
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Start Date & Time</p>
-                            <input name='startDateTime' onChange={onChangeHandler} value={data.startDateTime} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Start Date & Time</p>
+                            <input name='startDateTime' onChange={onChangeHandler} value={data.startDateTime} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='datetime-local' required />
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>End Date & Time</p>
-                            <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' required />
+                            <p className='text-xl font-medium mb-2 text-white'>End Date & Time</p>
+                            <input name='endDateTime' onChange={onChangeHandler} value={data.endDateTime} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='datetime-local' required />
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Event Type</p>
+                            <p className='text-xl font-medium mb-2 text-white'>Event Type</p>
                             <select
                                 name='eventType'
-                                className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent'
                                 value={eventTypeOption}
                                 onChange={(e) => {
                                     setEventTypeOption(e.target.value);
@@ -310,7 +310,7 @@ export default function EditEventPage({ params }) {
                             {eventTypeOption === 'Other' && (
                                 <input
                                     name='eventType'
-                                    className='w-full mt-4 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black'
+                                    className='w-full mt-4 px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400'
                                     type='text'
                                     placeholder='Type event type'
                                     value={data.eventType}
@@ -321,41 +321,41 @@ export default function EditEventPage({ params }) {
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Location</p>
-                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Jones College Rooftop' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Location</p>
+                            <input name='location' onChange={onChangeHandler} value={data.location} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type='text' placeholder='Jones College Rooftop' required />
                         </div>
 
                         <div className='flex items-center gap-3'>
-                            <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border' onChange={onChangeHandler} checked={data.needReservation} />
-                            <label htmlFor='needReservation' className='text-base'>Need RSVP</label>
+                            <input name='needReservation' id='needReservation' type='checkbox' className='w-4 h-4 border accent-purple-500' onChange={onChangeHandler} checked={data.needReservation} />
+                            <label htmlFor='needReservation' className='text-base text-white'>Need RSVP</label>
                         </div>
 
                         {data.needReservation && (
                             <div>
-                                <p className='text-xl font-medium mb-2'>RSVP Deadline (Optional)</p>
-                                <input name='reservationDeadline' onChange={onChangeHandler} value={data.reservationDeadline} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='datetime-local' />
+                                <p className='text-xl font-medium mb-2 text-white'>RSVP Deadline (Optional)</p>
+                                <input name='reservationDeadline' onChange={onChangeHandler} value={data.reservationDeadline} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='datetime-local' />
                             </div>
                         )}
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Capacity</p>
-                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='number' min='1' placeholder='120' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Capacity</p>
+                            <input name='capacity' onChange={onChangeHandler} value={data.capacity} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent' type='number' min='1' placeholder='120' required />
                         </div>
 
                         <div>
-                            <p className='text-xl font-medium mb-2'>Host</p>
-                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='Howard Zhao' required />
+                            <p className='text-xl font-medium mb-2 text-white'>Host</p>
+                            <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type='text' placeholder='Howard Zhao' required />
                         </div>
                         
                         <div className='flex gap-3'>
                             <button 
                                 type="button" 
                                 onClick={() => router.back()}
-                                className='flex-1 bg-gray-200 text-gray-700 font-medium py-3 rounded-md hover:bg-gray-300 transition-colors'
+                                className='flex-1 bg-gray-700 text-white font-medium py-3 rounded-md hover:bg-gray-600 transition-colors border border-purple-500/30'
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className='flex-1 bg-black text-white font-medium py-3 rounded-md hover:bg-gray-800 transition-colors'>
+                            <button type="submit" className='flex-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium py-3 rounded-md hover:from-orange-600 hover:to-pink-600 transition-colors shadow-[0_0_25px_rgba(255,0,128,0.6)]'>
                                 Update Event
                             </button>
                         </div>

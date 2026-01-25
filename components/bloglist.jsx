@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const BlogList = () => {
 
-        const [menu, setMenu] = useState("future");
+        const [menu, setMenu] = useState("official");
         const [searchTerm, setSearchTerm] = useState("");
         const [blogs, setBlogs] = useState([]);
         const [userCollege, setUserCollege] = useState('');
