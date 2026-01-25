@@ -92,7 +92,7 @@ const Header = () => {
                 </div>
             </div>
             <div className='text-center my-6 md:my-12'>
-                <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 drop-shadow-[0_0_30px_rgba(255,0,128,0.5)]'>What's The Move?</h1>
+                <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 drop-shadow-[0_0_30px_rgba(255,0,128,0.5)]'>What's The Move</h1>
                 <p className='mt-2 md:mt-4 max-w-[800px] m-auto text-xs sm:text-sm md:text-base text-gray-300 px-4'>Discover events</p>
             </div>
         </div>
