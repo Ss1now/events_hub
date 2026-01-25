@@ -9,11 +9,17 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 // Helper function to generate recommendation email HTML
 function getRecommendationEmailHTML(userName, events, baseURL) {
-    const eventCards = events.map(event => `
+    const eventCards = events.map(event => {
+        const eventDate = new Date(event.date);
+        const formattedDate = eventDate.toLocaleDateString('en-US', {
+            timeZone: 'America/Chicago'
+        });
+        
+        return `
         <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
             <h3 style="color: #7c3aed; margin: 0 0 10px 0; font-size: 18px;">${event.title}</h3>
             <p style="color: #6b7280; font-size: 14px; margin: 8px 0;">
-                <strong>📅 ${new Date(event.date).toLocaleDateString()}</strong> at ${event.time}
+                <strong>📅 ${formattedDate}</strong> at ${event.time}
             </p>
             <p style="color: #6b7280; font-size: 14px; margin: 8px 0;">
                 <strong>📍 ${event.location}</strong>
@@ -26,7 +32,8 @@ function getRecommendationEmailHTML(userName, events, baseURL) {
                 View Event
             </a>
         </div>
-    `).join('');
+    `;
+    }).join('');
 
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -59,6 +66,15 @@ function getRecommendationEmailHTML(userName, events, baseURL) {
 
 // Helper function to generate update email HTML
 function getUpdateEmailHTML(userName, event, changes, baseURL) {
+    const eventDate = new Date(event.date);
+    const formattedDate = eventDate.toLocaleDateString('en-US', { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        timeZone: 'America/Chicago'
+    });
+    
     return `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="text-align: center; margin-bottom: 30px;">
@@ -76,7 +92,7 @@ function getUpdateEmailHTML(userName, event, changes, baseURL) {
                 <div style="background-color: #f9fafb; border-radius: 8px; padding: 20px; margin: 20px 0;">
                     <h3 style="color: #7c3aed; margin: 0 0 16px 0; font-size: 22px;">${event.title}</h3>
                     <p style="color: #374151; font-size: 16px; margin: 10px 0;">
-                        <strong>📅 Date:</strong> ${new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        <strong>📅 Date:</strong> ${formattedDate}
                     </p>
                     <p style="color: #374151; font-size: 16px; margin: 10px 0;">
                         <strong>🕐 Time:</strong> ${event.time}
