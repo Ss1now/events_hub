@@ -148,7 +148,7 @@ export default function RegisterPage() {
                         <label htmlFor='is-organization' className='text-sm text-gray-700 cursor-pointer'>
                             <span className='font-medium'>I am an organization</span>
                             <span className='text-xs text-gray-500 block mt-0.5'>
-                                Get a verified badge and post official events (for clubs, residential colleges, and university organizations)
+                                Get a verified badge and post official events
                             </span>
                         </label>
                     </div>
