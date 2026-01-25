@@ -17,7 +17,7 @@ const PageToggle = () => {
                             : 'text-gray-300 hover:text-white'
                     }`}
                 >
-                    🎉 Parties
+                    Parties
                 </Link>
                 <Link 
                     href='/clubevents'
@@ -27,7 +27,7 @@ const PageToggle = () => {
                             : 'text-gray-300 hover:text-white'
                     }`}
                 >
-                    🎯 Club Events
+                    Club Events
                 </Link>
             </div>
         </div>

@@ -34,7 +34,7 @@ const BlogList = () => {
                                 item.eventCategory === 'university' ||
                                 (item.authorId && item.authorId.isOrganization);
             } else {
-                // For future/live/past, show all party events (including official ones in their time categories)
+                // For future/live/past, show all party events in their time categories (including organization events)
                 matchesCategory = item.status === menu;
             }
             
