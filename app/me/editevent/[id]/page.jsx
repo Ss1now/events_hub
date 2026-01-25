@@ -290,11 +290,6 @@ export default function EditEventPage({ params }) {
                                 required
                             />
                         </div>
-                                    onChange={onChangeHandler}
-                                    required
-                                />
-                            )}
-                        </div>
 
                         <div>
                             <p className='text-xl font-medium mb-2 text-white'>Location</p>
