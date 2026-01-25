@@ -257,7 +257,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 </Link>
                 
                 {/* Event Description */}
-                <p className='text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-none'>{description}</p>
+                <p className='text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4 line-clamp-1'>{description?.split('\n')[0]}</p>
                 
                 {/* Weekly Theme for Recurring Events */}
                 {isRecurring && recurrencePattern === 'weekly' && weeklyTheme && (
