@@ -64,7 +64,11 @@ export default function EditEventPage({ params }) {
 
                 if (userResponse.data.success) {
                     const userId = userResponse.data.user.id || userResponse.data.user._id;
-                    if (eventData.authorId !== userId) {
+                    const authorId = typeof eventData.authorId === 'object' 
+                        ? (eventData.authorId._id || eventData.authorId.id)?.toString()
+                        : eventData.authorId?.toString();
+                    
+                    if (authorId !== userId.toString()) {
                         toast.error('You are not authorized to edit this event');
                         router.back();
                         return;
