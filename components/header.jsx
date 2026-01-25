@@ -42,7 +42,7 @@ const Header = () => {
     };
 
     return (
-        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 shadow-lg border-b border-purple-500/20'>
+        <div className='py-4 px-4 md:py-6 md:px-12 lg:px-28 bg-gradient-to-r from-gray-900 via-purple-900 to-gray-900 shadow-lg'>
             <div className='flex justify-between items-center mb-6 md:mb-8'>
                 <Link href='/' className='flex items-center gap-2 cursor-pointer'>
                     <Image src={assets.logoWhite} width={120} height={40} alt='Rice Party Logo' className='w-20 sm:w-24 md:w-28 h-auto object-contain drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]'/>
