@@ -10,7 +10,7 @@ import SuccessModal from './SuccessModal';
 import StarRating from './StarRating';
 import LiveRatingButton from './LiveRatingButton';
 
-const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer}) => {
+const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer, isRecurring, recurrencePattern, weeklyTheme}) => {
     console.log('BlogItem ID:', id);
     const router = useRouter();
     const [interestedCount, setInterestedCount] = useState(interestedUsers?.length || 0);
@@ -258,6 +258,19 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 {/* Event Description */}
                 <p className='text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-none'>{description}</p>
                 
+                {/* Weekly Theme for Recurring Events */}
+                {isRecurring && recurrencePattern === 'weekly' && weeklyTheme && (
+                    <div className='mb-3 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-500/30 rounded-lg p-3'>
+                        <div className='flex items-center gap-2'>
+                            <svg className='w-4 h-4 text-indigo-400' fill='currentColor' viewBox='0 0 20 20'>
+                                <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z' clipRule='evenodd' />
+                            </svg>
+                            <span className='text-sm font-medium text-indigo-300'>Weekly Theme:</span>
+                            <span className='text-sm text-white font-semibold'>{weeklyTheme}</span>
+                        </div>
+                    </div>
+                )}
+                
                 {/* Tags/Categories */}
                 <div className='flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4'>
                     {/* Official Event Badge */}
@@ -279,6 +292,14 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     )}
                     <span className={`${statusBadge.bg} text-white text-xs px-3 py-1 rounded-full font-medium shadow-[0_0_10px_rgba(255,107,53,0.3)]`}>{statusBadge.text}</span>
                     <span className='bg-gray-700/50 text-gray-200 text-xs px-3 py-1 rounded-full hover:bg-gray-600/50 cursor-pointer transition-colors border border-purple-500/20'>{eventType}</span>
+                    {isRecurring && (
+                        <span className='bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                            <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
+                                <path fillRule='evenodd' d='M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z' clipRule='evenodd' />
+                            </svg>
+                            {recurrencePattern === 'weekly' ? 'WEEKLY' : 'MONTHLY'}
+                        </span>
+                    )}
                     {isCapacityReached && (
                         <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium'>FULL</span>
                     )}

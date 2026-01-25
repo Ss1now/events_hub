@@ -24,7 +24,10 @@ export default function AdminPostEventPage() {
         capacity:0,
         host:'',
         eventCategory:'residential_college',
-        organizer:''
+        organizer:'',
+        isRecurring:false,
+        recurrencePattern:'none',
+        weeklyTheme:''
     })
 
     useEffect(() => {
@@ -74,6 +77,9 @@ export default function AdminPostEventPage() {
         formData.append('host', data.host);
         formData.append('eventCategory', data.eventCategory);
         formData.append('organizer', data.organizer);
+        formData.append('isRecurring', data.isRecurring);
+        formData.append('recurrencePattern', data.recurrencePattern);
+        formData.append('weeklyTheme', data.weeklyTheme);
 
         try {
             const response = await axios.post('/api/blog', formData, {
@@ -240,6 +246,55 @@ export default function AdminPostEventPage() {
                         <div>
                             <p className='text-xl font-medium mb-2'>Host (Display Name)</p>
                             <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black' type='text' placeholder='e.g., Baker Social Team' required/>
+                        </div>
+
+                        {/* Recurring Event Section */}
+                        <div className='bg-purple-50 border-l-4 border-purple-500 p-4 rounded'>
+                            <div className='flex items-center gap-2 mb-3'>
+                                <input 
+                                    name='isRecurring' 
+                                    id='isRecurring' 
+                                    type='checkbox' 
+                                    className='w-4 h-4 border' 
+                                    onChange={onChangeHandler} 
+                                    checked={data.isRecurring}
+                                />
+                                <label htmlFor='isRecurring' className='text-lg font-medium text-purple-900'>Recurring Event</label>
+                            </div>
+                            <p className='text-sm text-gray-600 mb-3'>Use this for weekly events like Pub nights or monthly college events</p>
+                            
+                            {data.isRecurring && (
+                                <>
+                                    <div className='mb-3'>
+                                        <p className='text-base font-medium mb-2 text-purple-900'>Recurrence Pattern</p>
+                                        <select 
+                                            name='recurrencePattern' 
+                                            onChange={onChangeHandler} 
+                                            value={data.recurrencePattern}
+                                            className='w-full px-4 py-3 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white'
+                                        >
+                                            <option value='none'>None</option>
+                                            <option value='weekly'>Weekly</option>
+                                            <option value='monthly'>Monthly</option>
+                                        </select>
+                                    </div>
+                                    
+                                    {data.recurrencePattern === 'weekly' && (
+                                        <div>
+                                            <p className='text-base font-medium mb-2 text-purple-900'>Weekly Theme</p>
+                                            <input 
+                                                name='weeklyTheme' 
+                                                onChange={onChangeHandler} 
+                                                value={data.weeklyTheme} 
+                                                className='w-full px-4 py-3 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500'
+                                                type='text'
+                                                placeholder='e.g., Theme TBA - Announced Monday, or specific theme like "80s Night"'
+                                            />
+                                            <p className='text-xs text-gray-600 mt-1'>For Pub: Use "Theme TBA - Announced Monday" until the theme is revealed</p>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                         
                         <button type="submit" className='w-full bg-blue-600 text-white font-medium py-3 rounded-md hover:bg-blue-700 transition-colors'>

@@ -137,7 +137,10 @@ export async function POST(request){
             authorId: userId,
             cohosts: [],
             eventCategory: formData.get('eventCategory') || 'user',
-            organizer: formData.get('organizer') || null
+            organizer: formData.get('organizer') || null,
+            isRecurring: formData.get('isRecurring') === 'true',
+            recurrencePattern: formData.get('recurrencePattern') || 'none',
+            weeklyTheme: formData.get('weeklyTheme') || ''
         }
 
         const createdBlog = await Blogmodel.create(blogData);

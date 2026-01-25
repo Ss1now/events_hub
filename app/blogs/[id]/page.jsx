@@ -266,12 +266,51 @@ const Page = ({ params }) => {
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
+                                {/* Official Event Badges */}
+                                {data.eventCategory === 'residential_college' && (
+                                    <span className='bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(236,72,153,0.5)]'>
+                                        <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path d='M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z'/>
+                                        </svg>
+                                        {data.organizer || 'Residential College'}
+                                    </span>
+                                )}
+                                {data.eventCategory === 'university' && (
+                                    <span className='bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(255,107,53,0.5)]'>
+                                        <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path d='M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z'/>
+                                        </svg>
+                                        {data.organizer || 'Rice University'}
+                                    </span>
+                                )}
+                                {/* Recurring Event Badge */}
+                                {data.isRecurring && (
+                                    <span className='bg-gradient-to-r from-cyan-600 to-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1'>
+                                        <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path fillRule='evenodd' d='M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z' clipRule='evenodd' />
+                                        </svg>
+                                        {data.recurrencePattern === 'weekly' ? 'WEEKLY' : 'MONTHLY'}
+                                    </span>
+                                )}
                                 {data.status === 'live' && <span className='bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.5)]'>#HAPPENING NOW</span>}
                                 {data.status === 'future' && <span className='bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(255,107,53,0.5)]'>#UPCOMING</span>}
                                 <span className='bg-gray-700/50 text-gray-200 text-xs px-3 py-1 rounded-full border border-purple-500/20'>{data.eventType}</span>
                                 {isCapacityReached && <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.5)]'>FULL</span>}
                                 {isRSVPDeadlinePassed && data.needReservation && <span className='bg-orange-500 text-white text-xs px-3 py-1 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.5)]'>RSVP Closed</span>}
                             </div>
+
+                            {/* Weekly Theme Display */}
+                            {data.isRecurring && data.recurrencePattern === 'weekly' && data.weeklyTheme && (
+                                <div className='mb-4 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 border border-indigo-500/30 rounded-lg p-4'>
+                                    <div className='flex items-center gap-2'>
+                                        <svg className='w-5 h-5 text-indigo-400' fill='currentColor' viewBox='0 0 20 20'>
+                                            <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z' clipRule='evenodd' />
+                                        </svg>
+                                        <span className='text-base font-medium text-indigo-300'>This Week's Theme:</span>
+                                        <span className='text-base text-white font-bold'>{data.weeklyTheme}</span>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Live Rating Display - prominent placement for live events */}
                             {data.status === 'live' && (
