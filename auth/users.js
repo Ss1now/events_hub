@@ -34,7 +34,7 @@ const createToken = (id) => {
 }
 
 //register user
-const registerUser = async (name = '', email, password, residentialCollege = '', emailConsent = false) => {
+const registerUser = async (name = '', email, password, residentialCollege = '', emailConsent = false, isOrganization = false) => {
     try {
         await connectDB();
         //checking if user already exists
@@ -69,6 +69,7 @@ const registerUser = async (name = '', email, password, residentialCollege = '',
             password:hashedPassword,
             username:username,
             residentialCollege:residentialCollege,
+            isOrganization:isOrganization,
             emailSubscriptions: {
                 updates: emailConsent,
                 patchNotes: emailConsent

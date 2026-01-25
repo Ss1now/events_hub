@@ -22,7 +22,8 @@ export default function PostEventPage() {
         location:'',
         needReservation:false,
         capacity:0,
-        host:''
+        host:'',
+        eventPageType:'party'
     })
 
     useEffect(() => {
@@ -73,6 +74,7 @@ export default function PostEventPage() {
         formData.append('needReservation', data.needReservation);
         formData.append('capacity', data.capacity);
         formData.append('host', data.host);
+        formData.append('eventPageType', data.eventPageType);
 
         try {
             const response = await axios.post('/api/blog', formData, {
@@ -219,6 +221,36 @@ export default function PostEventPage() {
                         <div>
                             <p className='text-xl font-medium mb-2 text-white'>Host</p>
                             <input name='host' onChange={onChangeHandler} value={data.host} className='w-full px-4 py-3 border-2 border-purple-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-400' type='text' placeholder="Host name" required/>
+                        </div>
+
+                        {/* Event Page Type */}
+                        <div className='bg-gradient-to-r from-purple-900/30 to-pink-900/30 border-2 border-purple-500/40 rounded-lg p-5'>
+                            <p className='text-xl font-medium mb-3 text-white'>Event Category</p>
+                            <div className='flex gap-4'>
+                                <label className='flex items-center gap-2 cursor-pointer'>
+                                    <input
+                                        type='radio'
+                                        name='eventPageType'
+                                        value='party'
+                                        checked={data.eventPageType === 'party'}
+                                        onChange={onChangeHandler}
+                                        className='w-4 h-4 accent-pink-500'
+                                    />
+                                    <span className='text-white'>Party</span>
+                                </label>
+                                <label className='flex items-center gap-2 cursor-pointer'>
+                                    <input
+                                        type='radio'
+                                        name='eventPageType'
+                                        value='club_event'
+                                        checked={data.eventPageType === 'club_event'}
+                                        onChange={onChangeHandler}
+                                        className='w-4 h-4 accent-blue-500'
+                                    />
+                                    <span className='text-white'>Club Event</span>
+                                </label>
+                            </div>
+                            <p className='text-sm text-gray-400 mt-2'>Choose where your event will appear</p>
                         </div>
                         
                         <button type="submit" className='w-full bg-gradient-to-r from-orange-500 to-pink-500 text-white font-bold py-3 rounded-md hover:from-orange-600 hover:to-pink-600 shadow-[0_0_25px_rgba(255,0,128,0.6)] hover:shadow-[0_0_35px_rgba(255,0,128,0.8)] transition-all'>

@@ -43,7 +43,7 @@ export async function GET(request){
         
         return NextResponse.json(blog);
     }else{
-        const blogs = await Blogmodel.find({});
+        const blogs = await Blogmodel.find({}).populate('authorId', 'isOrganization name');
         
         // Update status for all blogs based on current time
         const now = new Date();
@@ -88,6 +88,12 @@ export async function POST(request){
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
+
+        await connectDB();
+        
+        // Check if user is an organization
+        const user = await userModel.findById(userId);
+        const isOrganization = user && user.isOrganization;
 
         const formData = await request.formData();
         const timestamp = Date.now();
@@ -136,11 +142,12 @@ export async function POST(request){
             host: `${formData.get('host')}`,
             authorId: userId,
             cohosts: [],
-            eventCategory: formData.get('eventCategory') || 'user',
+            eventCategory: isOrganization ? (formData.get('eventCategory') || 'user') : 'user',
             organizer: formData.get('organizer') || null,
             isRecurring: formData.get('isRecurring') === 'true',
             recurrencePattern: formData.get('recurrencePattern') || 'none',
-            weeklyTheme: formData.get('weeklyTheme') || ''
+            weeklyTheme: formData.get('weeklyTheme') || '',
+            eventPageType: formData.get('eventPageType') || 'party'
         }
 
         const createdBlog = await Blogmodel.create(blogData);

@@ -1,40 +1,39 @@
 import React, { useEffect } from 'react';
-import { blog_data } from '@/assets/assets';
 import BlogItem from './blogitem';
 import { useState } from 'react';
 import axios from 'axios';
 
-const BlogList = () => {
+const ClubEventsList = () => {
 
         const [menu, setMenu] = useState("future");
         const [searchTerm, setSearchTerm] = useState("");
-        const [blogs, setBlogs] = useState([]);
+        const [events, setEvents] = useState([]);
 
-        const fetchBlogs = async () =>{
+        const fetchEvents = async () =>{
             const response = await axios.get('/api/blog');
-            // Filter only party events
-            const partyEvents = response.data.blogs.filter(blog => blog.eventPageType === 'party' || !blog.eventPageType);
-            setBlogs(partyEvents);
-            console.log('party events:', partyEvents);
+            // Filter only club events
+            const clubEvents = response.data.blogs.filter(blog => blog.eventPageType === 'club_event');
+            setEvents(clubEvents);
+            console.log('club events:', clubEvents);
         }
 
         useEffect(()=>{
-            fetchBlogs();
+            fetchEvents();
         },[])
         
-        console.log('blogs:', blogs);
+        console.log('events:', events);
 
-        // Filter events by status/category and search term
-        const filteredEvents = blogs.filter((item) => {
+        // Filter events by status and search term
+        const filteredEvents = events.filter((item) => {
             let matchesCategory = false;
             
             if (menu === "official") {
-                // Official events: from admin-created official categories OR from organization accounts
+                // Official events from organizations or admin-created official events
                 matchesCategory = item.eventCategory === 'residential_college' || 
                                 item.eventCategory === 'university' ||
                                 (item.authorId && item.authorId.isOrganization);
             } else {
-                // For future/live/past, show all party events (including official ones in their time categories)
+                // For future/live/past, show all club events
                 matchesCategory = item.status === menu;
             }
             
@@ -52,25 +51,25 @@ const BlogList = () => {
             {/* Search Bar */}
             <div className='max-w-4xl mx-auto px-4 sm:px-5 mb-4 md:mb-8'>
                 <div className='relative'>
-                    <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400' fill='none' stroke='currentColor' viewBox='0 0 24 24' strokeWidth={2.5}>
+                    <svg className='absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-blue-400' fill='none' stroke='currentColor' viewBox='0 0 24 24' strokeWidth={2.5}>
                         <path strokeLinecap='round' strokeLinejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
                     <input 
                         type='text' 
-                        placeholder='Search events' 
+                        placeholder='Search club events' 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-2 border-purple-500/30 bg-gray-900/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent shadow-[0_0_15px_rgba(176,38,255,0.3)]'
+                        className='w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg border-2 border-blue-500/30 bg-gray-900/50 backdrop-blur-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-[0_0_15px_rgba(59,130,246,0.3)]'
                     />
                 </div>
             </div>
 
             {/* Filter Tabs */}
             <div className='flex justify-center gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8 px-4 overflow-x-auto'>
-                <button onClick={()=>setMenu('official')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="official"?'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Official Events</button>
-                <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-[0_0_20px_rgba(255,0,128,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Upcoming</button>
-                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-[0_0_20px_rgba(255,0,128,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Happening Now</button>
-                <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-700 text-white shadow-[0_0_15px_rgba(100,100,100,0.5)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/30'}`}>Past</button>
+                <button onClick={()=>setMenu('official')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="official"?'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-blue-500/30'}`}>Official Events</button>
+                <button onClick={()=>setMenu('future')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="future"?'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-blue-500/30'}`}>Upcoming</button>
+                <button onClick={()=>setMenu('live')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="live"?'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-blue-500/30'}`}>Happening Now</button>
+                <button onClick={()=>setMenu('past')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="past"?'bg-gray-700 text-white shadow-[0_0_15px_rgba(100,100,100,0.5)]':'text-gray-300 hover:bg-gray-800/50 border border-blue-500/30'}`}>Past</button>
             </div>
 
             {/* Event Cards */}
@@ -110,7 +109,7 @@ const BlogList = () => {
                         })
                     ) : (
                         <div className='text-center py-12'>
-                            <p className='text-gray-400 text-lg'>No events found matching your search.</p>
+                            <p className='text-gray-400 text-lg'>No club events found matching your search.</p>
                         </div>
                     )}
                 </div>
@@ -119,4 +118,4 @@ const BlogList = () => {
     )
 }
 
-export default BlogList
+export default ClubEventsList;

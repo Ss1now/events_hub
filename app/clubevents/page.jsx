@@ -1,16 +1,16 @@
 'use client'
 import Header from "@/components/header";
-import BlogList from "@/components/bloglist";
+import ClubEventsList from "@/components/ClubEventsList";
 import Footer from "@/components/footer";
 import RatingPrompt from "@/components/RatingPrompt";
 import PageToggle from "@/components/PageToggle";
 
-export default function Home() {
+export default function ClubEventsPage() {
   return (
     <>
       <Header/>
       <PageToggle/>
-      <BlogList/>
+      <ClubEventsList/>
       <Footer/>
       <RatingPrompt/>
     </>

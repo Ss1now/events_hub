@@ -9,8 +9,9 @@ import { useRouter } from 'next/navigation';
 import SuccessModal from './SuccessModal';
 import StarRating from './StarRating';
 import LiveRatingButton from './LiveRatingButton';
+import VerifiedBadge from './VerifiedBadge';
 
-const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer, isRecurring, recurrencePattern, weeklyTheme}) => {
+const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer, isRecurring, recurrencePattern, weeklyTheme, authorId}) => {
     console.log('BlogItem ID:', id);
     const router = useRouter();
     const [interestedCount, setInterestedCount] = useState(interestedUsers?.length || 0);
@@ -371,6 +372,9 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 {/* Hosted by */}
                 <div className='text-xs text-gray-400 mt-3'>
                     Hosted by <span className='font-medium text-orange-400'>{host}</span>
+                    {authorId && authorId.isOrganization && (
+                        <span className='ml-1'><VerifiedBadge size='sm' /></span>
+                    )}
                     {cohosts && cohosts.length > 0 && (
                         <>
                             <span className='mx-1.5 text-gray-500'>•</span>

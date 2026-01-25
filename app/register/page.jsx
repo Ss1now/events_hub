@@ -12,6 +12,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('')
     const [residentialCollege, setResidentialCollege] = useState('')
     const [emailConsent, setEmailConsent] = useState(false)
+    const [isOrganization, setIsOrganization] = useState(false)
     const router = useRouter()
 
     const handleSubmit = async (e) => {
@@ -29,7 +30,8 @@ export default function RegisterPage() {
                 email,
                 password,
                 residentialCollege,
-                emailConsent
+                emailConsent,
+                isOrganization
             })
 
             if (response.data.success) {
@@ -132,7 +134,22 @@ export default function RegisterPage() {
                                 <option value='Will Rice College'>Will Rice College</option>
                                 <option value='Others'>Others</option>
                             </select>
-                        </div>
+                    </div>
+
+                    <div className='flex items-start space-x-2'>
+                        <input
+                            id='is-organization'
+                            type='checkbox'
+                            checked={isOrganization}
+                            onChange={(e) => setIsOrganization(e.target.checked)}
+                            className='mt-0.5 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer'
+                        />
+                        <label htmlFor='is-organization' className='text-sm text-gray-700 cursor-pointer'>
+                            <span className='font-medium'>I am an organization</span>
+                            <span className='text-xs text-gray-500 block mt-0.5'>
+                                Get a verified badge and post official events (for clubs, residential colleges, and university organizations)
+                            </span>
+                        </label>
                     </div>
 
                     <div className='flex items-start space-x-2'>
@@ -146,6 +163,7 @@ export default function RegisterPage() {
                         <label htmlFor='email-consent' className='text-xs text-gray-600 cursor-pointer'>
                             I consent to receive email notifications including event reminders, event updates, and platform announcements.
                         </label>
+                    </div>label>
                     </div>
 
                     <div>
