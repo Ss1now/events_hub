@@ -241,7 +241,7 @@ export default function PostEventPage() {
                                 type='text'
                                 value={data.eventType}
                                 onChange={onChangeHandler}
-                                placeholder="e.g., Party, Networking, Workshop"
+                                placeholder=""
                                 required
                             />
                         </div>
