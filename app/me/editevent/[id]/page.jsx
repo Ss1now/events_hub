@@ -5,10 +5,12 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function EditEventPage({ params }) {
     const router = useRouter();
+    const routeParams = useParams();
+    const routeEventId = routeParams?.id;
     const [eventId, setEventId] = useState(null);
     const [newImages, setNewImages] = useState([]);
     const [existingImages, setExistingImages] = useState([]);
@@ -38,12 +40,14 @@ export default function EditEventPage({ params }) {
                 return;
             }
 
-            const resolvedParams = params;
-            setEventId(resolvedParams?.id || null);
+            if (!routeEventId) {
+                return;
+            }
+            setEventId(routeEventId);
 
             try {
                 // Fetch event data with cache-busting parameter
-                const response = await axios.get(`/api/blog?id=${resolvedParams.id}&t=${Date.now()}`);
+                const response = await axios.get(`/api/blog?id=${routeEventId}&t=${Date.now()}`);
                 const eventData = response.json ? await response.json() : response.data;
 
                 // Check if event has ended (can edit future or live events)
@@ -116,7 +120,7 @@ export default function EditEventPage({ params }) {
         };
 
         fetchEventData();
-    }, [params, router]);
+    }, [router, routeEventId]);
 
     const onChangeHandler = (event) => {
         const { name, type, value, checked } = event.target;
@@ -135,7 +139,7 @@ export default function EditEventPage({ params }) {
         }
 
         const formData = new FormData();
-        formData.append('eventId', eventId || params?.id || '');
+        formData.append('eventId', eventId || routeEventId || params?.id || '');
         formData.append('title', data.title);
         formData.append('description', data.description);
         
