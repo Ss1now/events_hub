@@ -12,7 +12,12 @@ const BlogList = () => {
         const [userCollege, setUserCollege] = useState('');
 
         const fetchBlogs = async () =>{
-            const response = await axios.get('/api/blog');
+            const response = await axios.get(`/api/blog?t=${Date.now()}`, {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
             // Filter only party events
             const partyEvents = response.data.blogs.filter(blog => blog.eventPageType === 'party' || !blog.eventPageType);
             setBlogs(partyEvents);

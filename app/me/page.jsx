@@ -87,9 +87,11 @@ END:VCALENDAR`;
             }
 
             try {
-                const response = await axios.get('/api/user', {
+                const response = await axios.get(`/api/user?t=${Date.now()}`, {
                     headers: {
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${token}`,
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
                     }
                 })
 

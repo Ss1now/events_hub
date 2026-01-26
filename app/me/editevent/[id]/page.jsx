@@ -42,8 +42,8 @@ export default function EditEventPage({ params }) {
             setEventId(resolvedParams.id);
 
             try {
-                // Fetch event data
-                const response = await axios.get(`/api/blog?id=${resolvedParams.id}`);
+                // Fetch event data with cache-busting parameter
+                const response = await axios.get(`/api/blog?id=${resolvedParams.id}&t=${Date.now()}`);
                 const eventData = response.json ? await response.json() : response.data;
 
                 // Check if event has ended (can edit future or live events)
@@ -180,9 +180,11 @@ export default function EditEventPage({ params }) {
             
             if (response.data.success) {
                 toast.success(response.data.msg);
+                // Use replace to prevent back button issues and reload to clear cache
                 setTimeout(() => {
-                    router.push('/me');
-                    router.refresh();
+                    router.replace('/me');
+                    // Force a hard refresh to clear all cached data
+                    window.location.href = '/me';
                 }, 1500);
             } else {
                 toast.error(response.data.msg || 'Could not update event');
