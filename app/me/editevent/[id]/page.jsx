@@ -182,9 +182,8 @@ export default function EditEventPage({ params }) {
                 toast.success(response.data.msg);
                 // Use replace to prevent back button issues and reload to clear cache
                 setTimeout(() => {
-                    router.replace('/me');
-                    // Force a hard refresh to clear all cached data
-                    window.location.href = '/me';
+                    // Force a hard refresh to clear all cached data and replace current history entry
+                    window.location.replace('/me');
                 }, 1500);
             } else {
                 toast.error(response.data.msg || 'Could not update event');
