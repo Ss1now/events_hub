@@ -647,12 +647,12 @@ export async function PATCH(request){
                     $addToSet: { reservedEvents: eventId }
                 });
                 
-                const updatedEvent = await blogModel.findById(eventId);
+                const reservedEvent = await blogModel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'Successfully reserved',
-                    reserved: updatedEvent.reservedUsers.length,
-                    capacity: updatedEvent.capacity
+                    reserved: reservedEvent.reservedUsers.length,
+                    capacity: reservedEvent.capacity
                 });
 
             case 'cancel-rsvp':
@@ -675,12 +675,12 @@ export async function PATCH(request){
                     $pull: { reservedEvents: eventId }
                 });
                 
-                const updatedEvent = await blogModel.findById(eventId);
+                const cancelledEvent = await blogModel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'RSVP cancelled',
-                    reserved: updatedEvent.reservedUsers.length,
-                    capacity: updatedEvent.capacity
+                    reserved: cancelledEvent.reservedUsers.length,
+                    capacity: cancelledEvent.capacity
                 });
 
             default:
