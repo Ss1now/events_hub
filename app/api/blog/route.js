@@ -400,53 +400,34 @@ export async function PUT(request) {
         
         console.log('[CHANGES] Detected', changesList.length, 'changes:', changesList);
 
-        // 11. Build complete update object
-        const completeUpdateObject = {
-            title: newTitle,
-            description: newDescription,
-            images: finalImageUrls,
-            startDateTime: parsedStartDateTime,
-            endDateTime: parsedEndDateTime,
-            status: newStatus,
-            eventType: newEventType,
-            location: newLocation,
-            host: newHost,
-            theme: newTheme,
-            dressCode: newDressCode,
-            instagram: newInstagram,
-            needReservation: newNeedReservation,
-            capacity: newCapacity,
-            reservationDeadline: newReservationDeadline,
-            lastUpdated: new Date()
-        };
+        // 11. Update event fields directly on the document
+        existingEvent.title = newTitle;
+        existingEvent.description = newDescription;
+        existingEvent.images = finalImageUrls;
+        existingEvent.startDateTime = parsedStartDateTime;
+        existingEvent.endDateTime = parsedEndDateTime;
+        existingEvent.status = newStatus;
+        existingEvent.eventType = newEventType;
+        existingEvent.location = newLocation;
+        existingEvent.host = newHost;
+        existingEvent.theme = newTheme;
+        existingEvent.dressCode = newDressCode;
+        existingEvent.instagram = newInstagram;
+        existingEvent.needReservation = newNeedReservation;
+        existingEvent.capacity = newCapacity;
+        existingEvent.reservationDeadline = newReservationDeadline;
+        existingEvent.lastUpdated = new Date();
         
-        console.log('[UPDATE] Prepared update object with startDateTime:', completeUpdateObject.startDateTime.toISOString());
-        console.log('[UPDATE] Prepared update object with endDateTime:', completeUpdateObject.endDateTime.toISOString());
-        console.log('[UPDATE] Full update object keys:', Object.keys(completeUpdateObject));
-        console.log('[UPDATE] endDateTime type:', typeof completeUpdateObject.endDateTime, completeUpdateObject.endDateTime instanceof Date);
+        console.log('[UPDATE] Before save - startDateTime:', existingEvent.startDateTime.toISOString());
+        console.log('[UPDATE] Before save - endDateTime:', existingEvent.endDateTime.toISOString());
 
-        // 12. Perform database update using findByIdAndUpdate for better reliability
-        const verifiedUpdatedEvent = await Blogmodel.findByIdAndUpdate(
-            eventId,
-            completeUpdateObject,
-            { 
-                new: true,  // Return the updated document
-                runValidators: true  // Run schema validators
-            }
-        );
-        
-        if (!verifiedUpdatedEvent) {
-            console.log('[DATABASE] Error: Event not found during update');
-            return NextResponse.json({ 
-                success: false, 
-                msg: 'Failed to update event' 
-            }, { status: 500 });
-        }
+        // 12. Save the document
+        const verifiedUpdatedEvent = await existingEvent.save();
         
         console.log('[DATABASE] Update successful');
-        console.log('[VERIFY] After update - startDateTime in DB:', verifiedUpdatedEvent.startDateTime.toISOString());
-        console.log('[VERIFY] After update - endDateTime in DB:', verifiedUpdatedEvent.endDateTime.toISOString());
-        console.log('[VERIFY] After update - title in DB:', verifiedUpdatedEvent.title);
+        console.log('[VERIFY] After save - startDateTime in DB:', verifiedUpdatedEvent.startDateTime.toISOString());
+        console.log('[VERIFY] After save - endDateTime in DB:', verifiedUpdatedEvent.endDateTime.toISOString());
+        console.log('[VERIFY] After save - title in DB:', verifiedUpdatedEvent.title);
 
         // 13. Send notifications to interested/reserved users
         if (newStatus === 'future' || newStatus === 'live') {
