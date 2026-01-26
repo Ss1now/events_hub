@@ -21,6 +21,10 @@ export async function GET(request){
     if (blogId){
         const blog = await Blogmodel.findById(blogId).populate('authorId', 'instagram name username');
         
+        console.log('[Get Blog] Retrieved blog:', blogId);
+        console.log('[Get Blog] startDateTime:', blog.startDateTime);
+        console.log('[Get Blog] endDateTime:', blog.endDateTime);
+        
         // Calculate current status based on time
         const now = new Date();
         const startTime = new Date(blog.startDateTime);
@@ -367,6 +371,9 @@ export async function PUT(request) {
         event.instagram = newInstagram;
         event.lastUpdated = new Date();
 
+        console.log('[Event Update] About to save event with startDateTime:', event.startDateTime);
+        console.log('[Event Update] About to save event with endDateTime:', event.endDateTime);
+
         console.log('[Event Update] Total changes detected:', changes.length);
         console.log('[Event Update] Current status:', currentStatus);
         console.log('[Event Update] Interested users count:', event.interestedUsers.length);
@@ -425,7 +432,9 @@ export async function PUT(request) {
         }
 
         await event.save();
-        console.log("Event Updated");
+        console.log("Event Updated - Saved to DB");
+        console.log('[Event Update] After save - startDateTime:', event.startDateTime);
+        console.log('[Event Update] After save - endDateTime:', event.endDateTime);
 
         return NextResponse.json({success: true, msg: "Event Updated Successfully", isLiveEdit});
     } catch (error) {
