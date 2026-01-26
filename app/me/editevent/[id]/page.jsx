@@ -38,8 +38,8 @@ export default function EditEventPage({ params }) {
                 return;
             }
 
-            const resolvedParams = await params;
-            setEventId(resolvedParams.id);
+            const resolvedParams = params;
+            setEventId(resolvedParams?.id || null);
 
             try {
                 // Fetch event data with cache-busting parameter
@@ -135,7 +135,7 @@ export default function EditEventPage({ params }) {
         }
 
         const formData = new FormData();
-        formData.append('eventId', eventId);
+        formData.append('eventId', eventId || params?.id || '');
         formData.append('title', data.title);
         formData.append('description', data.description);
         

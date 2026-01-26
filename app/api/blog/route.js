@@ -286,8 +286,14 @@ export async function PUT(request) {
 
         // Update event fields
         // Frontend sends ISO strings with timezone (e.g., "2026-01-12T14:28:00.000Z")
-        const newStartDateTime = new Date(formData.get('startDateTime'));
-        const newEndDateTime = new Date(formData.get('endDateTime'));
+        const startDateTimeValue = formData.get('startDateTime');
+        const endDateTimeValue = formData.get('endDateTime');
+        const newStartDateTime = new Date(startDateTimeValue);
+        const newEndDateTime = new Date(endDateTimeValue);
+
+        if (!startDateTimeValue || !endDateTimeValue || Number.isNaN(newStartDateTime.getTime()) || Number.isNaN(newEndDateTime.getTime())) {
+            return NextResponse.json({ success: false, msg: 'Invalid start or end time' }, { status: 400 });
+        }
         
         console.log('[Event Update] Received startDateTime:', formData.get('startDateTime'));
         console.log('[Event Update] Received endDateTime:', formData.get('endDateTime'));
@@ -364,6 +370,8 @@ export async function PUT(request) {
         event.images = imageUrls;
         event.startDateTime = newStartDateTime;
         event.endDateTime = newEndDateTime;
+        event.markModified('startDateTime');
+        event.markModified('endDateTime');
         event.status = currentStatus;
         event.eventType = formData.get('eventType');
         event.theme = formData.get('theme') || '';
