@@ -22,7 +22,12 @@ export async function GET(request){
 
     const blogId = request.nextUrl.searchParams.get("id")
     if (blogId){
-        const blog = await Blogmodel.findById(blogId).populate('authorId', 'instagram name username');
+        // Use lean() to get a plain JavaScript object and avoid Mongoose document issues
+        const blog = await Blogmodel.findById(blogId).populate('authorId', 'instagram name username').lean();
+        
+        if (!blog) {
+            return NextResponse.json({ success: false, msg: 'Blog not found' }, { status: 404 });
+        }
         
         console.log('[Get Blog] Retrieved blog:', blogId);
         console.log('[Get Blog] startDateTime:', blog.startDateTime);
@@ -49,7 +54,14 @@ export async function GET(request){
             blog.status = currentStatus; // Update local object for response
         }
         
-        return NextResponse.json(blog);
+        // Return with cache control headers to prevent stale data
+        return NextResponse.json(blog, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        });
     }else{
         const blogs = await Blogmodel.find({}).populate('authorId', 'isOrganization name');
         
@@ -365,28 +377,6 @@ export async function PUT(request) {
             currentStatus = 'past';
         }
 
-        event.title = formData.get('title');
-        event.description = formData.get('description');
-        event.images = imageUrls;
-        event.startDateTime = newStartDateTime;
-        event.endDateTime = newEndDateTime;
-        event.markModified('startDateTime');
-        event.markModified('endDateTime');
-        event.status = currentStatus;
-        event.eventType = formData.get('eventType');
-        event.theme = formData.get('theme') || '';
-        event.dressCode = formData.get('dressCode') || '';
-        event.location = formData.get('location');
-        event.needReservation = newNeedReservation;
-        event.capacity = newCapacity;
-        event.reservationDeadline = formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null;
-        event.host = formData.get('host');
-        event.instagram = newInstagram;
-        event.lastUpdated = new Date();
-
-        console.log('[Event Update] About to save event with startDateTime:', event.startDateTime);
-        console.log('[Event Update] About to save event with endDateTime:', event.endDateTime);
-
         console.log('[Event Update] Total changes detected:', changes.length);
         console.log('[Event Update] Current status:', currentStatus);
         console.log('[Event Update] Interested users count:', event.interestedUsers.length);
@@ -418,7 +408,7 @@ export async function PUT(request) {
                         $push: {
                             eventUpdateNotifications: {
                                 eventId: event._id,
-                                eventTitle: event.title,
+                                eventTitle: formData.get('title'), // Use the new title
                                 changes: changesSummary,
                                 timestamp: new Date(),
                                 read: false
@@ -444,20 +434,40 @@ export async function PUT(request) {
             }
         }
 
-        console.log('[Event Update] RIGHT BEFORE SAVE:');
-        console.log('[Event Update] event.startDateTime:', event.startDateTime);
-        console.log('[Event Update] event.endDateTime:', event.endDateTime);
-        console.log('[Event Update] event.instagram:', event.instagram);
-        console.log('[Event Update] event.theme:', event.theme);
-        console.log('[Event Update] event.dressCode:', event.dressCode);
+        console.log('[Event Update] RIGHT BEFORE UPDATE:');
+        console.log('[Event Update] newStartDateTime:', newStartDateTime);
+        console.log('[Event Update] newEndDateTime:', newEndDateTime);
         
-        await event.save();
+        // Use findByIdAndUpdate to ensure atomic update and proper datetime persistence
+        const updateData = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            images: imageUrls,
+            startDateTime: newStartDateTime,
+            endDateTime: newEndDateTime,
+            status: currentStatus,
+            eventType: formData.get('eventType'),
+            theme: formData.get('theme') || '',
+            dressCode: formData.get('dressCode') || '',
+            location: formData.get('location'),
+            needReservation: newNeedReservation,
+            capacity: newCapacity,
+            reservationDeadline: formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null,
+            host: formData.get('host'),
+            instagram: newInstagram,
+            lastUpdated: new Date()
+        };
+        
+        const updatedEvent = await Blogmodel.findByIdAndUpdate(
+            eventId,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
         
         console.log("Event Updated - Saved to DB");
-        console.log('[Event Update] AFTER SAVE:');
-        console.log('[Event Update] After save - startDateTime:', event.startDateTime);
-        console.log('[Event Update] After save - endDateTime:', event.endDateTime);
-        console.log('[Event Update] After save - instagram:', event.instagram);
+        console.log('[Event Update] AFTER UPDATE:');
+        console.log('[Event Update] Updated event startDateTime:', updatedEvent.startDateTime);
+        console.log('[Event Update] Updated event endDateTime:', updatedEvent.endDateTime);
 
         // Revalidate paths to ensure fresh data
         revalidatePath('/me');
