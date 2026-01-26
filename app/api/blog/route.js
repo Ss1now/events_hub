@@ -532,13 +532,14 @@ export async function PATCH(request){
                     return NextResponse.json({ success: false, msg: 'Invalid event category' }, { status: 400 });
                 }
                 
-                event.eventCategory = eventCategory;
-                await event.save();
+                await blogModel.findByIdAndUpdate(eventId, {
+                    eventCategory: eventCategory
+                });
                 
                 return NextResponse.json({ 
                     success: true, 
                     msg: eventCategory === 'user' ? 'Official status removed' : 'Event marked as official',
-                    eventCategory: event.eventCategory
+                    eventCategory: eventCategory
                 });
             
             case 'transfer-ownership':
@@ -557,14 +558,15 @@ export async function PATCH(request){
                 }
                 
                 // Update event ownership
-                event.authorId = newOwnerId;
-                event.host = newOwner.name || newOwner.username;
-                await event.save();
+                await blogModel.findByIdAndUpdate(eventId, {
+                    authorId: newOwnerId,
+                    host: newOwner.name || newOwner.username
+                });
                 
                 return NextResponse.json({ 
                     success: true, 
                     msg: `Event transferred to ${newOwner.name || newOwner.username}`,
-                    newHost: event.host
+                    newHost: newOwner.name || newOwner.username
                 });
             
             case 'interested':
@@ -576,29 +578,37 @@ export async function PATCH(request){
                 // Toggle interested status
                 const isInterested = event.interestedUsers.some(id => id.toString() === userId.toString());
                 
+                let updatedEvent;
                 if (isInterested) {
                     // Remove from interested
-                    event.interestedUsers = event.interestedUsers.filter(id => id.toString() !== userId.toString());
+                    updatedEvent = await blogModel.findByIdAndUpdate(
+                        eventId,
+                        { $pull: { interestedUsers: userId } },
+                        { new: true }
+                    );
                     await userModel.findByIdAndUpdate(userId, {
                         $pull: { interestedEvents: eventId }
                     });
                     console.log(`User ${userId} removed from interested for event ${eventId}`);
                 } else {
                     // Add to interested
-                    event.interestedUsers.push(userId);
+                    updatedEvent = await blogModel.findByIdAndUpdate(
+                        eventId,
+                        { $addToSet: { interestedUsers: userId } },
+                        { new: true }
+                    );
                     await userModel.findByIdAndUpdate(userId, {
                         $addToSet: { interestedEvents: eventId }
                     });
                     console.log(`User ${userId} added to interested for event ${eventId}`);
                 }
                 
-                const savedEvent = await event.save();
-                console.log(`Event saved. Interested users count: ${savedEvent.interestedUsers.length}`);
+                console.log(`Event updated. Interested users count: ${updatedEvent.interestedUsers.length}`);
                 
                 return NextResponse.json({ 
                     success: true, 
                     msg: isInterested ? 'Removed from interested' : 'Marked as interested',
-                    interestedCount: savedEvent.interestedUsers.length,
+                    interestedCount: updatedEvent.interestedUsers.length,
                     isInterested: !isInterested
                 });
 
@@ -629,17 +639,20 @@ export async function PATCH(request){
                 }
 
                 // Add to reserved
-                event.reservedUsers.push(userId);
+                await blogModel.findByIdAndUpdate(
+                    eventId,
+                    { $addToSet: { reservedUsers: userId } }
+                );
                 await userModel.findByIdAndUpdate(userId, {
                     $addToSet: { reservedEvents: eventId }
                 });
                 
-                await event.save();
+                const updatedEvent = await blogModel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'Successfully reserved',
-                    reserved: event.reservedUsers.length,
-                    capacity: event.capacity
+                    reserved: updatedEvent.reservedUsers.length,
+                    capacity: updatedEvent.capacity
                 });
 
             case 'cancel-rsvp':
@@ -654,17 +667,20 @@ export async function PATCH(request){
                 }
 
                 // Remove from reserved
-                event.reservedUsers = event.reservedUsers.filter(id => id.toString() !== userId);
+                await blogModel.findByIdAndUpdate(
+                    eventId,
+                    { $pull: { reservedUsers: userId } }
+                );
                 await userModel.findByIdAndUpdate(userId, {
                     $pull: { reservedEvents: eventId }
                 });
                 
-                await event.save();
+                const updatedEvent = await blogModel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'RSVP cancelled',
-                    reserved: event.reservedUsers.length,
-                    capacity: event.capacity
+                    reserved: updatedEvent.reservedUsers.length,
+                    capacity: updatedEvent.capacity
                 });
 
             default:
