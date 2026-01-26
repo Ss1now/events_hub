@@ -77,10 +77,14 @@ export default function EditEventPage({ params }) {
                 const formatDateTimeLocal = (dateString) => {
                     if (!dateString) return '';
                     const date = new Date(dateString);
-                    // Get local timezone offset and adjust
-                    const offset = date.getTimezoneOffset();
-                    const localDate = new Date(date.getTime() - (offset * 60 * 1000));
-                    return localDate.toISOString().slice(0, 16);
+                    // datetime-local input expects format: YYYY-MM-DDTHH:MM
+                    // The Date object already represents the UTC time, we need to format it as local time
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    return `${year}-${month}-${day}T${hours}:${minutes}`;
                 };
 
                 // Set form data
@@ -143,6 +147,7 @@ export default function EditEventPage({ params }) {
         // We convert it to a Date object (interprets as local time) then to ISO string
         const startDateTimeISO = new Date(data.startDateTime).toISOString();
         const endDateTimeISO = new Date(data.endDateTime).toISOString();
+        const reservationDeadlineISO = data.reservationDeadline ? new Date(data.reservationDeadline).toISOString() : '';
         
         formData.append('startDateTime', startDateTimeISO);
         formData.append('endDateTime', endDateTimeISO);
@@ -150,7 +155,7 @@ export default function EditEventPage({ params }) {
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);
         formData.append('capacity', data.capacity);
-        formData.append('reservationDeadline', data.reservationDeadline || '');
+        formData.append('reservationDeadline', reservationDeadlineISO);
         formData.append('host', data.host);
 
         try {

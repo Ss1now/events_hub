@@ -282,6 +282,13 @@ export async function PUT(request) {
         const newStartDateTime = new Date(formData.get('startDateTime'));
         const newEndDateTime = new Date(formData.get('endDateTime'));
         
+        console.log('[Event Update] Received startDateTime:', formData.get('startDateTime'));
+        console.log('[Event Update] Received endDateTime:', formData.get('endDateTime'));
+        console.log('[Event Update] Parsed newStartDateTime:', newStartDateTime);
+        console.log('[Event Update] Parsed newEndDateTime:', newEndDateTime);
+        console.log('[Event Update] Current event.startDateTime:', event.startDateTime);
+        console.log('[Event Update] Current event.endDateTime:', event.endDateTime);
+        
         // Track changes for notification
         const changes = [];
         
