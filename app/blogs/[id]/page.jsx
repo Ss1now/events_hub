@@ -35,9 +35,13 @@ const Page = ({ params }) => {
             const resolvedParams = await params;
             setId(resolvedParams.id);
             
-            // Fetch blog data
-            const response = await fetch(`/api/blog?id=${resolvedParams.id}`, {
-                cache: 'no-store'
+            // Fetch blog data with cache-busting
+            const response = await fetch(`/api/blog?id=${resolvedParams.id}&t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
             });
             const blogData = await response.json();
             setData(blogData);

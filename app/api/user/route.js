@@ -5,6 +5,7 @@ import userModel from '@/lib/models/usermodel';
 import Blogmodel from '@/lib/models/blogmodel';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(request) {
     try {
@@ -48,27 +49,28 @@ export async function GET(request) {
             console.log('Generated username for user:', username);
         }
 
-        // Fetch user's events
-        const events = await Blogmodel.find({ authorId: decoded.id }).sort({ date: -1 });
+        // Fetch user's events - use lean() to bypass Mongoose caching and get fresh data
+        const events = await Blogmodel.find({ authorId: decoded.id }).sort({ date: -1 }).lean();
 
         // Fetch events where user is a cohost
         const cohostedEvents = await Blogmodel.find({
             'cohosts.userId': decoded.id
-        }).sort({ date: -1 });
+        }).sort({ date: -1 }).lean();
 
         // Fetch user's interested events
         const interestedEvents = await Blogmodel.find({ 
             _id: { $in: user.interestedEvents || [] } 
-        }).sort({ startDateTime: 1 });
+        }).sort({ startDateTime: 1 }).lean();
 
         // Fetch user's reserved events
         const reservedEvents = await Blogmodel.find({ 
             _id: { $in: user.reservedEvents || [] } 
-        }).sort({ startDateTime: 1 });
+        }).sort({ startDateTime: 1 }).lean();
 
-        // Update status for all events based on current time
+        // Update status for all events based on current time (batch update)
         const now = new Date();
-        const updatedEvents = await Promise.all(events.map(async (event) => {
+        const statusUpdates = [];
+        const updatedEvents = events.map((event) => {
             const startTime = new Date(event.startDateTime);
             const endTime = new Date(event.endDateTime);
             
@@ -81,14 +83,24 @@ export async function GET(request) {
                 currentStatus = 'past';
             }
             
-            // Update in database if status changed
+            // Queue status update if changed
             if (event.status !== currentStatus) {
-                event.status = currentStatus;
-                await event.save();
+                statusUpdates.push({
+                    updateOne: {
+                        filter: { _id: event._id },
+                        update: { $set: { status: currentStatus } }
+                    }
+                });
+                event.status = currentStatus; // Update local copy
             }
             
             return event;
-        }));
+        });
+        
+        // Batch update all changed statuses
+        if (statusUpdates.length > 0) {
+            await Blogmodel.bulkWrite(statusUpdates);
+        }
 
         return NextResponse.json({ 
             success: true, 
@@ -108,6 +120,13 @@ export async function GET(request) {
             cohostedEvents,
             interestedEvents,
             reservedEvents
+        }, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
+            }
         });
     } catch (error) {
         console.log(error);

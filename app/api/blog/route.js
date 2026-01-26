@@ -10,6 +10,7 @@ import { sendUpdateEmails } from "@/lib/email/sendUpdateEmails";
 import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Never cache
 
 const LoadDB = async () => {
     await connectDB();
@@ -54,12 +55,13 @@ export async function GET(request){
             blog.status = currentStatus; // Update local object for response
         }
         
-        // Return with cache control headers to prevent stale data
+        // Return with aggressive cache control headers to prevent stale data
         return NextResponse.json(blog, {
             headers: {
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
                 'Pragma': 'no-cache',
-                'Expires': '0'
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
             }
         });
     }else{
@@ -100,7 +102,14 @@ export async function GET(request){
             await Blogmodel.bulkWrite(blogsToUpdate);
         }
         
-        return NextResponse.json({blogs: updatedBlogs});
+        return NextResponse.json({blogs: updatedBlogs}, {
+            headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Surrogate-Control': 'no-store'
+            }
+        });
     }
 }
 
@@ -326,6 +335,9 @@ export async function PUT(request) {
         
         console.log('[DATETIME] Parsed startDateTime object:', parsedStartDateTime.toISOString());
         console.log('[DATETIME] Parsed endDateTime object:', parsedEndDateTime.toISOString());
+        console.log('[DATETIME] Existing startDateTime in DB:', existingEvent.startDateTime.toISOString());
+        console.log('[DATETIME] Existing endDateTime in DB:', existingEvent.endDateTime.toISOString());
+        console.log('[DATETIME] Are they different? Start:', existingEvent.startDateTime.getTime() !== parsedStartDateTime.getTime(), 'End:', existingEvent.endDateTime.getTime() !== parsedEndDateTime.getTime());
 
         // 8. Extract all form values
         const newTitle = formData.get('title');
@@ -410,26 +422,33 @@ export async function PUT(request) {
         
         console.log('[UPDATE] Prepared update object with startDateTime:', completeUpdateObject.startDateTime.toISOString());
         console.log('[UPDATE] Prepared update object with endDateTime:', completeUpdateObject.endDateTime.toISOString());
+        console.log('[UPDATE] Full update object keys:', Object.keys(completeUpdateObject));
+        console.log('[UPDATE] endDateTime type:', typeof completeUpdateObject.endDateTime, completeUpdateObject.endDateTime instanceof Date);
 
-        // 12. Perform database update using updateOne
-        const updateResult = await Blogmodel.updateOne(
-            { _id: eventId },
-            { $set: completeUpdateObject }
+        // 12. Perform database update using findByIdAndUpdate for better reliability
+        const verifiedUpdatedEvent = await Blogmodel.findByIdAndUpdate(
+            eventId,
+            completeUpdateObject,
+            { 
+                new: true,  // Return the updated document
+                runValidators: true  // Run schema validators
+            }
         );
         
-        console.log('[DATABASE] Update result:', updateResult);
-        
-        if (updateResult.modifiedCount === 0) {
-            console.log('[DATABASE] Warning: No documents were modified');
+        if (!verifiedUpdatedEvent) {
+            console.log('[DATABASE] Error: Event not found during update');
+            return NextResponse.json({ 
+                success: false, 
+                msg: 'Failed to update event' 
+            }, { status: 500 });
         }
-
-        // 13. Fetch the updated event to verify
-        const verifiedUpdatedEvent = await Blogmodel.findById(eventId);
+        
+        console.log('[DATABASE] Update successful');
         console.log('[VERIFY] After update - startDateTime in DB:', verifiedUpdatedEvent.startDateTime.toISOString());
         console.log('[VERIFY] After update - endDateTime in DB:', verifiedUpdatedEvent.endDateTime.toISOString());
         console.log('[VERIFY] After update - title in DB:', verifiedUpdatedEvent.title);
 
-        // 14. Send notifications to interested/reserved users
+        // 13. Send notifications to interested/reserved users
         if (newStatus === 'future' || newStatus === 'live') {
             const interestedUserIds = existingEvent.interestedUsers.map(id => id.toString());
             const reservedUserIds = existingEvent.reservedUsers.map(id => id.toString());
@@ -468,11 +487,15 @@ export async function PUT(request) {
             }
         }
 
-        // 15. Revalidate Next.js cache
-        revalidatePath('/');
-        revalidatePath('/me');
-        revalidatePath(`/blogs/${eventId}`);
-        console.log('[CACHE] Revalidated paths');
+        // 14. Revalidate Next.js cache - be more aggressive
+        try {
+            revalidatePath('/', 'layout');
+            revalidatePath('/me', 'page');
+            revalidatePath(`/blogs/${eventId}`, 'page');
+            console.log('[CACHE] Revalidated paths');
+        } catch (e) {
+            console.log('[CACHE] Revalidation error (non-critical):', e.message);
+        }
 
         console.log('=== EVENT UPDATE COMPLETED SUCCESSFULLY ===\n');
         return NextResponse.json({ 
