@@ -4,6 +4,8 @@ import { connectDB } from '@/lib/config/db';
 import userModel from '@/lib/models/usermodel';
 import Blogmodel from '@/lib/models/blogmodel';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
     try {
         const authHeader = request.headers.get('authorization');

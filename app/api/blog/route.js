@@ -7,6 +7,9 @@ import { verifyAdmin } from "@/lib/utils/adminAuth";
 import mongoose from 'mongoose';
 import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/utils/cloudinary";
 import { sendUpdateEmails } from "@/lib/email/sendUpdateEmails";
+import { revalidatePath } from 'next/cache';
+
+export const dynamic = 'force-dynamic';
 
 const LoadDB = async () => {
     await connectDB();
@@ -448,7 +451,12 @@ export async function PUT(request) {
         console.log('[Event Update] After save - endDateTime:', event.endDateTime);
         console.log('[Event Update] After save - instagram:', event.instagram);
 
-        return NextResponse.json({success: true, msg: "Event Updated Successfully", isLiveEdit});
+        // Revalidate paths to ensure fresh data
+        revalidatePath('/me');
+        revalidatePath(`/blogs/${eventId}`);
+        revalidatePath('/');
+
+        return NextResponse.json({success:true, msg:"Event Updated Successfully"});
     } catch (error) {
         console.error(error);
         return NextResponse.json({success: false, msg: "Error updating event"}, { status: 500 });
