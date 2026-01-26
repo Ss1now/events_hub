@@ -25,7 +25,8 @@ export default function EditEventPage({ params }) {
         needReservation: false,
         capacity: 0,
         reservationDeadline: '',
-        host: ''
+        host: '',
+        instagram: ''
     })
 
     useEffect(() => {
@@ -94,11 +95,14 @@ export default function EditEventPage({ params }) {
                     startDateTime: formatDateTimeLocal(eventData.startDateTime),
                     endDateTime: formatDateTimeLocal(eventData.endDateTime),
                     eventType: eventData.eventType || 'Party',
+                    theme: eventData.theme || '',
+                    dressCode: eventData.dressCode || '',
                     location: eventData.location || '',
                     needReservation: eventData.needReservation || false,
                     capacity: eventData.capacity || 0,
                     reservationDeadline: eventData.reservationDeadline ? formatDateTimeLocal(eventData.reservationDeadline) : '',
-                    host: eventData.host || ''
+                    host: eventData.host || '',
+                    instagram: eventData.instagram || ''
                 });
 
                 setExistingImages(eventData.images || []);
@@ -149,14 +153,23 @@ export default function EditEventPage({ params }) {
         const endDateTimeISO = new Date(data.endDateTime).toISOString();
         const reservationDeadlineISO = data.reservationDeadline ? new Date(data.reservationDeadline).toISOString() : '';
         
+        console.log('[Frontend] Submitting datetime update:');
+        console.log('[Frontend] data.startDateTime (local input):', data.startDateTime);
+        console.log('[Frontend] startDateTimeISO (sending to API):', startDateTimeISO);
+        console.log('[Frontend] data.endDateTime (local input):', data.endDateTime);
+        console.log('[Frontend] endDateTimeISO (sending to API):', endDateTimeISO);
+        
         formData.append('startDateTime', startDateTimeISO);
         formData.append('endDateTime', endDateTimeISO);
         formData.append('eventType', data.eventType);
+        formData.append('theme', data.theme || '');
+        formData.append('dressCode', data.dressCode || '');
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);
         formData.append('capacity', data.capacity);
         formData.append('reservationDeadline', reservationDeadlineISO);
         formData.append('host', data.host);
+        formData.append('instagram', data.instagram || '');
 
         try {
             const response = await axios.put('/api/blog', formData, {
@@ -168,7 +181,8 @@ export default function EditEventPage({ params }) {
             if (response.data.success) {
                 toast.success(response.data.msg);
                 setTimeout(() => {
-                    router.back();
+                    router.push('/me');
+                    router.refresh();
                 }, 1500);
             } else {
                 toast.error(response.data.msg || 'Could not update event');

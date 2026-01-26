@@ -363,6 +363,8 @@ export async function PUT(request) {
         event.endDateTime = newEndDateTime;
         event.status = currentStatus;
         event.eventType = formData.get('eventType');
+        event.theme = formData.get('theme') || '';
+        event.dressCode = formData.get('dressCode') || '';
         event.location = formData.get('location');
         event.needReservation = newNeedReservation;
         event.capacity = newCapacity;
@@ -431,10 +433,20 @@ export async function PUT(request) {
             }
         }
 
+        console.log('[Event Update] RIGHT BEFORE SAVE:');
+        console.log('[Event Update] event.startDateTime:', event.startDateTime);
+        console.log('[Event Update] event.endDateTime:', event.endDateTime);
+        console.log('[Event Update] event.instagram:', event.instagram);
+        console.log('[Event Update] event.theme:', event.theme);
+        console.log('[Event Update] event.dressCode:', event.dressCode);
+        
         await event.save();
+        
         console.log("Event Updated - Saved to DB");
+        console.log('[Event Update] AFTER SAVE:');
         console.log('[Event Update] After save - startDateTime:', event.startDateTime);
         console.log('[Event Update] After save - endDateTime:', event.endDateTime);
+        console.log('[Event Update] After save - instagram:', event.instagram);
 
         return NextResponse.json({success: true, msg: "Event Updated Successfully", isLiveEdit});
     } catch (error) {

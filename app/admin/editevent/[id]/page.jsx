@@ -129,9 +129,17 @@ export default function AdminEditEventPage({ params }) {
         const endDateTimeISO = new Date(data.endDateTime).toISOString();
         const reservationDeadlineISO = data.reservationDeadline ? new Date(data.reservationDeadline).toISOString() : '';
         
+        console.log('[Admin Frontend] Submitting datetime update:');
+        console.log('[Admin Frontend] data.startDateTime (local input):', data.startDateTime);
+        console.log('[Admin Frontend] startDateTimeISO (sending to API):', startDateTimeISO);
+        console.log('[Admin Frontend] data.endDateTime (local input):', data.endDateTime);
+        console.log('[Admin Frontend] endDateTimeISO (sending to API):', endDateTimeISO);
+        
         formData.append('startDateTime', startDateTimeISO);
         formData.append('endDateTime', endDateTimeISO);
         formData.append('eventType', data.eventType);
+        formData.append('theme', data.theme || '');
+        formData.append('dressCode', data.dressCode || '');
         formData.append('location', data.location);
         formData.append('needReservation', data.needReservation);
         formData.append('capacity', data.capacity);
@@ -150,6 +158,7 @@ export default function AdminEditEventPage({ params }) {
                 toast.success(response.data.msg);
                 setTimeout(() => {
                     router.push('/admin/bloglist');
+                    router.refresh();
                 }, 1500);
             } else {
                 toast.error(response.data.msg || 'Could not update event');
