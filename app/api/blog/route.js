@@ -227,12 +227,13 @@ export async function POST(request){
     }
 }
 
-// API Endpoint for updating/editing post
+// API Endpoint for updating/editing post - REWRITTEN
 export async function PUT(request) {
+    console.log('\n=== EVENT UPDATE REQUEST STARTED ===');
+    
     try {
-        // Extract and verify JWT token
+        // 1. Authentication
         const authHeader = request.headers.get('authorization');
-        
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
         }
@@ -240,244 +241,253 @@ export async function PUT(request) {
         const token = authHeader.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id;
+        console.log('[AUTH] User ID:', userId);
 
+        // 2. Parse form data
         const formData = await request.formData();
         const eventId = formData.get('eventId');
         
         if (!eventId) {
             return NextResponse.json({ success: false, msg: 'Event ID required' }, { status: 400 });
         }
+        console.log('[EVENTID] Event ID to update:', eventId);
 
+        // 3. Connect to database and fetch event
         await connectDB();
-
-        const event = await Blogmodel.findById(eventId);
+        const existingEvent = await Blogmodel.findById(eventId);
         
-        if (!event) {
+        if (!existingEvent) {
             return NextResponse.json({ success: false, msg: 'Event not found' }, { status: 404 });
         }
+        console.log('[EXISTING] Found event:', existingEvent.title);
 
-        // Check if the user is the author or a cohost of the event
-        const isAuthor = event.authorId.toString() === userId;
-        const isCohost = event.cohosts && event.cohosts.some(c => c.userId.toString() === userId);
+        // 4. Authorization check
+        const isAuthor = existingEvent.authorId.toString() === userId;
+        const isCohost = existingEvent.cohosts && existingEvent.cohosts.some(c => c.userId.toString() === userId);
         
         if (!isAuthor && !isCohost) {
             return NextResponse.json({ success: false, msg: 'Unauthorized to edit this event' }, { status: 403 });
         }
+        console.log('[AUTH] User authorized:', isAuthor ? 'Author' : 'Cohost');
 
-        // Check if event can be edited (future or live events only, not past)
-        const now = new Date();
-        const startTime = new Date(event.startDateTime);
-        const endTime = new Date(event.endDateTime);
+        // 5. Check if event has ended
+        const currentTime = new Date();
+        const existingEndTime = new Date(existingEvent.endDateTime);
         
-        if (now > endTime) {
+        if (currentTime > existingEndTime) {
             return NextResponse.json({ success: false, msg: 'Cannot edit events that have already ended' }, { status: 400 });
         }
 
-        // Check if this is a live event being edited
-        const isLiveEdit = now >= startTime && now <= endTime;
-
-        const timestamp = Date.now();
-        const newImages = formData.getAll('images');
+        // 6. Handle image uploads
+        let finalImageUrls = existingEvent.images || [];
+        let imageWasUpdated = false;
         
-        let imageUrls = event.images || []; // Keep existing images by default
-        let imagesChanged = false;
-        
-        // Only process new images if uploaded
-        if (newImages && newImages.length > 0 && newImages[0].size > 0) {
-            const validImages = newImages.filter(img => img && img.size > 0);
-            const uploadedUrls = await uploadMultipleToCloudinary(validImages, 'events');
+        const uploadedImages = formData.getAll('images');
+        if (uploadedImages && uploadedImages.length > 0 && uploadedImages[0].size > 0) {
+            console.log('[IMAGES] Processing', uploadedImages.length, 'new images');
+            const validImages = uploadedImages.filter(img => img && img.size > 0);
             
-            // Delete old images from Cloudinary if new ones uploaded
-            if (event.images && event.images.length > 0) {
-                await deleteMultipleFromCloudinary(event.images);
+            if (validImages.length > 0) {
+                try {
+                    const newImageUrls = await uploadMultipleToCloudinary(validImages, 'events');
+                    console.log('[IMAGES] Uploaded to Cloudinary:', newImageUrls.length, 'images');
+                    
+                    // Delete old images
+                    if (existingEvent.images && existingEvent.images.length > 0) {
+                        await deleteMultipleFromCloudinary(existingEvent.images);
+                        console.log('[IMAGES] Deleted old images');
+                    }
+                    
+                    finalImageUrls = newImageUrls;
+                    imageWasUpdated = true;
+                } catch (uploadError) {
+                    console.error('[IMAGES] Upload failed:', uploadError);
+                    return NextResponse.json({
+                        success: false,
+                        msg: 'Image upload failed'
+                    }, { status: 500 });
+                }
             }
-            
-            imageUrls = uploadedUrls;
-            imagesChanged = true;
         }
 
-        // Update event fields
-        // Frontend sends ISO strings with timezone (e.g., "2026-01-12T14:28:00.000Z")
-        const startDateTimeValue = formData.get('startDateTime');
-        const endDateTimeValue = formData.get('endDateTime');
-        const newStartDateTime = new Date(startDateTimeValue);
-        const newEndDateTime = new Date(endDateTimeValue);
+        // 7. Parse and validate datetime values
+        const startDateTimeString = formData.get('startDateTime');
+        const endDateTimeString = formData.get('endDateTime');
+        
+        console.log('[DATETIME] Received startDateTime string:', startDateTimeString);
+        console.log('[DATETIME] Received endDateTime string:', endDateTimeString);
+        
+        const parsedStartDateTime = new Date(startDateTimeString);
+        const parsedEndDateTime = new Date(endDateTimeString);
+        
+        if (isNaN(parsedStartDateTime.getTime()) || isNaN(parsedEndDateTime.getTime())) {
+            return NextResponse.json({ success: false, msg: 'Invalid date/time values' }, { status: 400 });
+        }
+        
+        console.log('[DATETIME] Parsed startDateTime object:', parsedStartDateTime.toISOString());
+        console.log('[DATETIME] Parsed endDateTime object:', parsedEndDateTime.toISOString());
 
-        if (!startDateTimeValue || !endDateTimeValue || Number.isNaN(newStartDateTime.getTime()) || Number.isNaN(newEndDateTime.getTime())) {
-            return NextResponse.json({ success: false, msg: 'Invalid start or end time' }, { status: 400 });
-        }
-        
-        console.log('[Event Update] Received startDateTime:', formData.get('startDateTime'));
-        console.log('[Event Update] Received endDateTime:', formData.get('endDateTime'));
-        console.log('[Event Update] Parsed newStartDateTime:', newStartDateTime);
-        console.log('[Event Update] Parsed newEndDateTime:', newEndDateTime);
-        console.log('[Event Update] Current event.startDateTime:', event.startDateTime);
-        console.log('[Event Update] Current event.endDateTime:', event.endDateTime);
-        
-        // Track changes for notification
-        const changes = [];
-        
-        if (event.title !== formData.get('title')) {
-            changes.push(`Title changed from "${event.title}" to "${formData.get('title')}"`);
-        }
-        
-        if (event.description !== formData.get('description')) {
-            changes.push('Description updated');
-        }
-        
-        if (event.startDateTime.getTime() !== newStartDateTime.getTime()) {
-            changes.push(`Start time changed from ${event.startDateTime.toLocaleString()} to ${newStartDateTime.toLocaleString()}`);
-        }
-        
-        if (event.endDateTime.getTime() !== newEndDateTime.getTime()) {
-            changes.push(`End time changed from ${event.endDateTime.toLocaleString()} to ${newEndDateTime.toLocaleString()}`);
-        }
-        
-        if (event.eventType !== formData.get('eventType')) {
-            changes.push(`Event type changed from "${event.eventType}" to "${formData.get('eventType')}"`);
-        }
-        
-        if (event.location !== formData.get('location')) {
-            changes.push(`Location changed from "${event.location}" to "${formData.get('location')}"`);
-        }
-        
-        const newNeedReservation = formData.get('needReservation') === 'true';
-        if (event.needReservation !== newNeedReservation) {
-            changes.push(`RSVP requirement ${newNeedReservation ? 'added' : 'removed'}`);
-        }
-        
-        const newCapacity = parseInt(formData.get('capacity')) || 0;
-        if (event.capacity !== newCapacity) {
-            changes.push(`Capacity changed from ${event.capacity} to ${newCapacity}`);
-        }
-        
-        if (event.host !== formData.get('host')) {
-            changes.push(`Host changed from "${event.host}" to "${formData.get('host')}"`);
-        }
-        
+        // 8. Extract all form values
+        const newTitle = formData.get('title');
+        const newDescription = formData.get('description');
+        const newEventType = formData.get('eventType');
+        const newLocation = formData.get('location');
+        const newHost = formData.get('host');
+        const newTheme = formData.get('theme') || '';
+        const newDressCode = formData.get('dressCode') || '';
         const newInstagram = formData.get('instagram') || '';
-        if (event.instagram !== newInstagram) {
-            changes.push('Contact information updated');
-        }
-        
-        // Check if images changed
-        if (imagesChanged) {
-            changes.push('Event images updated');
-        }
-        
-        console.log('[Event Update] Detected changes:', changes);
-        
-        // Recalculate status based on new times
-        let currentStatus;
-        if (now < newStartDateTime) {
-            currentStatus = 'future';
-        } else if (now >= newStartDateTime && now <= newEndDateTime) {
-            currentStatus = 'live';
+        const newNeedReservation = formData.get('needReservation') === 'true';
+        const newCapacity = parseInt(formData.get('capacity')) || 0;
+        const reservationDeadlineString = formData.get('reservationDeadline');
+        const newReservationDeadline = reservationDeadlineString ? new Date(reservationDeadlineString) : null;
+
+        // 9. Calculate new status
+        let newStatus;
+        if (currentTime < parsedStartDateTime) {
+            newStatus = 'future';
+        } else if (currentTime >= parsedStartDateTime && currentTime <= parsedEndDateTime) {
+            newStatus = 'live';
         } else {
-            currentStatus = 'past';
+            newStatus = 'past';
+        }
+        console.log('[STATUS] Calculated status:', newStatus);
+
+        // 10. Track changes for notifications
+        const changesList = [];
+        
+        if (existingEvent.title !== newTitle) {
+            changesList.push(`Title changed from "${existingEvent.title}" to "${newTitle}"`);
+        }
+        if (existingEvent.description !== newDescription) {
+            changesList.push('Description updated');
+        }
+        if (existingEvent.startDateTime.getTime() !== parsedStartDateTime.getTime()) {
+            changesList.push(`Start time changed to ${parsedStartDateTime.toLocaleString()}`);
+        }
+        if (existingEvent.endDateTime.getTime() !== parsedEndDateTime.getTime()) {
+            changesList.push(`End time changed to ${parsedEndDateTime.toLocaleString()}`);
+        }
+        if (existingEvent.eventType !== newEventType) {
+            changesList.push(`Event type changed to "${newEventType}"`);
+        }
+        if (existingEvent.location !== newLocation) {
+            changesList.push(`Location changed to "${newLocation}"`);
+        }
+        if (existingEvent.needReservation !== newNeedReservation) {
+            changesList.push(`RSVP ${newNeedReservation ? 'required' : 'not required'}`);
+        }
+        if (existingEvent.capacity !== newCapacity) {
+            changesList.push(`Capacity changed to ${newCapacity}`);
+        }
+        if (existingEvent.host !== newHost) {
+            changesList.push(`Host changed to "${newHost}"`);
+        }
+        if (imageWasUpdated) {
+            changesList.push('Event images updated');
+        }
+        
+        console.log('[CHANGES] Detected', changesList.length, 'changes:', changesList);
+
+        // 11. Build complete update object
+        const completeUpdateObject = {
+            title: newTitle,
+            description: newDescription,
+            images: finalImageUrls,
+            startDateTime: parsedStartDateTime,
+            endDateTime: parsedEndDateTime,
+            status: newStatus,
+            eventType: newEventType,
+            location: newLocation,
+            host: newHost,
+            theme: newTheme,
+            dressCode: newDressCode,
+            instagram: newInstagram,
+            needReservation: newNeedReservation,
+            capacity: newCapacity,
+            reservationDeadline: newReservationDeadline,
+            lastUpdated: new Date()
+        };
+        
+        console.log('[UPDATE] Prepared update object with startDateTime:', completeUpdateObject.startDateTime.toISOString());
+        console.log('[UPDATE] Prepared update object with endDateTime:', completeUpdateObject.endDateTime.toISOString());
+
+        // 12. Perform database update using updateOne
+        const updateResult = await Blogmodel.updateOne(
+            { _id: eventId },
+            { $set: completeUpdateObject }
+        );
+        
+        console.log('[DATABASE] Update result:', updateResult);
+        
+        if (updateResult.modifiedCount === 0) {
+            console.log('[DATABASE] Warning: No documents were modified');
         }
 
-        console.log('[Event Update] Total changes detected:', changes.length);
-        console.log('[Event Update] Current status:', currentStatus);
-        console.log('[Event Update] Interested users count:', event.interestedUsers.length);
-        console.log('[Event Update] Reserved users count:', event.reservedUsers.length);
+        // 13. Fetch the updated event to verify
+        const verifiedUpdatedEvent = await Blogmodel.findById(eventId);
+        console.log('[VERIFY] After update - startDateTime in DB:', verifiedUpdatedEvent.startDateTime.toISOString());
+        console.log('[VERIFY] After update - endDateTime in DB:', verifiedUpdatedEvent.endDateTime.toISOString());
+        console.log('[VERIFY] After update - title in DB:', verifiedUpdatedEvent.title);
 
-        // Notify interested/reserved users about event update
-        // Send notifications if there are changes OR as a safety measure always notify on update
-        const shouldNotify = (currentStatus === 'future' || currentStatus === 'live');
-        
-        if (shouldNotify) {
-            // Get all users who are interested or reserved
-            const affectedUsers = [...new Set([
-                ...event.interestedUsers.map(id => id.toString()),
-                ...event.reservedUsers.map(id => id.toString())
-            ])];
+        // 14. Send notifications to interested/reserved users
+        if (newStatus === 'future' || newStatus === 'live') {
+            const interestedUserIds = existingEvent.interestedUsers.map(id => id.toString());
+            const reservedUserIds = existingEvent.reservedUsers.map(id => id.toString());
+            const allAffectedUserIds = [...new Set([...interestedUserIds, ...reservedUserIds])];
+            
+            console.log('[NOTIFICATIONS] Total affected users:', allAffectedUserIds.length);
 
-            console.log('[Event Update] Affected users count:', affectedUsers.length);
-
-            if (affectedUsers.length > 0) {
-                // Create a summary of changes - use generic message if no specific changes detected
-                const changesSummary = changes.length > 0 ? changes.join('; ') : 'Event details updated';
+            if (allAffectedUserIds.length > 0) {
+                const changeSummary = changesList.length > 0 
+                    ? changesList.join('; ') 
+                    : 'Event details have been updated';
                 
-                console.log('[Event Update] Sending notifications with changes:', changesSummary);
+                console.log('[NOTIFICATIONS] Sending with summary:', changeSummary);
                 
-                // Add in-app notification to each affected user
+                // In-app notifications
                 await userModel.updateMany(
-                    { _id: { $in: affectedUsers } },
+                    { _id: { $in: allAffectedUserIds } },
                     {
                         $push: {
                             eventUpdateNotifications: {
-                                eventId: event._id,
-                                eventTitle: formData.get('title'), // Use the new title
-                                changes: changesSummary,
+                                eventId: eventId,
+                                eventTitle: newTitle,
+                                changes: changeSummary,
                                 timestamp: new Date(),
                                 read: false
                             }
                         }
                     }
                 );
+                console.log('[NOTIFICATIONS] In-app notifications sent to', allAffectedUserIds.length, 'users');
                 
-                console.log(`Notified ${affectedUsers.length} users about event update: ${changesSummary}`);
-                
-                // Send email notifications to subscribed users (async, don't block response)
-                console.log('[Email Trigger] About to call sendUpdateEmails');
-                console.log('[Email Trigger] Event ID:', event._id.toString());
-                console.log('[Email Trigger] Changes:', changesSummary);
-                
-                sendUpdateEmails(event._id.toString(), changesSummary)
-                    .then(result => {
-                        console.log('[Email Trigger] Email sending result:', result);
-                    })
-                    .catch(err => {
-                        console.error('[Email Trigger] Error sending update emails:', err);
-                    });
+                // Email notifications (async, non-blocking)
+                sendUpdateEmails(eventId, changeSummary)
+                    .then(result => console.log('[EMAIL] Sent successfully:', result))
+                    .catch(error => console.error('[EMAIL] Error:', error));
             }
         }
 
-        console.log('[Event Update] RIGHT BEFORE UPDATE:');
-        console.log('[Event Update] newStartDateTime:', newStartDateTime);
-        console.log('[Event Update] newEndDateTime:', newEndDateTime);
-        
-        // Use findByIdAndUpdate to ensure atomic update and proper datetime persistence
-        const updateData = {
-            title: formData.get('title'),
-            description: formData.get('description'),
-            images: imageUrls,
-            startDateTime: newStartDateTime,
-            endDateTime: newEndDateTime,
-            status: currentStatus,
-            eventType: formData.get('eventType'),
-            theme: formData.get('theme') || '',
-            dressCode: formData.get('dressCode') || '',
-            location: formData.get('location'),
-            needReservation: newNeedReservation,
-            capacity: newCapacity,
-            reservationDeadline: formData.get('reservationDeadline') ? new Date(formData.get('reservationDeadline')) : null,
-            host: formData.get('host'),
-            instagram: newInstagram,
-            lastUpdated: new Date()
-        };
-        
-        const updatedEvent = await Blogmodel.findByIdAndUpdate(
-            eventId,
-            { $set: updateData },
-            { new: true, runValidators: true }
-        );
-        
-        console.log("Event Updated - Saved to DB");
-        console.log('[Event Update] AFTER UPDATE:');
-        console.log('[Event Update] Updated event startDateTime:', updatedEvent.startDateTime);
-        console.log('[Event Update] Updated event endDateTime:', updatedEvent.endDateTime);
-
-        // Revalidate paths to ensure fresh data
+        // 15. Revalidate Next.js cache
+        revalidatePath('/');
         revalidatePath('/me');
         revalidatePath(`/blogs/${eventId}`);
-        revalidatePath('/');
+        console.log('[CACHE] Revalidated paths');
 
-        return NextResponse.json({success:true, msg:"Event Updated Successfully"});
+        console.log('=== EVENT UPDATE COMPLETED SUCCESSFULLY ===\n');
+        return NextResponse.json({ 
+            success: true, 
+            msg: 'Event Updated Successfully' 
+        });
+
     } catch (error) {
-        console.error(error);
-        return NextResponse.json({success: false, msg: "Error updating event"}, { status: 500 });
+        console.error('=== EVENT UPDATE ERROR ===');
+        console.error('Error:', error.message);
+        console.error('Stack:', error.stack);
+        return NextResponse.json({ 
+            success: false, 
+            msg: 'Error updating event: ' + error.message 
+        }, { status: 500 });
     }
 }
 
