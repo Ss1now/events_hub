@@ -24,6 +24,14 @@ export const metadata = {
     description: "Find parties, pregames, and events happening at Rice University",
     url: 'https://riceparties.com',
     siteName: 'Rice Parties',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Rice Parties - Campus Events',
+      },
+    ],
     locale: 'en_US',
     type: 'website',
   },
@@ -31,6 +39,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "Rice Parties - Find Campus Events",
     description: "Find parties, pregames, and events happening at Rice University",
+    images: ['/opengraph-image.png'],
   },
 };
 

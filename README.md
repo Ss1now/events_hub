@@ -1,6 +1,6 @@
 # Rice Parties
 
-A modern event management platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
+An event platform for the Rice University community. Discover campus events, create your own gatherings, and connect with other students.
 
 **Version 2.0.0** - Public Release 🎉
 
