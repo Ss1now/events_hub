@@ -79,8 +79,8 @@ Browse and search for events happening on campus.
 
 **Search and Filter**
 - Search by event name, location, or type
-- Filter by category: **Official Events**, Upcoming, Happening Now, or Past
-- Official Events include residential college publics and university-hosted events
+- Filter by category: **Public Events**, Upcoming, Happening Now, or Past
+- Public Events include residential college publics and university-hosted events
 - View event details including time, location, and host information
 
 **Event Information**

@@ -21,7 +21,12 @@ export default function Page() {
         needReservation:false,
         capacity:0,
         reservationDeadline:'',
-        host:''
+        host:'',
+        publicEventType:'none',
+        deadMax:0,
+        chillMax:0,
+        packedMax:0,
+        peakMax:0
     })
 
     const onChangeHandler = (event) =>{
@@ -46,6 +51,7 @@ export default function Page() {
         formData.append('capacity', data.capacity);
         formData.append('reservationDeadline', data.reservationDeadline);
         formData.append('host', data.host);
+        // publicEventType defaults to 'none' - tags assigned later in edit page
 
         const response = await axios.post('/api/blog', formData);
         if (response.data.success) {
@@ -147,6 +153,7 @@ export default function Page() {
                 <p className='text-xl'>Host</p>
                 <input name='host' onChange={onChangeHandler} value={data.host} className='w-full sm:w-[500px] mt-4 px-4 py-3 border' type='text' placeholder='Howard Zhao' required/>
             </div>
+
             <br />
             <button type="submit" className='mt-8 w-40 bg-black text-white'>Post</button>
         </form>

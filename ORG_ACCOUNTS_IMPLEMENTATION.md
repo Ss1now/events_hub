@@ -7,18 +7,18 @@
 1. **Organization Accounts System**
    - Registration option: "I am an organization"
    - Instagram-style verified badge for organizations
-   - Organization events automatically appear in "Official Events" tab
+   - Organization events automatically appear in "Public Events" tab
 
 2. **Parties vs Club Events Separation**
    - Toggle switch to switch between Parties and Club Events pages
    - Separate pages with identical functionality
    - Event creators choose which page their event appears on
 
-3. **Enhanced Official Events Logic**
-   - Official Events tab shows:
-     - Admin-created official events (residential_college/university)
+3. **Enhanced Public Events Logic**
+   - Public Events tab shows:
+     - Admin-created public events (residential_college/university)
      - Events from organization accounts
-   - Official events ALSO appear in their time-based categories
+   - Public events ALSO appear in their time-based categories
 
 ## New Features
 
@@ -28,13 +28,13 @@
 New checkbox during signup:
 ```
 ☐ I am an organization
-   Get a verified badge and post official events
+   Get a verified badge and post public events
    (for clubs, residential colleges, and university organizations)
 ```
 
 When checked:
 - Account gets `isOrganization: true` flag
-- All events posted get treated as official
+- All events posted get treated as public
 - Verified badge appears next to their name
 
 ### 2. Verified Badge
@@ -63,7 +63,7 @@ Located at top of both pages:
 
 Identical structure to Parties page:
 - Search bar (blue theme instead of purple)
-- Filter tabs: Official Events | Upcoming | Happening Now | Past
+- Filter tabs: Public Events | Upcoming | Happening Now | Past
 - Same event cards and functionality
 - Different color scheme (blue/green tones)
 
@@ -110,7 +110,7 @@ eventPageType: {
 2. Account gets verified badge
 3. Create events, choose Party or Club Event
 4. Events appear on corresponding page
-5. Events ALSO appear in "Official Events" tab
+5. Events ALSO appear in "Public Events" tab
 6. Events appear in time-based tabs
 7. Verified badge shows on all their events
 
@@ -118,20 +118,20 @@ eventPageType: {
 1. Create events via Admin Panel
 2. Choose eventCategory (residential_college/university)
 3. Choose eventPageType (party/club_event)
-4. Events appear in "Official Events" tab
+4. Events appear in "Public Events" tab
 5. Events appear on chosen page (parties/club events)
 6. Events appear in time-based tabs
 
-## Official Events Tab Logic
+## Public Events Tab Logic
 
 Shows events from THREE sources:
-1. **Admin-created official events** (`eventCategory: 'residential_college'` or `'university'`)
+1. **Admin-created public events** (`eventCategory: 'residential_college'` or `'university'`)
 2. **Organization account events** (`authorId.isOrganization: true`)
 3. **Both types combined**, regardless of time status
 
 This means:
-- A Baker College party (admin-created) appears in: Official Events + Parties + Future (if upcoming)
-- A club event from org account appears in: Official Events + Club Events + Future (if upcoming)
+- A Baker College party (admin-created) appears in: Public Events + Parties + Future (if upcoming)
+- A club event from org account appears in: Public Events + Club Events + Future (if upcoming)
 - All three tabs can show the same event simultaneously
 
 ## File Structure
@@ -178,7 +178,7 @@ components/
 ```
 [🎉 Parties] [🎯 Club Events]
      ↓
-[Official Events] [Upcoming] [Happening Now] [Past]
+[Public Events] [Upcoming] [Happening Now] [Past]
      ↓
 Party events only, sorted by selected filter
 ```
@@ -187,7 +187,7 @@ Party events only, sorted by selected filter
 ```
 [🎉 Parties] [🎯 Club Events]
      ↓
-[Official Events] [Upcoming] [Happening Now] [Past]
+[Public Events] [Upcoming] [Happening Now] [Past]
      ↓
 Club events only, sorted by selected filter
 ```
@@ -229,11 +229,11 @@ This allows frontend to check `event.authorId.isOrganization`
 
 ✅ Register as organization
 ✅ Verified badge appears on events
-✅ Organization events appear in Official Events tab
+✅ Organization events appear in Public Events tab
 ✅ Page toggle switches between Parties and Club Events
 ✅ Events respect party/club_event selection
 ✅ Filters work on both pages
-✅ Official events appear in time-based tabs too
+✅ Public events appear in time-based tabs too
 ✅ Search works on both pages
 
 ## Next Steps / Enhancements
@@ -251,7 +251,7 @@ Possible future improvements:
 The platform now supports:
 - ✅ Organization accounts with verified badges
 - ✅ Separate Parties and Club Events pages
-- ✅ Enhanced Official Events logic (admin + org events)
+- ✅ Enhanced Public Events logic (admin + org events)
 - ✅ Events appear in multiple tabs simultaneously
 - ✅ Visual distinction for organizations
 - ✅ Complete separation of content types while maintaining shared functionality

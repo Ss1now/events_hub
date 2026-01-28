@@ -1,17 +1,17 @@
-# Official Events Feature
+# Public Events Feature
 
 ## Overview
 
-The Official Events category is designed for university-sanctioned and residential college-hosted events. This includes:
+The Public Events category is designed for university-sanctioned and residential college-hosted events. This includes:
 - **Residential College Publics** - Scheduled parties hosted by residential colleges
 - **Pub Theme Nights** - Weekly recurring events at the campus pub with varying themes
-- **University-Wide Events** - Official campus events
+- **University-Wide Events** - Public campus events
 
 ## Key Features
 
-### 1. Official Events Tab
-Users can filter events by clicking the "Official Events" tab on the homepage alongside:
-- **Official Events** - Shows all residential college and university events
+### 1. Public Events Tab
+Users can filter events by clicking the "Public" tab on the homepage alongside:
+- **Public** - Shows all residential college and university events
 - **Upcoming** - Future student-created events
 - **Happening Now** - Live student-created events  
 - **Past** - Past student-created events
@@ -52,9 +52,9 @@ For weekly events like Pub nights:
 
 ## Admin Usage
 
-### Creating Official Events
+### Creating Public Events
 
-1. Navigate to Admin Panel → Create Official Event
+1. Navigate to Admin Panel → Create Public Event
 2. Select **Event Category**:
    - Residential College Event
    - University-Wide Event
@@ -129,8 +129,8 @@ To update a pub theme or recurring event theme:
 
 ### Filter Behavior
 
-**Official Tab:**
-- Shows ALL official events regardless of status (future/live/past)
+**Public Tab:**
+- Shows ALL public events regardless of status (future/live/past)
 - Filters by `eventCategory === 'residential_college' OR 'university'`
 
 **Other Tabs:**
@@ -178,7 +178,7 @@ To update a pub theme or recurring event theme:
 
 ### Modified Files:
 1. `/lib/models/blogmodel.js` - Added recurring event fields
-2. `/components/bloglist.jsx` - Added Official tab and filter logic
+2. `/components/bloglist.jsx` - Added Public tab and filter logic
 3. `/components/blogitem.jsx` - Added badges and theme display
 4. `/app/blogs/[id]/page.jsx` - Added badges and theme on detail page
 5. `/app/admin/postevent/page.jsx` - Added recurring event form fields
@@ -195,7 +195,7 @@ Potential additions:
 
 ## Notes
 
-- Official events appear ONLY in the "Official Events" tab
+- Public events appear ONLY in the "Public" tab
 - Student events appear in Future/Live/Past tabs
-- This separation provides clear distinction between official and student activities
+- This separation provides clear distinction between public and student activities
 - Weekly themes can be updated anytime by admins without creating new events

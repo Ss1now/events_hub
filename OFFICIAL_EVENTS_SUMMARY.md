@@ -1,19 +1,19 @@
-# Official Events Implementation Summary
+# Public Events Implementation Summary
 
 ## What Was Built
 
-I've implemented a complete **Official Events** category for your events hub, designed specifically for:
+I've implemented a complete **Public Events** category for your events hub, designed specifically for:
 - **Residential College Publics** (parties hosted by Baker, Wiess, etc.)
 - **Weekly Pub Nights** with rotating themes
 - **University-wide events**
 
 ## Key Features
 
-### 1. New "Official Events" Tab
-- Added 4th filter tab on homepage: **Official Events** | Upcoming | Happening Now | Past
-- Official tab shows all residential college and university events
+### 1. New "Public Events" Tab
+- Added 4th filter tab on homepage: **Public Events** | Upcoming | Happening Now | Past
+- Public tab shows all residential college and university events
 - Other tabs show only student-created events
-- Clean separation between official and student activities
+- Clean separation between public and student activities
 
 ### 2. Visual Distinction
 **Residential College Events:**
@@ -42,7 +42,7 @@ Perfect for **weekly Pub nights**:
 2. Select "Residential College Event"
 3. Enter organizer (e.g., "Baker College")
 4. Fill in event details normally
-5. Event appears in Official Events tab with special badge
+5. Event appears in Public Events tab with special badge
 
 ### For Weekly Pub Nights:
 1. Admin creates event and checks "Recurring Event"
@@ -65,7 +65,7 @@ New fields in Admin Post Event page:
 
 **Homepage:**
 ```
-[Official Events] [Upcoming] [Happening Now] [Past]
+[Public Events] [Upcoming] [Happening Now] [Past]
 ```
 
 **Event Card Display:**
@@ -94,11 +94,11 @@ New fields in Admin Post Event page:
    - Added: `isRecurring`, `recurrencePattern`, `weeklyTheme`, `themeAnnouncementDate`
 
 2. **Homepage** (`components/bloglist.jsx`)
-   - Added Official Events tab
-   - Updated filter logic to separate official/user events
+   - Added Public Events tab
+   - Updated filter logic to separate public/user events
 
 3. **Event Cards** (`components/blogitem.jsx`)
-   - Added official event badges
+   - Added public event badges
    - Added recurring event badge
    - Added weekly theme display section
 
@@ -147,9 +147,9 @@ You might want to:
 ## Summary
 
 You now have a clean, intuitive way to:
-- Distinguish official events from student events
+- Distinguish public events from student events
 - Manage recurring Pub nights with themes
 - Update themes weekly without creating new events
-- Give official events special visual prominence
+- Give public events special visual prominence
 
-The implementation keeps official and student events separate while maintaining all existing functionality for ratings, RSVPs, and notifications.
+The implementation keeps public and student events separate while maintaining all existing functionality for ratings, RSVPs, and notifications.

@@ -13,6 +13,7 @@ export default function PostEventPage() {
     const [images,setImages] = useState([]);
     const [showCreatedModal, setShowCreatedModal] = useState(false);
     const [createdEvent, setCreatedEvent] = useState(null);
+    const [publicEvents, setPublicEvents] = useState([]);
     const [data,setData] = useState({
         title:'',
         description:'',
@@ -24,7 +25,8 @@ export default function PostEventPage() {
         capacity:0,
         host:'',
         eventPageType:'party',
-        isCollegeOnly:false
+        isCollegeOnly:false,
+        pregameFor:''
     })
     const [userCollege, setUserCollege] = useState('')
 
@@ -53,7 +55,28 @@ export default function PostEventPage() {
             }
         };
         
+        // Fetch available pub/public events for pregame linking
+        const fetchPublicEvents = async () => {
+            try {
+                const response = await axios.get('/api/public-events', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.data.success) {
+                    setPublicEvents(response.data.events);
+                }
+            } catch (error) {
+                console.error('Failed to fetch public events:', error);
+            }
+        };
+        
         fetchUserProfile();
+        fetchPublicEvents();
+        
+        // Refresh public events every 2 minutes
+        const interval = setInterval(fetchPublicEvents, 120000);
+        return () => clearInterval(interval);
     }, [router]);
 
     const onChangeHandler = (event) =>{
@@ -111,6 +134,9 @@ export default function PostEventPage() {
         formData.append('isCollegeOnly', String(data.isCollegeOnly));
         if (data.isCollegeOnly && userCollege) {
             formData.append('targetCollege', userCollege);
+        }
+        if (data.pregameFor) {
+            formData.append('pregameFor', data.pregameFor);
         }
 
         try {
@@ -328,6 +354,38 @@ export default function PostEventPage() {
                                         )}
                                     </div>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Pregame Linking (only for party events) */}
+                        {data.eventPageType === 'party' && publicEvents.length > 0 && (
+                            <div className='bg-gradient-to-r from-pink-900/30 to-orange-900/30 border-2 border-pink-500/40 rounded-lg p-5'>
+                                <p className='text-xl font-medium mb-3 text-white flex items-center gap-2'>
+                                    <svg className='w-6 h-6 text-pink-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
+                                    </svg>
+                                    Link to Public/Pub Event (Optional)
+                                </p>
+                                <select
+                                    name='pregameFor'
+                                    value={data.pregameFor}
+                                    onChange={onChangeHandler}
+                                    className='w-full px-4 py-3 border-2 border-pink-500/30 bg-gray-800/50 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent'
+                                >
+                                    <option value=''>None - This is not a pregame</option>
+                                    {publicEvents.map(event => (
+                                        <option key={event._id} value={event._id}>
+                                            {event.publicEventType.toUpperCase()} - {event.title} 
+                                            {' at '}{new Date(event.startDateTime).toLocaleDateString()} 
+                                            {' '}{new Date(event.startDateTime).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className='text-sm text-gray-400 mt-2'>
+                                    {data.pregameFor 
+                                        ? '✓ This pregame will appear on the linked event\'s page' 
+                                        : 'Link your pregame to a public or pub event to help people find it'}
+                                </p>
                             </div>
                         )}
                         

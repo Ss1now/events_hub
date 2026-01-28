@@ -24,7 +24,7 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
         );
     };
     
-    const isOfficial = eventCategory === 'residential_college' || eventCategory === 'university';
+    const isPublic = eventCategory === 'residential_college' || eventCategory === 'university';
     
     return (
         <tr className='hover:bg-gray-50 transition-colors'>
@@ -46,9 +46,9 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
                     <div className='text-sm text-gray-900 font-medium max-w-md truncate'>
                         {title ? title : "N/A"}
                     </div>
-                    {isOfficial && (
+                    {isPublic && (
                         <span className='bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0'>
-                            Official
+                            Public
                         </span>
                     )}
                 </div>
@@ -85,10 +85,10 @@ export default function BlogTableItem({host, title, date, status, deleteBlog, mo
                     </Link>
                     <button
                         onClick={() => onMakeOfficial(mongoId, eventCategory)}
-                        className={`${isOfficial ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' : 'text-purple-600 hover:text-purple-900 hover:bg-purple-50'} p-2 rounded-lg transition-colors inline-flex items-center gap-1`}
-                        title={isOfficial ? 'Remove Official Status' : 'Make Official Event'}
+                        className={`${isPublic ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' : 'text-purple-600 hover:text-purple-900 hover:bg-purple-50'} p-2 rounded-lg transition-colors inline-flex items-center gap-1`}
+                        title={isPublic ? 'Remove Public Status' : 'Make Public Event'}
                     >
-                        <svg className='w-5 h-5' fill={isOfficial ? 'currentColor' : 'none'} stroke='currentColor' viewBox='0 0 24 24'>
+                        <svg className='w-5 h-5' fill={isPublic ? 'currentColor' : 'none'} stroke='currentColor' viewBox='0 0 24 24'>
                             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
                         </svg>
                     </button>

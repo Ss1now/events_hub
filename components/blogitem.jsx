@@ -9,9 +9,10 @@ import { useRouter } from 'next/navigation';
 import SuccessModal from './SuccessModal';
 import StarRating from './StarRating';
 import LiveRatingButton from './LiveRatingButton';
+import LiveMetricsBar from './LiveMetricsBar';
 import VerifiedBadge from './VerifiedBadge';
 
-const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer, isRecurring, recurrencePattern, weeklyTheme, authorId}) => {
+const BlogItem = ({title, description, category, images, id, status, eventType, location, needReservation, reserved, capacity, startDateTime, endDateTime, host, cohosts = [], interestedUsers = [], reservedUsers = [], reservationDeadline, averageLiveRating, totalLiveRatings, eventCategory, organizer, isRecurring, recurrencePattern, weeklyTheme, authorId, publicEventType}) => {
     console.log('BlogItem ID:', id);
     const router = useRouter();
     const [interestedCount, setInterestedCount] = useState(interestedUsers?.length || 0);
@@ -274,7 +275,7 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 
                 {/* Tags/Categories */}
                 <div className='flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4'>
-                    {/* Official Event Badge */}
+                    {/* Public Event Badge */}
                     {eventCategory === 'residential_college' && (
                         <span className='bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(236,72,153,0.5)]'>
                             <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
@@ -301,6 +302,16 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                             {recurrencePattern === 'weekly' ? 'WEEKLY' : 'MONTHLY'}
                         </span>
                     )}
+                    {publicEventType === 'pub' && (
+                        <span className='bg-gradient-to-r from-amber-600 to-yellow-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(251,191,36,0.5)] animate-pulse'>
+                            🍺 PUB
+                        </span>
+                    )}
+                    {publicEventType === 'public' && (
+                        <span className='bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(37,99,235,0.5)] animate-pulse'>
+                            🎉 PUBLIC
+                        </span>
+                    )}
                     {isCapacityReached && (
                         <span className='bg-red-500 text-white text-xs px-3 py-1 rounded-full font-medium'>FULL</span>
                     )}
@@ -309,8 +320,15 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                     )}
                 </div>
 
-                {/* Live Rating Display - only for live events */}
-                {status === 'live' && (
+                {/* Live Metrics Bar - for pub/public events */}
+                {(publicEventType === 'pub' || publicEventType === 'public') && status === 'live' && (
+                    <div className='mb-3'>
+                        <LiveMetricsBar eventId={id} />
+                    </div>
+                )}
+                
+                {/* Live Rating Display - only for non-pub/public live events */}
+                {status === 'live' && publicEventType !== 'pub' && publicEventType !== 'public' && (
                     <div className='mb-4'>
                         <LiveRatingButton 
                             eventId={id}

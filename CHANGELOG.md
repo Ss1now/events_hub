@@ -119,16 +119,16 @@ This version marks the official public release of Rice Parties with a complete v
 
 ### Added
 
-#### Official Events System
+#### Public Events System
 - **Event Categorization System**
   - Added `eventCategory` field to event model with three types:
     - `'user'` - Regular user-posted events (default)
-    - `'residential_college'` - Official residential college events
-    - `'university'` - University-wide official events
-  - Added `organizer` field to store official organizer name (e.g., "Baker College", "Wiess College")
+    - `'residential_college'` - Public residential college events
+    - `'university'` - University-wide public events
+  - Added `organizer` field to store public organizer name (e.g., "Baker College", "Wiess College")
   
-- **Admin Official Event Posting Interface**
-  - Created `/admin/postevent` page for manually posting official events
+- **Admin Public Event Posting Interface**
+  - Created `/admin/postevent` page for manually posting public events
   - Special UI with highlighted category and organizer fields
   - Dropdown to select between Residential College and University-Wide events
   - All standard event features (images, RSVP, capacity, etc.)
@@ -136,12 +136,12 @@ This version marks the official public release of Rice Parties with a complete v
 - **Visual Event Badges**
   - Residential College events display blue badge with college icon and organizer name
   - University events display purple badge with university icon and organizer name
-  - Badges appear prominently on event cards to distinguish official events from user events
+  - Badges appear prominently on event cards to distinguish public events from user events
   
 - **Enhanced Admin Navigation**
-  - Added "Post Official Event" button in admin sidebar
+  - Added "Post Public Event" button in admin sidebar
   - Distinguished from "Create Personal Event" option
-  - Special highlighting and badge icon for official event posting
+  - Special highlighting and badge icon for public event posting
 
 ### Changed
 - Updated event model schema to include categorization fields

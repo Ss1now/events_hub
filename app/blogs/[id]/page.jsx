@@ -13,6 +13,12 @@ import ReviewList from '@/components/ReviewList';
 import StarRating from '@/components/StarRating';
 import LiveRatingButton from '@/components/LiveRatingButton';
 import ShareModal from '@/components/ShareModal';
+import PregamesList from '@/components/PregamesList';
+import LiveMetrics from '@/components/LiveMetrics';
+import LiveMetricsBar from '@/components/LiveMetricsBar';
+import LiveFeedbackForm from '@/components/LiveFeedbackForm';
+import LiveComments from '@/components/LiveComments';
+import WhatsMoveNow from '@/components/WhatsMoveNow';
 
 
 const Page = ({ params }) => {
@@ -269,7 +275,7 @@ const Page = ({ params }) => {
 
                             {/* Tags */}
                             <div className='flex flex-wrap gap-2 mb-4'>
-                                {/* Official Event Badges */}
+                                {/* Public Event Badges */}
                                 {data.eventCategory === 'residential_college' && (
                                     <span className='bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-[0_0_10px_rgba(236,72,153,0.5)]'>
                                         <svg className='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'>
@@ -315,8 +321,15 @@ const Page = ({ params }) => {
                                 </div>
                             )}
 
-                            {/* Live Rating Display - prominent placement for live events */}
-                            {data.status === 'live' && (
+                            {/* Live Metrics Bar - for pub/public events */}
+                            {data.status === 'live' && (data.publicEventType === 'pub' || data.publicEventType === 'public') && (
+                                <div className='mb-4'>
+                                    <LiveMetricsBar eventId={id} />
+                                </div>
+                            )}
+                            
+                            {/* Live Rating Display - prominent placement for non-pub/public live events */}
+                            {data.status === 'live' && data.publicEventType !== 'pub' && data.publicEventType !== 'public' && (
                                 <div className='mb-4'>
                                     <LiveRatingButton 
                                         eventId={id}
@@ -571,6 +584,45 @@ END:VCALENDAR`;
                         </div>
                     </div>
                 </div>
+
+                {/* Pub/Public Event Features */}
+                {(data.publicEventType === 'pub' || data.publicEventType === 'public') && (
+                    <>
+                        {/* Future Events: Show Pregames */}
+                        {data.status === 'future' && (
+                            <div className='mt-6'>
+                                <PregamesList eventId={id} />
+                            </div>
+                        )}
+
+                        {/* Live Events: Show Metrics, Feedback Form, and Comments */}
+                        {data.status === 'live' && (
+                            <div className='mt-6 space-y-6'>
+                                {/* Live Metrics */}
+                                <LiveMetrics eventId={id} eventType={data.publicEventType} />
+                                
+                                {/* Submit Feedback */}
+                                <LiveFeedbackForm 
+                                    eventId={id} 
+                                    eventType={data.publicEventType}
+                                    onFeedbackSubmitted={() => {
+                                        // Metrics will auto-refresh
+                                    }}
+                                />
+                                
+                                {/* Live Comments */}
+                                <LiveComments eventId={id} isPast={false} />
+                            </div>
+                        )}
+
+                        {/* Past Events: Show "What's the Move Now" for pub/public events */}
+                        {data.status === 'past' && (data.publicEventType === 'pub' || data.publicEventType === 'public') && (
+                            <div className='mt-6'>
+                                <WhatsMoveNow eventId={id} />
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {/* Ratings & Reviews Section - Only for Past Events */}
                 {data.status === 'past' && (

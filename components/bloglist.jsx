@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const BlogList = () => {
 
-        const [menu, setMenu] = useState("official");
+        const [menu, setMenu] = useState("public");
         const [searchTerm, setSearchTerm] = useState("");
         const [blogs, setBlogs] = useState([]);
         const [userCollege, setUserCollege] = useState('');
@@ -55,23 +55,34 @@ const BlogList = () => {
         const filteredEvents = blogs.filter((item) => {
             let matchesCategory = false;
             
-            if (menu === "official") {
-                // Official events: from admin-created official categories OR from organization accounts
+            if (menu === "public") {
+                // Public events: from admin-created public categories OR from organization accounts
+                // Also include pub/public tagged events (unless they're past)
                 // Exclude college-only events from other colleges
-                const isOfficial = item.eventCategory === 'residential_college' || 
+                const isPublic = item.eventCategory === 'residential_college' || 
                                 item.eventCategory === 'university' ||
                                 (item.authorId && item.authorId.isOrganization);
+                const isPubOrPublicTagged = (item.publicEventType === 'pub' || item.publicEventType === 'public') && item.status !== 'past';
                 const isAccessible = !item.isCollegeOnly || item.targetCollege === userCollege;
-                matchesCategory = isOfficial && isAccessible;
+                matchesCategory = (isPublic || isPubOrPublicTagged) && isAccessible;
             } else if (menu === "mycollege") {
                 // My College: only events marked as college-only for user's college
                 matchesCategory = item.isCollegeOnly && item.targetCollege === userCollege;
             } else {
                 // For future/live/past, show all party events in their time categories (including organization events)
+                // Pub/public tagged events appear in BOTH public category AND happening now when live
                 // Exclude college-only events from other colleges
                 const isInTimeCategory = item.status === menu;
+                const isPubOrPublicTagged = item.publicEventType === 'pub' || item.publicEventType === 'public';
                 const isAccessible = !item.isCollegeOnly || item.targetCollege === userCollege;
-                matchesCategory = isInTimeCategory && isAccessible;
+                
+                // Pub/public events should appear in "live" (Happening Now) when they're live
+                // But NOT in "future" (they stay in public category only for future)
+                if (isPubOrPublicTagged && menu === 'future') {
+                    matchesCategory = false;
+                } else {
+                    matchesCategory = isInTimeCategory && isAccessible;
+                }
             }
             
             const matchesSearch = searchTerm === "" || 
@@ -81,6 +92,21 @@ const BlogList = () => {
                 item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.host.toLowerCase().includes(searchTerm.toLowerCase());
             return matchesCategory && matchesSearch;
+        });
+
+        // Sort events: prioritize live pub/public events in the public category
+        const sortedEvents = [...filteredEvents].sort((a, b) => {
+            // In public category, prioritize live pub/public events at the very top
+            if (menu === 'public') {
+                const aIsLivePubPublic = a.status === 'live' && (a.publicEventType === 'pub' || a.publicEventType === 'public');
+                const bIsLivePubPublic = b.status === 'live' && (b.publicEventType === 'pub' || b.publicEventType === 'public');
+                
+                if (aIsLivePubPublic && !bIsLivePubPublic) return -1;
+                if (!aIsLivePubPublic && bIsLivePubPublic) return 1;
+            }
+            
+            // Otherwise sort by start date (earliest first)
+            return new Date(a.startDateTime) - new Date(b.startDateTime);
         });
 
     return (
@@ -103,7 +129,7 @@ const BlogList = () => {
 
             {/* Filter Tabs */}
             <div className='flex justify-center gap-2 sm:gap-3 md:gap-4 mb-4 md:mb-8 px-4 overflow-x-auto'>
-                <button onClick={()=>setMenu('official')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="official"?'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/10'}`}>Official Events</button>
+                <button onClick={()=>setMenu('public')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="public"?'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/10'}`}>Public</button>
                 {userCollege && (
                     <button onClick={()=>setMenu('mycollege')} className={`px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full font-medium transition-all text-xs sm:text-sm whitespace-nowrap ${menu==="mycollege"?'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-[0_0_20px_rgba(99,102,241,0.6)]':'text-gray-300 hover:bg-gray-800/50 border border-purple-500/10'}`}>My College</button>
                 )}
@@ -115,8 +141,8 @@ const BlogList = () => {
             {/* Event Cards */}
             <div className='max-w-6xl mx-auto px-4 sm:px-5'>
                 <div className='space-y-4 md:space-y-6'>
-                    {filteredEvents.length > 0 ? (
-                        filteredEvents.map((item,index)=>{
+                    {sortedEvents.length > 0 ? (
+                        sortedEvents.map((item,index)=>{
                             return <BlogItem 
                                 key={item._id} 
                                 id={item._id} 
@@ -144,6 +170,7 @@ const BlogList = () => {
                                 isRecurring={item.isRecurring}
                                 recurrencePattern={item.recurrencePattern}
                                 weeklyTheme={item.weeklyTheme}
+                                publicEventType={item.publicEventType}
                                 authorId={item.authorId}
                             />
                         })

@@ -218,7 +218,16 @@ export async function POST(request){
             weeklyTheme: formData.get('weeklyTheme') || '',
             eventPageType: formData.get('eventPageType') || 'party',
             isCollegeOnly: formData.get('isCollegeOnly') === 'true',
-            targetCollege: formData.get('isCollegeOnly') === 'true' ? (formData.get('targetCollege') || null) : null
+            targetCollege: formData.get('isCollegeOnly') === 'true' ? (formData.get('targetCollege') || null) : null,
+            // Pub/Public event fields
+            publicEventType: formData.get('publicEventType') || 'none',
+            capacityProfile: formData.get('publicEventType') !== 'none' ? {
+                deadMax: parseInt(formData.get('deadMax')) || 0,
+                chillMax: parseInt(formData.get('chillMax')) || 0,
+                packedMax: parseInt(formData.get('packedMax')) || 0,
+                peakMax: parseInt(formData.get('peakMax')) || 0
+            } : undefined,
+            pregameFor: formData.get('pregameFor') || null
         }
 
         console.log('Creating blog with data:', JSON.stringify(blogData, null, 2));
@@ -584,13 +593,13 @@ export async function PATCH(request){
                     return NextResponse.json({ success: false, msg: 'Invalid event category' }, { status: 400 });
                 }
                 
-                await blogModel.findByIdAndUpdate(eventId, {
+                await Blogmodel.findByIdAndUpdate(eventId, {
                     eventCategory: eventCategory
                 });
                 
                 return NextResponse.json({ 
                     success: true, 
-                    msg: eventCategory === 'user' ? 'Official status removed' : 'Event marked as official',
+                    msg: eventCategory === 'user' ? 'Public status removed' : 'Event marked as public',
                     eventCategory: eventCategory
                 });
             
@@ -610,7 +619,7 @@ export async function PATCH(request){
                 }
                 
                 // Update event ownership
-                await blogModel.findByIdAndUpdate(eventId, {
+                await Blogmodel.findByIdAndUpdate(eventId, {
                     authorId: newOwnerId,
                     host: newOwner.name || newOwner.username
                 });
@@ -633,7 +642,7 @@ export async function PATCH(request){
                 let updatedEvent;
                 if (isInterested) {
                     // Remove from interested
-                    updatedEvent = await blogModel.findByIdAndUpdate(
+                    updatedEvent = await Blogmodel.findByIdAndUpdate(
                         eventId,
                         { $pull: { interestedUsers: userId } },
                         { new: true }
@@ -644,7 +653,7 @@ export async function PATCH(request){
                     console.log(`User ${userId} removed from interested for event ${eventId}`);
                 } else {
                     // Add to interested
-                    updatedEvent = await blogModel.findByIdAndUpdate(
+                    updatedEvent = await Blogmodel.findByIdAndUpdate(
                         eventId,
                         { $addToSet: { interestedUsers: userId } },
                         { new: true }
@@ -691,7 +700,7 @@ export async function PATCH(request){
                 }
 
                 // Add to reserved
-                await blogModel.findByIdAndUpdate(
+                await Blogmodel.findByIdAndUpdate(
                     eventId,
                     { $addToSet: { reservedUsers: userId } }
                 );
@@ -699,7 +708,7 @@ export async function PATCH(request){
                     $addToSet: { reservedEvents: eventId }
                 });
                 
-                const reservedEvent = await blogModel.findById(eventId);
+                const reservedEvent = await Blogmodel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'Successfully reserved',
@@ -719,7 +728,7 @@ export async function PATCH(request){
                 }
 
                 // Remove from reserved
-                await blogModel.findByIdAndUpdate(
+                await Blogmodel.findByIdAndUpdate(
                     eventId,
                     { $pull: { reservedUsers: userId } }
                 );
@@ -727,7 +736,7 @@ export async function PATCH(request){
                     $pull: { reservedEvents: eventId }
                 });
                 
-                const cancelledEvent = await blogModel.findById(eventId);
+                const cancelledEvent = await Blogmodel.findById(eventId);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'RSVP cancelled',
@@ -740,6 +749,12 @@ export async function PATCH(request){
         }
     } catch (error) {
         console.error('Error processing guest action:', error);
-        return NextResponse.json({ success: false, msg: 'Error processing request' }, { status: 500 });
+        console.error('Error details:', error.message);
+        console.error('Error stack:', error.stack);
+        return NextResponse.json({ 
+            success: false, 
+            msg: 'Error processing request',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        }, { status: 500 });
     }
 }

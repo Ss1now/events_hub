@@ -25,7 +25,7 @@ const ClubEventsList = () => {
 
         // Filter events by status and search term
         const filteredEvents = events.filter((item) => {
-            // Only show time-based categories (future/live/past) - no official category for club events
+            // Only show time-based categories (future/live/past) - no public category for club events
             const matchesCategory = item.status === menu;
             
             const matchesSearch = searchTerm === "" || 

@@ -115,10 +115,10 @@ export default function Page() {
     }
     
     const handleMakeOfficial = async (mongoId, currentCategory) => {
-        const isCurrentlyOfficial = currentCategory === 'residential_college' || currentCategory === 'university';
+        const isCurrentlyPublic = currentCategory === 'residential_college' || currentCategory === 'university';
         
-        if (isCurrentlyOfficial) {
-            // Remove official status
+        if (isCurrentlyPublic) {
+            // Remove public status
             updateEventCategory(mongoId, 'user');
         } else {
             // Show modal to select category
@@ -472,12 +472,12 @@ export default function Page() {
                 Showing {filteredBlogs.length} of {blogs.length} events
             </div>
 
-            {/* Official Event Modal */}
+            {/* Public Event Modal */}
             {showOfficialModal && (
                 <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
                     <div className='bg-white rounded-lg p-6 max-w-md w-full mx-4'>
-                        <h3 className='text-xl font-bold text-gray-900 mb-4'>Make Event Official</h3>
-                        <p className='text-gray-600 mb-6'>Select the official category for this event:</p>
+                        <h3 className='text-xl font-bold text-gray-900 mb-4'>Make Event Public</h3>
+                        <p className='text-gray-600 mb-6'>Select the public category for this event:</p>
                         
                         <div className='space-y-3'>
                             <button
@@ -492,7 +492,7 @@ export default function Page() {
                                     </div>
                                     <div>
                                         <div className='font-semibold text-gray-900'>Residential College</div>
-                                        <div className='text-sm text-gray-500'>Official college-hosted event</div>
+                                        <div className='text-sm text-gray-500'>Public college-hosted event</div>
                                     </div>
                                 </div>
                             </button>
@@ -509,7 +509,7 @@ export default function Page() {
                                     </div>
                                     <div>
                                         <div className='font-semibold text-gray-900'>Rice University</div>
-                                        <div className='text-sm text-gray-500'>Official university-hosted event</div>
+                                        <div className='text-sm text-gray-500'>Public university-hosted event</div>
                                     </div>
                                 </div>
                             </button>
