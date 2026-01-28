@@ -8,17 +8,19 @@ const LoadDB = async () => {
 
 LoadDB();
 
-// GET - Retrieve current/upcoming pub and public events for pregame linking
+// GET - Retrieve pub and public events for pregame linking
 export async function GET(request) {
     try {
         const now = new Date();
-        const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+        const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
         
-        // Find pub/public events that are upcoming or live
+        // Find all pub/public events within the next 7 days (regardless of status)
         const events = await BlogModel.find({
             publicEventType: { $in: ['pub', 'public'] },
-            status: { $in: ['future', 'live'] },
-            startDateTime: { $lte: twoDaysFromNow } // Only show events within next 2 days
+            startDateTime: { 
+                $gte: now, // Event hasn't ended yet
+                $lte: sevenDaysFromNow // Within next 7 days
+            }
         })
         .select('title startDateTime endDateTime location publicEventType organizer')
         .sort({ startDateTime: 1 });

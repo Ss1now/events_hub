@@ -357,7 +357,7 @@ export default function PostEventPage() {
                             </div>
                         )}
 
-                        {/* Pregame Linking (only for party events) */}
+                        {/* Pregame Linking (only for Party category) */}
                         {data.eventPageType === 'party' && publicEvents.length > 0 && (
                             <div className='bg-gradient-to-r from-pink-900/30 to-orange-900/30 border-2 border-pink-500/40 rounded-lg p-5'>
                                 <p className='text-xl font-medium mb-3 text-white flex items-center gap-2'>
