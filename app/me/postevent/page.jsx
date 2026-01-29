@@ -31,13 +31,8 @@ export default function PostEventPage() {
     const [userCollege, setUserCollege] = useState('')
 
     useEffect(() => {
-        // Check if user is logged in
+        // Fetch user data if logged in
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to post an event');
-            router.push('/login');
-            return;
-        }
         
         // Fetch user profile to get residential college
         const fetchUserProfile = async () => {
@@ -90,11 +85,6 @@ export default function PostEventPage() {
         e.preventDefault();
         
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to post an event');
-            router.push('/login');
-            return;
-        }
         
         // Validate college-only events
         if (data.isCollegeOnly && !userCollege) {

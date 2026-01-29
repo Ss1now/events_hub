@@ -12,13 +12,16 @@ LoadDB();
 export async function POST(request) {
     try {
         const token = request.headers.get('authorization')?.replace('Bearer ', '');
+        let userId = null;
         
-        if (!token) {
-            return NextResponse.json({ success: false, msg: "Unauthorized" }, { status: 401 });
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                userId = decoded.id;
+            } catch (error) {
+                console.log('[Live Rating] Invalid token, treating as anonymous');
+            }
         }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.id;
 
         const formData = await request.formData();
         const eventId = formData.get('eventId');
@@ -43,15 +46,48 @@ export async function POST(request) {
             return NextResponse.json({ success: false, msg: "Live ratings are only available during the event" }, { status: 400 });
         }
 
-        // Check RSVP requirement
-        if (event.needReservation) {
+        // Check RSVP requirement (only for logged-in users)
+        if (userId && event.needReservation) {
             const hasReservation = event.reservedUsers.some(id => id.toString() === userId);
             if (!hasReservation) {
                 return NextResponse.json({ success: false, msg: "Only users with RSVPs can rate this event" }, { status: 403 });
             }
         }
 
-        // Check if user already rated live
+        // For anonymous users, just increment the anonymous rating
+        if (!userId) {
+            // Add anonymous rating
+            if (!event.anonymousLiveRatings) {
+                event.anonymousLiveRatings = [];
+            }
+            event.anonymousLiveRatings.push({
+                rating,
+                timestamp: new Date()
+            });
+
+            // Calculate new average including both logged-in and anonymous ratings
+            const totalLoggedInRatings = event.liveRatings?.length || 0;
+            const totalAnonymousRatings = event.anonymousLiveRatings?.length || 0;
+            const totalRatings = totalLoggedInRatings + totalAnonymousRatings;
+
+            const sumLoggedInRatings = (event.liveRatings || []).reduce((sum, r) => sum + r.rating, 0);
+            const sumAnonymousRatings = (event.anonymousLiveRatings || []).reduce((sum, r) => sum + r.rating, 0);
+            const sumRatings = sumLoggedInRatings + sumAnonymousRatings;
+
+            event.averageLiveRating = totalRatings > 0 ? sumRatings / totalRatings : 0;
+            event.totalLiveRatings = totalRatings;
+
+            await event.save();
+
+            return NextResponse.json({
+                success: true,
+                msg: "Live rating submitted",
+                averageLiveRating: event.averageLiveRating,
+                totalLiveRatings: event.totalLiveRatings
+            });
+        }
+
+        // For logged-in users, check if user already rated live
         const existingRatingIndex = event.liveRatings.findIndex(r => r.userId.toString() === userId);
 
         if (existingRatingIndex !== -1) {
@@ -67,9 +103,15 @@ export async function POST(request) {
             });
         }
 
-        // Calculate new average
-        const totalRatings = event.liveRatings.length;
-        const sumRatings = event.liveRatings.reduce((sum, r) => sum + r.rating, 0);
+        // Calculate new average including both logged-in and anonymous ratings
+        const totalLoggedInRatings = event.liveRatings?.length || 0;
+        const totalAnonymousRatings = event.anonymousLiveRatings?.length || 0;
+        const totalRatings = totalLoggedInRatings + totalAnonymousRatings;
+
+        const sumLoggedInRatings = (event.liveRatings || []).reduce((sum, r) => sum + r.rating, 0);
+        const sumAnonymousRatings = (event.anonymousLiveRatings || []).reduce((sum, r) => sum + r.rating, 0);
+        const sumRatings = sumLoggedInRatings + sumAnonymousRatings;
+
         event.averageLiveRating = totalRatings > 0 ? sumRatings / totalRatings : 0;
         event.totalLiveRatings = totalRatings;
 

@@ -112,16 +112,12 @@ const Page = ({ params }) => {
 
     const handleInterested = async () => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to mark as interested');
-            router.push('/login');
-            return;
-        }
 
         try {
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const response = await axios.patch('/api/blog', 
                 { action: 'interested', eventId: id },
-                { headers: { 'Authorization': `Bearer ${token}` } }
+                { headers }
             );
 
             if (response.data.success) {
@@ -148,16 +144,12 @@ const Page = ({ params }) => {
 
     const handleReserve = async () => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to reserve');
-            router.push('/login');
-            return;
-        }
 
         try {
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const response = await axios.patch('/api/blog', 
                 { action: 'reserve', eventId: id },
-                { headers: { 'Authorization': `Bearer ${token}` } }
+                { headers }
             );
 
             if (response.data.success) {

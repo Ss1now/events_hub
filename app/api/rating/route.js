@@ -9,20 +9,24 @@ import { uploadMultipleToCloudinary, deleteMultipleFromCloudinary } from "@/lib/
 export async function POST(request) {
     try {
         const authHeader = request.headers.get('authorization');
+        let userId = null;
+        let user = null;
         
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            try {
+                const token = authHeader.split(' ')[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                userId = decoded.id;
+                
+                await connectDB();
+                user = await userModel.findById(userId);
+            } catch (error) {
+                console.log('[Rating] Invalid token, treating as anonymous');
+            }
         }
 
-        const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.id;
-
-        await connectDB();
-
-        const user = await userModel.findById(userId);
-        if (!user) {
-            return NextResponse.json({ success: false, msg: 'User not found' }, { status: 404 });
+        if (!userId) {
+            await connectDB();
         }
 
         const formData = await request.formData();
@@ -46,13 +50,13 @@ export async function POST(request) {
             return NextResponse.json({ success: false, msg: 'Can only rate past events' }, { status: 400 });
         }
 
-        // Check if user is the event host - hosts cannot rate their own events
-        if (event.authorId.toString() === userId) {
+        // Check if user is the event host (only for logged in users) - hosts cannot rate their own events
+        if (userId && event.authorId.toString() === userId) {
             return NextResponse.json({ success: false, msg: 'Event hosts cannot rate their own events' }, { status: 400 });
         }
 
-        // Check rating eligibility based on RSVP requirement
-        if (event.needReservation) {
+        // Check rating eligibility based on RSVP requirement (only for logged-in users)
+        if (userId && event.needReservation) {
             // For events that need RSVP, only RSVP'd users can rate
             const isReserved = event.reservedUsers && event.reservedUsers.some(id => id.toString() === userId);
             if (!isReserved) {
@@ -62,12 +66,14 @@ export async function POST(request) {
                 }, { status: 403 });
             }
         }
-        // For events without RSVP requirement, anyone can rate (no additional check needed)
+        // For events without RSVP requirement or anonymous users, anyone can rate
 
-        // Check if user already rated this event
-        const existingRating = event.ratings.find(r => r.userId.toString() === userId);
-        if (existingRating) {
-            return NextResponse.json({ success: false, msg: 'You have already rated this event' }, { status: 400 });
+        // Check if user already rated this event (only for logged-in users)
+        if (userId) {
+            const existingRating = event.ratings.find(r => r.userId && r.userId.toString() === userId);
+            if (existingRating) {
+                return NextResponse.json({ success: false, msg: 'You have already rated this event' }, { status: 400 });
+            }
         }
 
         // Process images - upload to Cloudinary
@@ -82,8 +88,8 @@ export async function POST(request) {
 
         // Add rating to event
         event.ratings.push({
-            userId,
-            userName: user.name || user.email.split('@')[0],
+            userId: userId || null,
+            userName: user ? (user.name || user.email.split('@')[0]) : 'Anonymous',
             rating,
             comment,
             images: imageUrls,
@@ -97,10 +103,12 @@ export async function POST(request) {
 
         await event.save();
 
-        // Add to user's rated events
-        if (!user.ratedEvents.includes(eventId)) {
-            user.ratedEvents.push(eventId);
-            await user.save();
+        // Add to user's rated events (only for logged-in users)
+        if (userId && user) {
+            if (!user.ratedEvents.includes(eventId)) {
+                user.ratedEvents.push(eventId);
+                await user.save();
+            }
         }
 
         return NextResponse.json({ 

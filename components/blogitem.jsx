@@ -99,16 +99,12 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
         e.stopPropagation();
         
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to mark as interested');
-            router.push('/login');
-            return;
-        }
 
         try {
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const response = await axios.patch('/api/blog', 
                 { action: 'interested', eventId: id },
-                { headers: { 'Authorization': `Bearer ${token}` } }
+                { headers }
             );
 
             if (response.data.success) {
@@ -143,16 +139,12 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
         e.stopPropagation();
         
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to reserve');
-            router.push('/login');
-            return;
-        }
 
         try {
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const response = await axios.patch('/api/blog', 
                 { action: 'reserve', eventId: id },
-                { headers: { 'Authorization': `Bearer ${token}` } }
+                { headers }
             );
 
             if (response.data.success) {
@@ -203,11 +195,6 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
         }
 
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to rate events');
-            router.push('/login');
-            return;
-        }
 
         setSubmittingRating(true);
 
@@ -221,10 +208,9 @@ const BlogItem = ({title, description, category, images, id, status, eventType, 
                 formData.append('images', image);
             });
 
+            const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
             const response = await axios.post('/api/rating', formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers
             });
 
             if (response.data.success) {

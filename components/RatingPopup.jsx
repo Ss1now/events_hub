@@ -36,10 +36,6 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
         }
 
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to submit a review');
-            return;
-        }
 
         setSubmitting(true);
 
@@ -53,11 +49,12 @@ const RatingPopup = ({ event, onClose, onSubmitted }) => {
                 formData.append('images', image);
             });
 
+            const headers = token 
+                ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+                : { 'Content-Type': 'multipart/form-data' };
+
             const response = await axios.post('/api/rating', formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers
             });
 
             if (response.data.success) {

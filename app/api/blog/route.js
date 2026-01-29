@@ -120,28 +120,38 @@ export async function POST(request){
     console.log('POST /api/blog - Request received');
     
     try {
-        // Extract and verify JWT token
+        // Extract JWT token if present (optional for anonymous users)
         const authHeader = request.headers.get('authorization');
+        let userId = null;
+        let user = null;
+        let isOrganization = false;
         
         console.log('Auth header present:', !!authHeader);
         
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            try {
+                const token = authHeader.split(' ')[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                userId = decoded.id;
+                
+                console.log('User authenticated:', userId);
+
+                await connectDB();
+                
+                // Check if user is an organization
+                user = await userModel.findById(userId);
+                isOrganization = user && user.isOrganization;
+                
+                console.log('User found, isOrganization:', isOrganization);
+            } catch (error) {
+                console.log('[POST] Invalid token, treating as anonymous');
+            }
         }
 
-        const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.id;
-        
-        console.log('User authenticated:', userId);
-
-        await connectDB();
-        
-        // Check if user is an organization
-        const user = await userModel.findById(userId);
-        const isOrganization = user && user.isOrganization;
-        
-        console.log('User found, isOrganization:', isOrganization);
+        if (!userId) {
+            await connectDB();
+            console.log('Anonymous user creating event');
+        }
 
         const formData = await request.formData();
         console.log('FormData parsed successfully');
@@ -209,7 +219,7 @@ export async function POST(request){
             interestedUsers: [],
             reservedUsers: [],
             host: hostName,
-            authorId: userId,
+            authorId: userId || null, // Allow null for anonymous users
             cohosts: [],
             eventCategory: eventCategoryValue,
             organizer: organizerValue,
@@ -558,16 +568,20 @@ export async function PATCH(request){
     try {
         await connectDB(); // Ensure database connection
         
-        // Extract and verify JWT token
+        // Extract JWT token if present (optional for anonymous users)
         const authHeader = request.headers.get('authorization');
+        let userId = null;
         
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return NextResponse.json({ success: false, msg: 'Authentication required' }, { status: 401 });
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            try {
+                const token = authHeader.split(' ')[1];
+                const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                userId = decoded.id;
+            } catch (error) {
+                // Invalid token, treat as anonymous user
+                console.log('[PATCH] Invalid token, treating as anonymous');
+            }
         }
-
-        const token = authHeader.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const userId = decoded.id;
 
         const body = await request.json();
         const { action, eventId } = body;
@@ -631,12 +645,32 @@ export async function PATCH(request){
                 });
             
             case 'interested':
+                // For anonymous users, just increment/decrement counter
+                if (!userId) {
+                    // Anonymous user - just update count
+                    const currentCount = event.interestedUsers?.length || 0;
+                    const updatedEvent = await Blogmodel.findByIdAndUpdate(
+                        eventId,
+                        { $set: { anonymousInterestedCount: (event.anonymousInterestedCount || 0) + 1 } },
+                        { new: true }
+                    );
+                    
+                    const totalCount = (updatedEvent.interestedUsers?.length || 0) + (updatedEvent.anonymousInterestedCount || 0);
+                    
+                    return NextResponse.json({ 
+                        success: true, 
+                        msg: 'Marked as interested',
+                        interestedCount: totalCount,
+                        isInterested: true
+                    });
+                }
+                
                 // Initialize interestedUsers if it doesn't exist
                 if (!event.interestedUsers) {
                     event.interestedUsers = [];
                 }
                 
-                // Toggle interested status
+                // Toggle interested status for logged-in users
                 const isInterested = event.interestedUsers.some(id => id.toString() === userId.toString());
                 
                 let updatedEvent;
@@ -664,16 +698,51 @@ export async function PATCH(request){
                     console.log(`User ${userId} added to interested for event ${eventId}`);
                 }
                 
-                console.log(`Event updated. Interested users count: ${updatedEvent.interestedUsers.length}`);
+                const totalInterestedCount = (updatedEvent.interestedUsers?.length || 0) + (updatedEvent.anonymousInterestedCount || 0);
+                console.log(`Event updated. Total interested count: ${totalInterestedCount}`);
                 
                 return NextResponse.json({ 
                     success: true, 
                     msg: isInterested ? 'Removed from interested' : 'Marked as interested',
-                    interestedCount: updatedEvent.interestedUsers.length,
+                    interestedCount: totalInterestedCount,
                     isInterested: !isInterested
                 });
 
             case 'reserve':
+                // For anonymous users, just increment counter
+                if (!userId) {
+                    // Check if event needs RSVP
+                    if (!event.needReservation) {
+                        return NextResponse.json({ success: false, msg: 'This event does not require RSVP' }, { status: 400 });
+                    }
+
+                    // Check RSVP deadline
+                    if (event.reservationDeadline && new Date() > new Date(event.reservationDeadline)) {
+                        return NextResponse.json({ success: false, msg: 'RSVP deadline has passed' }, { status: 400 });
+                    }
+
+                    // Check capacity (including anonymous reservations)
+                    const totalReserved = (event.reservedUsers?.length || 0) + (event.anonymousReservedCount || 0);
+                    if (totalReserved >= event.capacity) {
+                        return NextResponse.json({ success: false, msg: 'Event has reached capacity' }, { status: 400 });
+                    }
+
+                    // Increment anonymous count
+                    const updatedEvent = await Blogmodel.findByIdAndUpdate(
+                        eventId,
+                        { $inc: { anonymousReservedCount: 1 } },
+                        { new: true }
+                    );
+
+                    const totalCount = (updatedEvent.reservedUsers?.length || 0) + (updatedEvent.anonymousReservedCount || 0);
+
+                    return NextResponse.json({ 
+                        success: true, 
+                        msg: 'RSVP confirmed',
+                        reserved: totalCount
+                    });
+                }
+                
                 // Initialize reservedUsers if it doesn't exist
                 if (!event.reservedUsers) {
                     event.reservedUsers = [];
@@ -695,7 +764,8 @@ export async function PATCH(request){
                 }
 
                 // Check capacity
-                if (event.reservedUsers.length >= event.capacity) {
+                const totalReserved = (event.reservedUsers?.length || 0) + (event.anonymousReservedCount || 0);
+                if (totalReserved >= event.capacity) {
                     return NextResponse.json({ success: false, msg: 'Event has reached capacity' }, { status: 400 });
                 }
 
@@ -709,10 +779,11 @@ export async function PATCH(request){
                 });
                 
                 const reservedEvent = await Blogmodel.findById(eventId);
+                const totalReservedCount = (reservedEvent.reservedUsers?.length || 0) + (reservedEvent.anonymousReservedCount || 0);
                 return NextResponse.json({ 
                     success: true, 
                     msg: 'Successfully reserved',
-                    reserved: reservedEvent.reservedUsers.length,
+                    reserved: totalReservedCount,
                     capacity: reservedEvent.capacity
                 });
 

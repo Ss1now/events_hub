@@ -61,10 +61,6 @@ export default function WhatsMoveNow({ eventId }) {
         if (!newComment.trim()) return;
 
         const token = localStorage.getItem('token');
-        if (!token) {
-            alert('Please login to post a comment');
-            return;
-        }
 
         setIsLoading(true);
         try {

@@ -46,13 +46,8 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
         e.stopPropagation();
         
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to rate this event');
-            router.push('/login');
-            return;
-        }
 
-        if (needReservation && !hasReservation) {
+        if (needReservation && !hasReservation && token) {
             toast.error('Only users with RSVPs can rate this event');
             return;
         }
@@ -70,10 +65,6 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
         }
 
         const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Please login to rate this event');
-            return;
-        }
 
         setSubmitting(true);
 
@@ -82,11 +73,12 @@ const LiveRatingButton = ({ eventId, averageLiveRating, totalLiveRatings, needRe
             formData.append('eventId', eventId);
             formData.append('rating', rating);
 
+            const headers = token 
+                ? { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+                : { 'Content-Type': 'multipart/form-data' };
+
             const response = await axios.post('/api/live-rating', formData, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers
             });
 
             if (response.data.success) {
